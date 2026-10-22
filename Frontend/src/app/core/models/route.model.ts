@@ -7,13 +7,17 @@ export interface RouteOption {
   type: RouteType;
   distanceKm: number;
   etaMinutes: number;
-  safetyScore: number; // e.g. 92%
+  safetyScore: number;
   riskStatus: RouteRiskStatus;
   floodPointsAvoided: number;
   hazardExposure: 'Low' | 'Medium' | 'High';
-  pathCoordinates: [number, number][]; // LatLng points for Leaflet polyline
+  riskExposureScore?: number;
+  highRiskEdgeCount?: number;
+  pathCoordinates: [number, number][]; // [lat, lon] Leaflet order
+  nodesVisited?: string[];
   notes: string;
   isSimulated: boolean;
+  geometrySource?: string;
 }
 
 export interface RouteHazard {
@@ -33,8 +37,12 @@ export interface RoutePlanResult {
   sourceCoords: [number, number];
   destCoords: [number, number];
   recommendedRoute: RouteOption;
-  alternativeRoute: RouteOption;
+  alternativeRoute?: RouteOption | null;
+  alternativeUnavailableReason?: string | null;
   hazards: RouteHazard[];
+  networkProvenance?: string;
+  geometrySource?: string;
+  warnings?: string[];
   isSimulated: boolean;
 }
 

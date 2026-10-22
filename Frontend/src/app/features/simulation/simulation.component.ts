@@ -749,7 +749,7 @@ export class SimulationComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Dark base tiles
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_4s5y_1_1e7c1c7f9b42043537db27b8', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
       maxZoom: 18
     }).addTo(this.map);

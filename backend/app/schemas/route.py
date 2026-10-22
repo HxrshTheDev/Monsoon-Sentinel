@@ -26,10 +26,13 @@ class RouteOptionSchema(BaseModel):
     riskStatus: str  # 'SAFE' | 'CAUTION' | 'UNSAFE' | 'BLOCKED'
     floodPointsAvoided: int
     hazardExposure: str  # 'Low' | 'Medium' | 'High'
-    pathCoordinates: List[List[float]]  # [[lat, lon], ...]
+    riskExposureScore: float = 0.0  # length-weighted mean edge susceptibility
+    highRiskEdgeCount: int = 0
+    pathCoordinates: List[List[float]]  # [[lat, lon], ...] Leaflet order
     nodesVisited: Optional[List[str]] = None
     notes: str
     isSimulated: bool = False
+    geometrySource: str = "arterial_graph_reconstruction"
 
 
 class RouteHazardSchema(BaseModel):
@@ -50,7 +53,11 @@ class RoutePlanResultSchema(BaseModel):
     destCoords: List[float]
     recommendedRoute: RouteOptionSchema
     alternativeRoute: Optional[RouteOptionSchema] = None
+    alternativeUnavailableReason: Optional[str] = None
     hazards: List[RouteHazardSchema] = []
+    networkProvenance: Optional[str] = None
+    geometrySource: Optional[str] = None
+    warnings: List[str] = []
     isSimulated: bool = False
 
 
@@ -60,4 +67,3 @@ class PresetRouteSchema(BaseModel):
     source: str
     destination: str
     description: str
-

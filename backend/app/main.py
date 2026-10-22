@@ -44,14 +44,20 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS configuration
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS configuration — explicit local origins + private-LAN regex in development
+_cors_kwargs = {
+    "allow_origins": settings.CORS_ORIGINS,
+    "allow_credentials": True,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+if getattr(settings, "ENVIRONMENT", "development") != "production":
+    _cors_kwargs["allow_origin_regex"] = getattr(
+        settings,
+        "CORS_ORIGIN_REGEX",
+        r"https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$",
+    )
+app.add_middleware(CORSMiddleware, **_cors_kwargs)
 
 # Mount API v1 router
 app.include_router(api_router, prefix=settings.API_V1_STR)

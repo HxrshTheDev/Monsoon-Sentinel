@@ -18,7 +18,7 @@ function depthColor(cm: number): string {
 }
 
 const BASE_TILES = {
-  standard: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  standard: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_4s5y_1_1e7c1c7f9b42043537db27b8',
   satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   terrain: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
 };
