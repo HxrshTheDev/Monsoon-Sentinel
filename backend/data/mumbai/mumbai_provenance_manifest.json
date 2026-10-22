@@ -1,0 +1,85 @@
+{
+  "target_city": "Mumbai",
+  "state": "Maharashtra",
+  "country": "India",
+  "jurisdiction": "Brihanmumbai Municipal Corporation (BMC / MCGM)",
+  "bounds": {
+    "min_lat": 18.89,
+    "max_lat": 19.29,
+    "min_lon": 72.76,
+    "max_lon": 72.99
+  },
+  "crs_projected": "EPSG:32643 (WGS 84 / UTM Zone 43N)",
+  "crs_display": "EPSG:4326 (WGS 84 Geographic)",
+  "total_cells": 1767,
+  "features_columns": [
+    "grid_id",
+    "x_utm",
+    "y_utm",
+    "longitude",
+    "latitude",
+    "elevation_m",
+    "slope_deg",
+    "low_lying_score",
+    "soil_clay_0_5cm",
+    "built_up_ratio",
+    "water_ratio",
+    "vegetation_ratio",
+    "worldcover_class",
+    "dist_to_swd_m",
+    "dist_to_macro_drain_m",
+    "dist_to_micro_drain_m",
+    "dist_to_river_stream_m",
+    "dist_to_buckingham_canal_m",
+    "drainage_density_m_per_km2",
+    "building_count",
+    "building_area_m2",
+    "dist_to_hospital_m",
+    "hospital_count_1km",
+    "dist_to_fire_station_m",
+    "dist_to_police_m"
+  ],
+  "total_facilities": 537,
+  "mlops_metrics": {
+    "prototypeAccuracy": 0.98,
+    "f1Score": 0.964,
+    "rocAuc": 0.998
+  },
+  "verified_sources": [
+    {
+      "source": "OpenCity Mumbai Wards Map",
+      "file": "backend/data/mumbai/raw/mumbai_wards_map.kml",
+      "license": "OGD India / ODbL",
+      "status": "VERIFIED_DOWNLOADED"
+    },
+    {
+      "source": "OpenCity Mumbai Fire Stations",
+      "file": "backend/data/mumbai/raw/mumbai_fire_stations.kml",
+      "license": "OGD India",
+      "status": "VERIFIED_DOWNLOADED"
+    },
+    {
+      "source": "OpenCity Mumbai Public Health Facilities (Dispensaries, UPHCs, Hospitals, Maternity)",
+      "file": "backend/data/mumbai/raw/mumbai_public_hospitals.kml",
+      "license": "OGD India",
+      "status": "VERIFIED_DOWNLOADED"
+    },
+    {
+      "source": "OpenCity & MRSAC Mumbai Microwatersheds",
+      "file": "backend/data/mumbai/raw/mumbai_microwatersheds.geojson",
+      "license": "OGD India",
+      "status": "VERIFIED_DOWNLOADED"
+    },
+    {
+      "source": "Copernicus GLO-90 / 30m Digital Elevation Model (Open-Meteo API)",
+      "file": "backend/data/mumbai/raw/mumbai_dem_elevations.json",
+      "license": "Copernicus Open Access / CC-BY",
+      "status": "VERIFIED_FETCHED"
+    },
+    {
+      "source": "BMC Disaster Management Chronic Waterlogging Hotspots Registry",
+      "reference": "BMC Disaster Management Guidelines 2023-2024",
+      "status": "VERIFIED_OFFICIAL"
+    }
+  ]
+}

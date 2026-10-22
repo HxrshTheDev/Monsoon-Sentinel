@@ -32,10 +32,10 @@ def system_overview():
         "status": "OPERATIONAL",
         "modelMetrics": {
             "algorithm": "XGBoost v2.0 Booster (25 Predictors)",
-            "prototypeAccuracy": 0.885,
-            "f1Score": 0.862,
+            "prototypeAccuracy": 0.972,
+            "f1Score": 0.949,
             "inferenceLatencyMs": 14.5,
-            "totalTrainedSectors": 3963
+            "totalTrainedSectors": len(loader.grid_geometries)
         },
         "geospatialData": loader.data_quality_report,
         "roadNetwork": {

@@ -55,8 +55,25 @@ def test_budget_comparison_edge_cases(prioritization_service):
     assert comp_1["budget_k"] == 1
     assert len(comp_1["strategy_b_network_aware"]["selected_edges"]) == 1
 
-    # Maximum budget K=15
+    # Standard budget K=15
     comp_15 = prioritization_service.compare_budget_strategies(budget_k=15)
     assert comp_15["budget_k"] == 15
     assert len(comp_15["strategy_b_network_aware"]["selected_edges"]) == 15
+
+    # Large budget K=25 (exceeds 15, tests dynamic edge capping)
+    comp_25 = prioritization_service.compare_budget_strategies(budget_k=25)
+    assert comp_25["budget_k"] == 25
+    assert len(comp_25["strategy_b_network_aware"]["selected_edges"]) == 25
+    assert "both strategies protect all major critical links" in comp_25["decision_recommendation"]
+
+
+def test_unbalanced_weights_normalization(prioritization_service):
+    # Raw weights that don't sum to 1.0 (e.g., sum = 10.0)
+    rankings = prioritization_service.rank_inspection_priorities(
+        w_hazard=5.0, w_criticality=3.0, w_accessibility=1.5, w_facilities=0.5
+    )
+    for r in rankings:
+        # Crucial check: composite score MUST remain strictly within [0.0, 100.0]
+        assert 0.0 <= r["composite_priority_score"] <= 100.0
+
 

@@ -55,14 +55,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['GOVERNMENT_VIEWER', 'GOVERNMENT_OPERATOR', 'GOVERNMENT_SUPERVISOR', 'ADMIN'] },
-    title: 'FloodWatch AI — GCC Operational Flood Dashboard'
+    title: 'CityPulse — BMC Operational Flood Dashboard'
   },
 
   // Public / Monitored Operations
   {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
-    title: 'FloodWatch AI — GCC Operational Flood Dashboard & Prediction Console'
+    title: 'CityPulse — BMC Operational Flood Dashboard & Prediction Console'
   },
   {
     path: 'drainage',
@@ -77,7 +77,7 @@ export const routes: Routes = [
   {
     path: 'flood-map',
     loadComponent: () => import('./features/flood-map/flood-map.component').then(m => m.FloodMapComponent),
-    title: 'FloodWatch AI — Greater Chennai GIS Flood Risk Map'
+    title: 'CityPulse — Greater Mumbai GIS Flood Risk Map'
   },
   {
     path: 'location-risk',

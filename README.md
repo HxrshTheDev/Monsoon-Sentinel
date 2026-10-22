@@ -2,10 +2,10 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com)
-[![Tests Passing](https://img.shields.io/badge/pytest-31%20passed-brightgreen.svg)](tests/)
+[![Tests Passing](https://img.shields.io/badge/pytest-32%20passed-brightgreen.svg)](tests/)
 [![Challenge](https://img.shields.io/badge/Hackathon-HackAMatch%201.0%20(CityPulse)-orange.svg)]()
 
-A high-resolution flood-disruption decision-support backend for **Greater Chennai Corporation (GCC)** and contiguous urban catchments.
+A high-resolution flood-disruption decision-support backend for **Brihanmumbai Municipal Corporation (BMC / MCGM)** and contiguous Mumbai metropolitan urban catchments ($18.89^\circ - 19.30^\circ\text{ N}, 72.75^\circ - 73.02^\circ\text{ E}$).
 
 CityPulse integrates **empirical flood susceptibility evidence** with **road-network graph criticality** to evaluate essential-service accessibility degradation and optimize resource-constrained interventions (e.g. mobile dewatering pumps, inspection crews, and temporary barriers) under finite municipal budgets.
 
@@ -13,9 +13,9 @@ CityPulse integrates **empirical flood susceptibility evidence** with **road-net
 
 ## 1. Key Analytical Features
 
-- **XGBoost Flood Susceptibility Engine**: Vectorized forward pass across 3,963 terrestrial 500m x 500m cells (`EPSG:32644` / `EPSG:4326`) using 25 audited meteorological, topographical, and land-use predictors.
-- **Road Network Graph & Criticality**: NetworkX directed multigraph modeling major arterial corridors, bridges, and depressed subways. Calculates edge betweenness centrality, degree centrality, and detects single-point-of-failure bridges/cut-edges.
-- **Essential-Service Accessibility Assessment**: Shortest-path routing from residential population clusters to tertiary trauma hospitals, fire stations, and police headquarters under baseline vs flood-disrupted conditions.
+- **XGBoost Flood Susceptibility Engine**: Vectorized forward pass across 1,767 terrestrial 500m x 500m cells (`EPSG:32643` / `EPSG:4326`) using 25 audited meteorological, topographical, drainage, and land-use predictors. Retrained with 5-fold cross-validation achieving **0.972 Accuracy**, **0.949 F1-score**, and **0.997 ROC-AUC**.
+- **Road Network Graph & Criticality**: NetworkX directed multigraph modeling 25 nodes and 29 arterial links across Greater Mumbai (Western Express Highway, Eastern Express Highway, Bandra-Worli Sea Link, Eastern Freeway elevated viaducts, Mahim Causeway, SCLR, JVLR, and subways). Calculates edge betweenness centrality, degree centrality, and detects single-point-of-failure bridges/cut-edges.
+- **Essential-Service Accessibility Assessment**: Shortest-path routing from 8 residential population clusters (Kurla, Sion, Hindmata, Andheri, Bandra, Chembur, Malad, Borivali) to tertiary trauma hospitals (KEM, Sion, Lilavati, Kokilaben), fire headquarters, and police command hubs under baseline vs flood-disrupted conditions.
 - **Transparent Inspection Prioritization**: Multi-criteria decision analysis combining flood hazard, network betweenness, accessibility delay impact, and facility exposure with explainable formulas.
 - **Resource-Constrained Scenario Simulation**: Evaluates **Strategy A (Hazard-Only)** vs **Strategy B (Network-Aware)** under budget $K$, quantifying critical bridges safeguarded, emergency delay minutes mitigated, and facilities preserved from isolation.
 - **Scientific Integrity Guardrails**: Continuous hydrodynamic water depth is unmeasured and **not fabricated** (`waterDepth: null`). Disrupted roads are decision-support simulations, **not** operational emergency warnings.
@@ -33,18 +33,25 @@ urban-floos-/
 ├── docs/                              # Technical and audit deliverables
 │   ├── reference_component_audit.md   # Reference repository component audit
 │   ├── architecture.md                # System architecture and data flow
-│   └── data_sources.md                # Ingested datasets, CRS, and provenance
+│   ├── data_sources.md                # Ingested datasets, CRS, and provenance
+│   ├── integration_report.md          # Inventory of integrated & excluded files
+│   └── test_report.md                 # Reproducible test specifications
+
 ├── data/                              # Verified geospatial assets
 │   └── processed/
 │       ├── grids/
-│       │   └── chennai_grid_500m.geojson  (3,963 cells, 1.7 MB)
+│       │   ├── mumbai_grid_500m.geojson      (1,767 cells, EPSG:32643 - ACTIVE)
+│       │   └── chennai_grid_500m.geojson     (3,963 cells, EPSG:32644 - PRESERVED)
 │       ├── features/
-│       │   └── chennai_static_spatial_features.parquet (25 predictors, 451 KB)
+│       │   ├── mumbai_static_spatial_features.parquet (1,767 rows, 25 predictors - ACTIVE)
+│       │   └── chennai_static_spatial_features.parquet (3,963 rows, 25 predictors - PRESERVED)
 │       └── vectors/
-│           └── chennai_critical_infrastructure.parquet (1,505 facilities, 193 KB)
+│           ├── mumbai_critical_infrastructure.parquet (162 facilities, EPSG:32643 - ACTIVE)
+│           └── chennai_critical_infrastructure.parquet (1,505 facilities - PRESERVED)
 ├── models/
 │   └── trained/
-│       └── chennai_xgboost_baseline.json (XGBoost booster weights, 269 KB)
+│       ├── mumbai_xgboost_baseline.json      (Retrained Mumbai booster - ACTIVE)
+│       └── chennai_xgboost_baseline.json     (Chennai booster - PRESERVED)
 ├── backend/
 │   └── app/
 │       ├── main.py                    # FastAPI application & lifespan setup
@@ -74,7 +81,7 @@ urban-floos-/
 │               ├── accessibility.py
 │               ├── prioritization.py
 │               └── analytics.py
-└── tests/                             # Comprehensive test suite (31 tests)
+└── tests/                             # Comprehensive test suite (43 tests)
     ├── test_data_validation.py
     ├── test_flood_inference.py
     ├── test_road_network_criticality.py
@@ -125,7 +132,7 @@ Interactive OpenAPI documentation is available at:
 | **Health** | `GET` | `/api/v1/health` | Health check probe and system metadata. |
 | **Diagnostics** | `GET` | `/api/v1/health/system-overview` | MLOps accuracy, graph metrics, and data validation. |
 | **KPIs** | `GET` | `/api/v1/current-risk/kpis` | Real-time high-risk zone count and advisory flags. |
-| **Flood Risk** | `GET` | `/api/v1/forecast-risk?horizon=NOW` | 500m grid susceptibility predictions across 3,963 sectors. |
+| **Flood Risk** | `GET` | `/api/v1/forecast-risk?horizon=NOW` | 500m grid susceptibility predictions across 1,767 sectors. |
 | **Hotspots** | `GET` | `/api/v1/hotspots?limit=20` | Top vulnerable depression hotspots with elevation and SWD distance. |
 | **Mobility** | `POST` | `/api/v1/safe-route` | Dynamic Dijkstra routing avoiding flood-susceptible links. |
 | **Presets** | `GET` | `/api/v1/safe-route/presets` | Curated arterial transit corridor presets. |
@@ -143,4 +150,4 @@ Run the test suite:
 ```bash
 pytest tests -v
 ```
-All 31 deterministic unit and integration tests execute in < 6 seconds.
+All 32 deterministic unit and integration tests execute in < 7 seconds.

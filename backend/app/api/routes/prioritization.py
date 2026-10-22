@@ -33,7 +33,7 @@ def rank_inspection_priorities(
 
 @router.post("/compare", response_model=BudgetComparisonResponse)
 def compare_budget_allocation(
-    budget_k: int = Query(default=5, ge=1, le=15, description="Number of inspection teams / intervention units")
+    budget_k: int = Query(default=5, ge=1, le=50, description="Number of inspection teams / intervention units")
 ):
     service = PrioritizationService.get_instance()
     return service.compare_budget_strategies(budget_k=budget_k)

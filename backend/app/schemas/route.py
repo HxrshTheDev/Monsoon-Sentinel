@@ -9,7 +9,9 @@ from pydantic import BaseModel, Field
 class RouteRequestSchema(BaseModel):
     source: Optional[str] = None
     origin: Optional[str] = None
-    destination: str
+    destination: Optional[str] = None
+    source_coords: Optional[List[float]] = Field(None, description="[latitude, longitude] origin GPS coordinate")
+    dest_coords: Optional[List[float]] = Field(None, description="[latitude, longitude] destination GPS coordinate")
     mode: Optional[str] = "vehicle"
     vehicle_type: Optional[str] = "car"  # 'car' | 'suv' | 'truck' | 'rescue'
 

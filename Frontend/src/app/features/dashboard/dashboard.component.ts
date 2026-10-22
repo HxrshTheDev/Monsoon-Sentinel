@@ -2848,9 +2848,9 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private initMiniMap(): void {
     if (!this.miniMapContainer || this.map) return;
 
-    // Center on Greater Chennai area with Canvas hardware acceleration
+    // Center on Greater Mumbai area with Canvas hardware acceleration
     this.map = L.map(this.miniMapContainer.nativeElement, {
-      center: [13.0827, 80.2707],
+      center: [19.0760, 72.8777],
       zoom: 11,
       zoomControl: false,
       attributionControl: false,
@@ -2985,11 +2985,11 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       // Find from recent predictions
       const pred = this.recentPredictions.find(p => p.location === locationName);
       this.selectedZone = {
-        gridId: 'CHN-' + Math.floor(1000 + Math.random() * 9000),
+        gridId: 'MUM-' + Math.floor(1000 + Math.random() * 9000),
         name: locationName + ' Basin',
-        latitude: 13.0827,
-        longitude: 80.2707,
-        bounds: [[13.07, 80.26], [13.09, 80.28]],
+        latitude: 19.0760,
+        longitude: 72.8777,
+        bounds: [[19.06, 72.86], [19.09, 72.89]],
         riskLevel: pred?.currentRisk || 'MEDIUM',
         riskScore: pred?.confidence || 65,
         predictionTime: this.currentHorizon,

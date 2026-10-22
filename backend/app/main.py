@@ -1,6 +1,6 @@
 """
 CityPulse — FastAPI Backend Application
-AI-Powered Urban Flood Disruption & Decision-Support System (Greater Chennai Corporation)
+AI-Powered Urban Flood Disruption & Decision-Support System (Brihanmumbai Municipal Corporation - BMC / MCGM)
 HackAMatch 1.0 Challenge
 """
 
@@ -38,7 +38,7 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     description=(
         "High-resolution AI-powered urban flood susceptibility, road network criticality, "
-        "essential-service accessibility, and resource-constrained scenario decision support for Greater Chennai."
+        "essential-service accessibility, and resource-constrained scenario decision support for Greater Mumbai."
     ),
     version="2.0.0-citypulse",
     lifespan=lifespan

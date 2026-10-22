@@ -12,8 +12,8 @@ from pyproj import Transformer
 
 from backend.app.core.config import settings
 
-# UTM 44N to WGS84 Transformer
-_TRANSFORMER_UTM_TO_WGS84 = Transformer.from_crs("EPSG:32644", "EPSG:4326", always_xy=True)
+# UTM 43N to WGS84 Transformer (Mumbai UTM Zone 43N)
+_TRANSFORMER_UTM_TO_WGS84 = Transformer.from_crs("EPSG:32643", "EPSG:4326", always_xy=True)
 
 
 class DataLoaderService:
@@ -108,95 +108,105 @@ class DataLoaderService:
     def _load_critical_infrastructure(self) -> List[Dict[str, Any]]:
         facilities: List[Dict[str, Any]] = []
 
-        # 1. Curated anchor landmark facilities (guaranteed 24x7 representation)
+        # 1. Curated anchor landmark facilities (guaranteed 24x7 representation in Greater Mumbai)
         curated_landmarks = [
             {
-                "id": "HOSP-RGGGH-01",
-                "name": "Rajiv Gandhi Government General Hospital (RGGGH)",
+                "id": "HOSP-KEM-01",
+                "name": "King Edward Memorial Hospital (KEM Hospital)",
                 "facility_type": "hospital",
                 "category": "Tertiary Trauma & Emergency Center",
-                "lat": 13.0805, "lon": 80.2785,
-                "locality": "Chennai Central / Park Town",
-                "beds": 450,
+                "lat": 19.0028, "lon": 72.8431,
+                "locality": "Parel / Bhoiwada",
+                "beds": 550,
                 "status": "OPERATIONAL_24X7"
             },
             {
-                "id": "HOSP-APOLLO-02",
-                "name": "Apollo Hospitals Greams Road",
+                "id": "HOSP-SION-02",
+                "name": "Lokmanya Tilak Municipal General Hospital (Sion Hospital)",
                 "facility_type": "hospital",
-                "category": "Multi-Speciality Emergency Center",
-                "lat": 13.0592, "lon": 80.2520,
-                "locality": "Thousand Lights / Anna Salai",
-                "beds": 280,
+                "category": "Metropolitan Disaster Trauma Center",
+                "lat": 19.0378, "lon": 72.8606,
+                "locality": "Sion / Dharavi",
+                "beds": 480,
                 "status": "OPERATIONAL_24X7"
             },
             {
-                "id": "HOSP-STANLEY-03",
-                "name": "Government Stanley Medical College Hospital",
+                "id": "HOSP-NAIR-03",
+                "name": "Topiwala National Medical College & BYL Nair Hospital",
                 "facility_type": "hospital",
-                "category": "North Chennai Trauma Center",
-                "lat": 13.1090, "lon": 80.2865,
-                "locality": "Royapuram / Old Washermanpet",
+                "category": "Tertiary Referral & Trauma Center",
+                "lat": 18.9712, "lon": 72.8217,
+                "locality": "Mumbai Central",
                 "beds": 350,
                 "status": "OPERATIONAL_24X7"
             },
             {
-                "id": "HOSP-FORTIS-04",
-                "name": "Fortis Malar Hospital Adyar",
+                "id": "HOSP-LILAVATI-04",
+                "name": "Lilavati Hospital & Research Centre",
                 "facility_type": "hospital",
-                "category": "South Chennai Emergency Hub",
-                "lat": 13.0068, "lon": 80.2570,
-                "locality": "Adyar / Gandhi Nagar",
-                "beds": 180,
+                "category": "Multi-Speciality Emergency Center",
+                "lat": 19.0514, "lon": 72.8295,
+                "locality": "Bandra West",
+                "beds": 300,
                 "status": "OPERATIONAL_24X7"
             },
             {
-                "id": "FIRE-CENTRAL-01",
-                "name": "Chennai Fire & Rescue Central Station",
+                "id": "HOSP-KDAH-05",
+                "name": "Kokilaben Dhirubhai Ambani Hospital",
+                "facility_type": "hospital",
+                "category": "Western Suburbs Tertiary Emergency Hub",
+                "lat": 19.1312, "lon": 72.8252,
+                "locality": "Andheri West",
+                "beds": 350,
+                "status": "OPERATIONAL_24X7"
+            },
+            {
+                "id": "FIRE-BYCULLA-01",
+                "name": "Mumbai Fire Brigade Headquarters",
                 "facility_type": "fire_station",
                 "category": "State Disaster Command Dispatch",
-                "lat": 13.0850, "lon": 80.2820,
-                "locality": "Egmore / Central",
+                "lat": 18.9780, "lon": 72.8310,
+                "locality": "Byculla / Central Command",
                 "beds": 0,
                 "status": "OPERATIONAL_24X7"
             },
             {
-                "id": "FIRE-GUINDY-02",
-                "name": "Guindy Fire & Rescue Station",
+                "id": "FIRE-ANDHERI-02",
+                "name": "Andheri Fire & Rescue Station",
                 "facility_type": "fire_station",
-                "category": "Industrial & South Sector Dispatch",
-                "lat": 13.0085, "lon": 80.2100,
-                "locality": "Guindy Industrial Area",
+                "category": "Mid-Suburbs Heavy Rescue Hub",
+                "lat": 19.1180, "lon": 72.8490,
+                "locality": "Andheri East / WEH",
                 "beds": 0,
                 "status": "OPERATIONAL_24X7"
             },
             {
-                "id": "FIRE-TAMBARAM-03",
-                "name": "Tambaram Fire & Rescue Station",
+                "id": "FIRE-KURLA-03",
+                "name": "Kurla Fire & Rescue Station",
                 "facility_type": "fire_station",
-                "category": "South Catchment Flood Response",
-                "lat": 12.9260, "lon": 80.1180,
-                "locality": "Tambaram / GST Corridor",
+                "category": "Mithi Catchment Flood & Dewatering Dispatch",
+                "lat": 19.0680, "lon": 72.8780,
+                "locality": "Kurla / LBS Corridor",
                 "beds": 0,
                 "status": "OPERATIONAL_24X7"
             },
             {
                 "id": "POLICE-HQ-01",
-                "name": "Greater Chennai Police Headquarters",
+                "name": "Mumbai Police Commissionerate Headquarters",
                 "facility_type": "police",
                 "category": "Metropolitan Command Center",
-                "lat": 13.0450, "lon": 80.2780,
-                "locality": "Mylapore / Marina Beach",
+                "lat": 18.9440, "lon": 72.8340,
+                "locality": "Crawford Market / Fort",
                 "beds": 0,
                 "status": "OPERATIONAL_24X7"
             },
             {
-                "id": "POLICE-TNAGAR-02",
-                "name": "T. Nagar Police Divisional Headquarters",
+                "id": "POLICE-BANDRA-02",
+                "name": "Bandra Police Divisional Headquarters",
                 "facility_type": "police",
-                "category": "Commercial District Emergency Control",
-                "lat": 13.0400, "lon": 80.2330,
-                "locality": "T. Nagar",
+                "category": "Western Region Emergency Control",
+                "lat": 19.0550, "lon": 72.8350,
+                "locality": "Bandra West",
                 "beds": 0,
                 "status": "OPERATIONAL_24X7"
             }
@@ -228,7 +238,7 @@ class DataLoaderService:
                                 "category": str(row.get("healthcare:speciality") or amenity).capitalize(),
                                 "lat": round(lat, 5),
                                 "lon": round(lon, 5),
-                                "locality": str(row.get("addr:suburb") or "Greater Chennai Sector"),
+                                "locality": str(row.get("addr:suburb") or "Greater Mumbai Sector"),
                                 "beds": int(row.get("building:levels", 1)) * 20 if amenity == "hospital" else 0,
                                 "status": "OPERATIONAL"
                             })
@@ -248,7 +258,7 @@ class DataLoaderService:
             "hospitals_count": sum(1 for f in self.critical_facilities if f["facility_type"] in ["hospital", "clinic"]),
             "fire_stations_count": sum(1 for f in self.critical_facilities if f["facility_type"] == "fire_station"),
             "police_stations_count": sum(1 for f in self.critical_facilities if f["facility_type"] == "police"),
-            "crs_projected": "EPSG:32644 (UTM Zone 44N)",
+            "crs_projected": "EPSG:32643 (UTM Zone 43N)",
             "crs_display": "EPSG:4326 (WGS84)",
             "validation_status": "PASSED_STRICT_SCHEMA"
         }

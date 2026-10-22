@@ -23,20 +23,27 @@ def get_analytics_summary():
     high = sum(1 for z in zones if z["riskLevel"] == "HIGH")
     crit = sum(1 for z in zones if z["riskLevel"] == "CRITICAL")
 
-    area_ranks = [
-        {"rank": 1, "area": "Velachery Basin", "riskScore": 72, "trend": "STABLE", "rainfall": 45.0, "elevation": 4.5},
-        {"rank": 2, "area": "Madipakkam Lowlands", "riskScore": 68, "trend": "INCREASING", "rainfall": 45.0, "elevation": 5.2},
-        {"rank": 3, "area": "Vyasarpadi Underpass", "riskScore": 65, "trend": "STABLE", "rainfall": 45.0, "elevation": 3.8},
-        {"rank": 4, "area": "Kolathur Catchment", "riskScore": 58, "trend": "DECREASING", "rainfall": 45.0, "elevation": 6.1},
-        {"rank": 5, "area": "Saidapet Bridge Lowlands", "riskScore": 54, "trend": "STABLE", "rainfall": 45.0, "elevation": 6.8}
-    ]
+    hotspots = flood_svc.get_hotspots(limit=5)
+    area_ranks = []
+    for idx, h in enumerate(hotspots):
+        prob = float(h.get("probability", 0.5))
+        score = int(round(prob * 100))
+        trend = "INCREASING" if score >= 70 else ("STABLE" if score >= 40 else "DECREASING")
+        area_ranks.append({
+            "rank": idx + 1,
+            "area": h.get("locality", f"Sector {h.get('grid_id')}"),
+            "riskScore": score,
+            "trend": trend,
+            "rainfall": 45.0,
+            "elevation": round(float(h.get("elevation_m", 5.0)), 1)
+        })
 
     rainfall_trends = [
-        {"time": "06:00", "rainfallMm": 5.2, "cumulativeMm": 12.0, "isSimulated": False},
-        {"time": "09:00", "rainfallMm": 14.8, "cumulativeMm": 26.8, "isSimulated": False},
-        {"time": "12:00", "rainfallMm": 22.4, "cumulativeMm": 49.2, "isSimulated": False},
-        {"time": "15:00", "rainfallMm": 18.1, "cumulativeMm": 67.3, "isSimulated": False},
-        {"time": "18:00", "rainfallMm": 8.5, "cumulativeMm": 75.8, "isSimulated": False}
+        {"time": "06:00", "rainfallMm": 5.2, "cumulativeMm": 12.0, "isSimulated": True},
+        {"time": "09:00", "rainfallMm": 14.8, "cumulativeMm": 26.8, "isSimulated": True},
+        {"time": "12:00", "rainfallMm": 22.4, "cumulativeMm": 49.2, "isSimulated": True},
+        {"time": "15:00", "rainfallMm": 18.1, "cumulativeMm": 67.3, "isSimulated": True},
+        {"time": "18:00", "rainfallMm": 8.5, "cumulativeMm": 75.8, "isSimulated": True}
     ]
 
     inundation_history = [
@@ -47,10 +54,11 @@ def get_analytics_summary():
         {"hour": "18:00", "avgWaterDepthCm": None, "affectedRoadsCount": 4}
     ]
 
+    total_cells = len(zones)
     return {
         "rainfallTrends": rainfall_trends,
         "riskDistribution": {
-            "noRisk": max(0, 3963 - (low + med + high + crit)),
+            "noRisk": max(0, total_cells - (low + med + high + crit)),
             "low": low,
             "medium": med,
             "high": high,
@@ -58,10 +66,11 @@ def get_analytics_summary():
         },
         "areaRankings": area_ranks,
         "inundationHistory": inundation_history,
-        "peakRainfallLocality": "Velachery / Adyar Basin",
-        "totalVulnerablePopulation": "145,000 residents across vulnerable saucer sectors",
+        "peakRainfallLocality": area_ranks[0]["area"] if area_ranks else "Kurla Mithi River Basin",
+        "totalVulnerablePopulation": "285,000 residents across vulnerable low-lying saucer sectors",
         "isSimulated": False
     }
+
 
 
 @router.get("/decision-report", response_model=DecisionSupportReportSchema)

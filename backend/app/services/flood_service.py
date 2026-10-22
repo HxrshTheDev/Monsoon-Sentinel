@@ -1,7 +1,7 @@
 """
-Flood Service Layer — Greater Chennai Corporation (GCC)
-High-resolution 500m spatial susceptibility engine powered by the audited
-XGBoost baseline model (chennai_xgboost_baseline.json) across 3,963 spatial sectors.
+Flood Service Layer — Brihanmumbai Municipal Corporation (BMC / MCGM)
+High-resolution 500m spatial susceptibility engine powered by the calibrated
+XGBoost baseline model (mumbai_xgboost_baseline.json) across Greater Mumbai sectors.
 
 Scientific boundaries & ethical standards:
 - Vectorized forward pass using exactly the 25 audited predictors.
@@ -50,34 +50,38 @@ AUDITED_PREDICTORS = [
     "dist_to_police_m"
 ]
 
-CHENNAI_LANDMARKS = [
-    {"name": "Velachery Basin", "lat": 12.9815, "lon": 80.2180},
-    {"name": "Madipakkam Puzhuthivakkam", "lat": 12.9640, "lon": 80.1980},
-    {"name": "Adyar Estuary / Kotturpuram", "lat": 13.0080, "lon": 80.2450},
-    {"name": "T. Nagar Commercial Core", "lat": 13.0418, "lon": 80.2341},
-    {"name": "Guindy Industrial Estate", "lat": 13.0067, "lon": 80.2026},
-    {"name": "Tambaram Airfield West", "lat": 12.9249, "lon": 80.1000},
-    {"name": "Kolathur North Catchment", "lat": 13.1238, "lon": 80.2185},
-    {"name": "Vyasarpadi Underpass Corridor", "lat": 13.1185, "lon": 80.2615},
-    {"name": "Perambur Loco Works", "lat": 13.1070, "lon": 80.2380},
-    {"name": "Mylapore Heritage Precinct", "lat": 13.0368, "lon": 80.2676},
-    {"name": "Royapuram Harbour Coast", "lat": 13.1120, "lon": 80.2960},
-    {"name": "Sholinganallur IT Expressway (OMR)", "lat": 12.9010, "lon": 80.2279},
-    {"name": "Ambattur Industrial Area", "lat": 13.1143, "lon": 80.1548},
-    {"name": "Anna Nagar West Basin", "lat": 13.0850, "lon": 80.2100},
-    {"name": "Pallavaram Lowland Junction", "lat": 12.9675, "lon": 80.1491},
-    {"name": "Porur Lake Sub-basin", "lat": 13.0382, "lon": 80.1565},
-    {"name": "Alandur St. Thomas Mount", "lat": 13.0033, "lon": 80.2014},
-    {"name": "Kodambakkam / West Mambalam", "lat": 13.0520, "lon": 80.2250},
-    {"name": "Tondiarpet North Terminal", "lat": 13.1290, "lon": 80.2880},
-    {"name": "Saidapet Bridge Corridor", "lat": 13.0210, "lon": 80.2230}
+MUMBAI_LANDMARKS = [
+    {"name": "Kurla Mithi River Basin", "lat": 19.0680, "lon": 72.8800},
+    {"name": "Sion Circle / Gandhi Market", "lat": 19.0400, "lon": 72.8620},
+    {"name": "Hindmata / Parel Bowl", "lat": 19.0080, "lon": 72.8430},
+    {"name": "Andheri Subway Corridor", "lat": 19.1180, "lon": 72.8430},
+    {"name": "Khar Subway Corridor", "lat": 19.0700, "lon": 72.8380},
+    {"name": "Milan Subway Santacruz", "lat": 19.0830, "lon": 72.8420},
+    {"name": "Sakinaka Junction", "lat": 19.1080, "lon": 72.8860},
+    {"name": "Bandra-Kurla Complex (BKC)", "lat": 19.0650, "lon": 72.8680},
+    {"name": "Dharavi Transit Sump", "lat": 19.0430, "lon": 72.8530},
+    {"name": "Chunabhatti Lowland", "lat": 19.0530, "lon": 72.8750},
+    {"name": "Dadar TT Circle", "lat": 19.0178, "lon": 72.8478},
+    {"name": "Mahim Causeway", "lat": 19.0400, "lon": 72.8410},
+    {"name": "Malad Subway / SV Road", "lat": 19.1860, "lon": 72.8485},
+    {"name": "Chembur Postal Colony", "lat": 19.0620, "lon": 72.9000},
+    {"name": "Vidyavihar Station Lowland", "lat": 19.0800, "lon": 72.8970},
+    {"name": "King's Circle Matunga", "lat": 19.0300, "lon": 72.8580},
+    {"name": "Wadala Antop Hill Lowland", "lat": 19.0250, "lon": 72.8760},
+    {"name": "Goregaon Motilal Nagar", "lat": 19.1620, "lon": 72.8390},
+    {"name": "Dahisar River Culvert", "lat": 19.2500, "lon": 72.8600},
+    {"name": "CSMT / Fort Heritage Precinct", "lat": 18.9400, "lon": 72.8353},
+    {"name": "Bandra Bandstand / Linking Road", "lat": 19.0544, "lon": 72.8402},
+    {"name": "Borivali National Park Gateway", "lat": 19.2300, "lon": 72.8570},
+    {"name": "Powai Lake / JVLR", "lat": 19.1200, "lon": 72.9050},
+    {"name": "Mulund Check Naka Lowland", "lat": 19.1720, "lon": 72.9560}
 ]
 
 
 def find_nearest_locality(lat: float, lon: float) -> str:
     best_dist = float("inf")
-    best_name = "Greater Chennai Sector"
-    for lm in CHENNAI_LANDMARKS:
+    best_name = "Greater Mumbai Sector"
+    for lm in MUMBAI_LANDMARKS:
         d = math.hypot(lat - lm["lat"], lon - lm["lon"])
         if d < best_dist:
             best_dist = d
@@ -262,12 +266,12 @@ class FloodService:
                 "dist_to_swd_m": round(swd_dist, 1),
                 "locality": z["name"],
                 "timestamp": now_iso,
-                "source": "Chennai XGBoost Baseline Model",
+                "source": "Mumbai XGBoost Baseline Model",
                 "provenance_status": ProvenanceStatus.MODEL_PREDICTED
             })
         return hotspots
 
-    def get_depth_prediction(self, location: str = "Velachery Basin") -> Dict[str, Any]:
+    def get_depth_prediction(self, location: str = "Kurla Mithi River Basin") -> Dict[str, Any]:
         return {
             "location": location,
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -282,17 +286,36 @@ class FloodService:
         zones = self.get_flood_zones("NOW")
         return next((z for z in zones if z["gridId"] == grid_id), None)
 
-    def get_location_risk(self, location: str) -> Optional[Dict[str, Any]]:
+    def get_location_risk(self, location: str, fallback_to_first: bool = False) -> Optional[Dict[str, Any]]:
         zones = self.get_flood_zones("NOW")
-        loc_lower = location.lower().strip()
+        loc_lower = (location or "").lower().strip()
+        if not loc_lower:
+            return zones[0] if fallback_to_first else None
+
+        # Check for numeric coordinates: "19.0680, 72.8800"
+        cleaned = loc_lower.replace(",", " ").replace(";", " ")
+        tokens = [t.strip() for t in cleaned.split() if t.strip()]
+        if len(tokens) == 2:
+            try:
+                v1, v2 = float(tokens[0]), float(tokens[1])
+                target_lat, target_lon = (v1, v2) if 18.0 <= v1 <= 20.0 else (v2, v1)
+                best_zone = min(zones, key=lambda z: math.hypot(target_lat - z["latitude"], target_lon - z["longitude"]))
+                return best_zone
+            except ValueError:
+                pass
+
         matching = next((z for z in zones if loc_lower in z["name"].lower()), None)
-        return matching or zones[0]
+        if matching:
+            return matching
+        if fallback_to_first:
+            return zones[0]
+        return None
 
     def get_recent_predictions(self) -> List[Dict[str, Any]]:
-        sample_landmarks = ["Velachery Basin", "Madipakkam Puzhuthivakkam", "Vyasarpadi Underpass Corridor", "Saidapet Bridge Corridor"]
+        sample_landmarks = ["Kurla Mithi River Basin", "Hindmata / Parel Bowl", "Andheri Subway Corridor", "Sion Circle / Gandhi Market"]
         results = []
         for lm in sample_landmarks:
-            risk = self.get_location_risk(lm)
+            risk = self.get_location_risk(lm, fallback_to_first=True)
             results.append({
                 "location": lm,
                 "currentRisk": risk["riskLevel"] if risk else "MEDIUM",
@@ -309,7 +332,22 @@ class FloodService:
         net_loading = max(0.0, rainfall_rate_mm_h - drain_evacuation_rate_mm_h)
         capacity_deficit_mm = max(0.0, 70.0 - accumulated_rainfall_mm)
 
-        if net_loading <= 0.0:
+        if accumulated_rainfall_mm >= 70.0:
+            # Catchment surface storage threshold (70mm) already exceeded
+            eta_minutes = 0
+            if net_loading > 0.0:
+                status = "IMPENDING_INUNDATION"
+                summary = (
+                    f"Retention capacity fully exhausted (accumulated {accumulated_rainfall_mm}mm >= 70mm). "
+                    f"Active surface ponding intensifying at net surcharge of +{round(net_loading, 1)} mm/h."
+                )
+            else:
+                status = "WATCH_ADVISORY"
+                summary = (
+                    f"Retention capacity exhausted from antecedent rainfall ({accumulated_rainfall_mm}mm). "
+                    f"Active surface ponding receding under current drainage discharge of {drain_evacuation_rate_mm_h} mm/h."
+                )
+        elif net_loading <= 0.0:
             eta_minutes = -1
             status = "STABLE_EVACUATION"
             summary = "Drainage capacity exceeds current precipitation rate. No impending surface ponding."
@@ -329,3 +367,4 @@ class FloodService:
             "summary": summary,
             "provenance_status": ProvenanceStatus.DERIVED
         }
+

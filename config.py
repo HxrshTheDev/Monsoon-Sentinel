@@ -2,27 +2,34 @@ import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "FloodWatch AI — Greater Chennai"
+    PROJECT_NAME: str = "CityPulse — Greater Mumbai Flood Risk & Critical Infrastructure"
     API_V1_STR: str = "/api/v1"
     SIH_PROJECT_CODE: str = "SIH26085"
-    STUDY_AREA: str = "Greater Chennai Corporation (GCC) & Contiguous Catchment"
-    MODEL_VERSION: str = "XGBoost-v1.0-Chennai"
-    DATA_MODE: str = "chennai_real_pipeline"
+    STUDY_AREA: str = "Brihanmumbai Municipal Corporation (BMC / MCGM) & Mumbai Metropolitan Area"
+    MODEL_VERSION: str = "XGBoost-v1.0-Mumbai"
+    DATA_MODE: str = "mumbai_verified_pipeline"
     USE_DEVELOPMENT_FALLBACK: bool = False
-    CORS_ORIGINS: list[str] = ["http://localhost:4200", "http://127.0.0.1:4200", "*"]
+    CORS_ORIGINS: list[str] = [
+        "http://localhost:4200", "http://127.0.0.1:4200",
+        "http://localhost:3000", "http://127.0.0.1:3000",
+        "http://localhost:5173", "http://127.0.0.1:5173",
+        "http://localhost:8501", "http://127.0.0.1:8501",
+        "http://localhost:8080", "http://127.0.0.1:8080",
+        "*"
+    ]
     PORT: int = 8000
     HOST: str = "0.0.0.0"
 
-    # Geographic Bounding Box & Center (Chennai UTM 44N / WGS84)
-    DEFAULT_LAT: float = 13.0827
-    DEFAULT_LON: float = 80.2707
-    BOUNDS_MIN_LAT: float = 12.85
-    BOUNDS_MAX_LAT: float = 13.25
-    BOUNDS_MIN_LON: float = 80.09
-    BOUNDS_MAX_LON: float = 80.35
+    # Geographic Bounding Box & Center (Mumbai UTM 43N / WGS84)
+    DEFAULT_LAT: float = 19.0760
+    DEFAULT_LON: float = 72.8777
+    BOUNDS_MIN_LAT: float = 18.89
+    BOUNDS_MAX_LAT: float = 19.30
+    BOUNDS_MIN_LON: float = 72.75
+    BOUNDS_MAX_LON: float = 73.02
 
     # Security & JWT
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "sih26085-chennai-floodwatch-ai-secret-key-2026-prod")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "sih26085-mumbai-citypulse-secret-key-2026-prod")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
@@ -43,10 +50,10 @@ class Settings(BaseSettings):
 
     # CityPulse Decision Support Extensions
     DATA_DIR: str = os.getenv("DATA_DIR", "./data")
-    GRID_GEOJSON_PATH: str = os.getenv("GRID_GEOJSON_PATH", "./data/processed/grids/chennai_grid_500m.geojson")
-    STATIC_FEATURES_PATH: str = os.getenv("STATIC_FEATURES_PATH", "./data/processed/features/chennai_static_spatial_features.parquet")
-    CRITICAL_INFRA_PATH: str = os.getenv("CRITICAL_INFRA_PATH", "./data/processed/vectors/chennai_critical_infrastructure.parquet")
-    MODEL_PATH: str = os.getenv("MODEL_PATH", "./models/trained/chennai_xgboost_baseline.json")
+    GRID_GEOJSON_PATH: str = os.getenv("GRID_GEOJSON_PATH", "./data/processed/grids/mumbai_grid_500m.geojson")
+    STATIC_FEATURES_PATH: str = os.getenv("STATIC_FEATURES_PATH", "./data/processed/features/mumbai_static_spatial_features.parquet")
+    CRITICAL_INFRA_PATH: str = os.getenv("CRITICAL_INFRA_PATH", "./data/processed/vectors/mumbai_critical_infrastructure.parquet")
+    MODEL_PATH: str = os.getenv("MODEL_PATH", "./models/trained/mumbai_xgboost_baseline.json")
 
     DEFAULT_INSPECTION_BUDGET: int = 5
     DISRUPTION_THRESHOLD_HIGH: float = 0.50

@@ -14,7 +14,7 @@ def test_root_endpoint():
     res = client.get("/")
     assert res.status_code == 200
     data = res.json()
-    assert "Greater Chennai" in data["study_area"] or "Chennai" in data["study_area"]
+    assert "Brihanmumbai" in data["study_area"] or "Mumbai" in data["study_area"]
     assert data["status"] == "ONLINE"
 
 
@@ -27,7 +27,7 @@ def test_health_endpoints():
     assert res_diag.status_code == 200
     data = res_diag.json()
     assert data["status"] == "OPERATIONAL"
-    assert data["geospatialData"]["total_grid_cells"] == 3963
+    assert data["geospatialData"]["total_grid_cells"] == 1767
 
 
 def test_kpis_endpoint():
@@ -43,7 +43,7 @@ def test_forecast_risk_endpoint():
     res = client.get("/api/v1/forecast-risk?horizon=NOW")
     assert res.status_code == 200
     zones = res.json()
-    assert len(zones) == 3963
+    assert len(zones) == 1767
     assert zones[0]["waterDepth"] is None
 
 
@@ -53,7 +53,7 @@ def test_hotspots_and_depth_endpoints():
     hotspots = res_hot.json()
     assert len(hotspots) == 5
 
-    res_depth = client.get("/api/v1/depth?location=Velachery%20Basin")
+    res_depth = client.get("/api/v1/depth?location=Kurla%20Mithi%20River%20Basin")
     assert res_depth.status_code == 200
     depth = res_depth.json()
     assert depth["depth_cm"] is None
@@ -62,8 +62,8 @@ def test_hotspots_and_depth_endpoints():
 
 def test_safe_route_endpoint():
     payload = {
-        "source": "Chennai Central",
-        "destination": "Chennai Airport",
+        "source": "CSMT Fort",
+        "destination": "CSMIA International Airport",
         "vehicle_type": "car"
     }
     res = client.post("/api/v1/safe-route", json=payload)
