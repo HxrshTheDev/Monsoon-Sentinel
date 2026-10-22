@@ -41,8 +41,8 @@ def test_road_criticality_calculation(network_service, flood_service):
 
 def test_dijkstra_safe_routing(network_service, flood_service):
     res = network_service.calculate_safe_route(
-        source="Velachery",
-        destination="Chennai Central",
+        source="CSMT Fort",
+        destination="CSMIA International Airport",
         vehicle_type="car",
         flood_service=flood_service
     )
@@ -59,5 +59,5 @@ def test_preset_routes(network_service):
     presets = network_service.get_preset_routes()
     assert len(presets) >= 3
     sources = [p["source"] for p in presets]
-    assert "Chennai Central" in sources or "Velachery" in sources
+    assert "CSMT Fort" in sources or "Sion Circle" in sources
 

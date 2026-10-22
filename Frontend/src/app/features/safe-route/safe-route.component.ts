@@ -774,7 +774,7 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.routeMapCanvas) return;
 
     this.map = L.map(this.routeMapCanvas.nativeElement, {
-      center: [13.0827, 80.2707],
+      center: [19.0760, 72.8777],
       zoom: 12,
       zoomControl: false,
       attributionControl: false

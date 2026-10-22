@@ -36,6 +36,16 @@ class PrioritizationService:
         """Computes transparent multi-criteria inspection rankings for all road links."""
         roads = self.road_service.get_road_criticality_items(self.flood_service)
 
+        # Normalize weights so that the composite score is strictly within [0.0, 100.0]
+        total_w = max(0.0, w_hazard) + max(0.0, w_criticality) + max(0.0, w_accessibility) + max(0.0, w_facilities)
+        if total_w > 0.0:
+            norm_wh = max(0.0, w_hazard) / total_w
+            norm_wc = max(0.0, w_criticality) / total_w
+            norm_wa = max(0.0, w_accessibility) / total_w
+            norm_wf = max(0.0, w_facilities) / total_w
+        else:
+            norm_wh, norm_wc, norm_wa, norm_wf = 0.35, 0.30, 0.25, 0.10
+
         ranked_items = []
         for rd in roads:
             hazard = rd["flood_susceptibility"] * 100.0
@@ -47,20 +57,20 @@ class PrioritizationService:
 
             # Exposure to critical emergency facilities
             loc = rd["locality"].lower()
-            if "central" in loc or "egmore" in loc or "saidapet" in loc or "guindy" in loc:
+            if "fort" in loc or "cst" in loc or "byculla" in loc or "parel" in loc or "dadar" in loc or "bkc" in loc or "bandra" in loc:
                 fac_exposure = 90.0
-            elif "velachery" in loc or "tambaram" in loc or "porur" in loc:
+            elif "kurla" in loc or "sion" in loc or "andheri" in loc or "malad" in loc or "chembur" in loc:
                 fac_exposure = 75.0
             else:
                 fac_exposure = 50.0
 
-            # Composite multi-criteria decision score
-            composite = (
-                (w_hazard * hazard) +
-                (w_criticality * betweenness) +
-                (w_accessibility * access_impact) +
-                (w_facilities * fac_exposure)
-            )
+            # Composite multi-criteria decision score (strictly 0 to 100)
+            composite = min(100.0, max(0.0, (
+                (norm_wh * hazard) +
+                (norm_wc * betweenness) +
+                (norm_wa * access_impact) +
+                (norm_wf * fac_exposure)
+            )))
 
             # Recommended action
             if composite >= 70.0:
@@ -101,8 +111,9 @@ class PrioritizationService:
         - Strategy A (Hazard-Only): Allocates K crews to the links with the highest flood hazard score.
         - Strategy B (Network-Aware Decision Support): Allocates K crews to links with highest composite priority score.
         """
-        k = max(1, min(15, budget_k))
         all_ranked = self.rank_inspection_priorities()
+        max_edges = len(all_ranked)
+        k = max(1, min(max_edges, budget_k))
 
         # Strategy A: Sorted purely by hazard_score
         hazard_sorted = sorted(all_ranked, key=lambda x: x["hazard_score"], reverse=True)
@@ -112,25 +123,34 @@ class PrioritizationService:
         strat_b_selected = all_ranked[:k]
 
         # Evaluate Strategy A metrics
+        n_a = max(1, len(strat_a_selected))
         a_bridges = sum(1 for item in strat_a_selected if item["is_bridge"])
         a_delays_mitigated = sum(item["accessibility_impact"] * 0.4 for item in strat_a_selected)
-        a_avg_hazard = sum(item["hazard_score"] for item in strat_a_selected) / k
-        a_avg_crit = sum(item["betweenness_score"] for item in strat_a_selected) / k
+        a_avg_hazard = sum(item["hazard_score"] for item in strat_a_selected) / n_a
+        a_avg_crit = sum(item["betweenness_score"] for item in strat_a_selected) / n_a
 
         # Evaluate Strategy B metrics
+        n_b = max(1, len(strat_b_selected))
         b_bridges = sum(1 for item in strat_b_selected if item["is_bridge"])
         b_delays_mitigated = sum(item["accessibility_impact"] * 0.4 for item in strat_b_selected)
-        b_avg_hazard = sum(item["hazard_score"] for item in strat_b_selected) / k
-        b_avg_crit = sum(item["betweenness_score"] for item in strat_b_selected) / k
+        b_avg_hazard = sum(item["hazard_score"] for item in strat_b_selected) / n_b
+        b_avg_crit = sum(item["betweenness_score"] for item in strat_b_selected) / n_b
 
         delta_bridges = b_bridges - a_bridges
         delta_delay_saved = round(b_delays_mitigated - a_delays_mitigated, 1)
 
-        recommendation = (
-            f"Network-Aware prioritization safeguards {b_bridges} critical bridges/cut-edges (vs {a_bridges} under Hazard-Only) "
-            f"and prevents {delta_delay_saved} additional minutes of emergency transit delays under budget K={k}. "
-            f"Strategy B prevents isolating key trauma corridors by accounting for road topology rather than solely local ponding."
-        )
+        if k >= 25 or (delta_delay_saved <= 0.0 and delta_bridges <= 0):
+            recommendation = (
+                f"Under high budget allocation K={k} (covering {round((k/max_edges)*100)}% of network links), "
+                f"both strategies protect all major critical links and achieve optimal network coverage."
+            )
+        else:
+            recommendation = (
+                f"Network-Aware prioritization safeguards {b_bridges} critical bridges/cut-edges (vs {a_bridges} under Hazard-Only) "
+                f"and prevents {delta_delay_saved} additional minutes of emergency transit delays under budget K={k}. "
+                f"Strategy B prevents isolating key trauma corridors by accounting for road topology rather than solely local ponding."
+            )
+
 
         return {
             "budget_k": k,

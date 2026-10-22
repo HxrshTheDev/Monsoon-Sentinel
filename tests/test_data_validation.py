@@ -14,7 +14,7 @@ def data_loader():
 
 def test_grid_geometries_count_and_bounds(data_loader):
     geoms = data_loader.grid_geometries
-    assert len(geoms) == 3963, f"Expected 3,963 grid cells, got {len(geoms)}"
+    assert len(geoms) == 1767, f"Expected 1,767 grid cells for Mumbai, got {len(geoms)}"
 
     for gid, data in list(geoms.items())[:100]:
         lat = data["latitude"]
@@ -33,7 +33,7 @@ def test_grid_geometries_count_and_bounds(data_loader):
 
 def test_static_features_schema_and_zero_nulls(data_loader):
     df = data_loader.static_features_df
-    assert len(df) == 3963, f"Expected 3,963 rows, got {len(df)}"
+    assert len(df) == 1767, f"Expected 1,767 rows for Mumbai, got {len(df)}"
 
     required_predictors = [
         "elevation_m", "slope_deg", "low_lying_score",
@@ -64,7 +64,8 @@ def test_critical_facilities_categorization(data_loader):
 
 def test_data_quality_report(data_loader):
     report = data_loader.data_quality_report
-    assert report["total_grid_cells"] == 3963
+    assert report["total_grid_cells"] == 1767
     assert report["static_feature_nulls"] == 0
+    assert "EPSG:32643" in report["crs_projected"]
     assert report["validation_status"] == "PASSED_STRICT_SCHEMA"
 

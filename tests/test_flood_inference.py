@@ -19,7 +19,7 @@ def test_xgboost_model_predictors(flood_service):
 
 def test_flood_zones_forward_pass(flood_service):
     zones = flood_service.get_flood_zones("NOW")
-    assert len(zones) == 3963, f"Expected 3,963 zones, got {len(zones)}"
+    assert len(zones) == 1767, f"Expected 1,767 zones for Mumbai, got {len(zones)}"
 
     for z in zones[:50]:
         assert 0.0 <= z["probability"] <= 1.0, f"Invalid prob {z['probability']}"
@@ -47,7 +47,7 @@ def test_hotspots_ranking(flood_service):
 
 
 def test_honest_depth_prediction(flood_service):
-    depth = flood_service.get_depth_prediction("Velachery Basin")
+    depth = flood_service.get_depth_prediction("Kurla Mithi River Basin")
     assert depth["depth_cm"] is None
     assert depth["status"] == "unavailable"
     assert "not fabricated" in depth["message"]

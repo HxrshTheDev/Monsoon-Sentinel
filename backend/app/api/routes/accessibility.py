@@ -25,12 +25,14 @@ def evaluate_accessibility_disruption(
 
 
 @router.get("/facilities")
+@router.get("/emergency/facilities")
 def get_critical_facilities(
-    facility_type: str = Query(default="all", description="all | hospital | fire_station | police")
+    facility_type: str = Query(default="all", description="all | hospital | fire_station | police"),
+    limit: int = Query(default=100, ge=1, le=1000, description="Max facilities to return")
 ) -> List[Dict[str, Any]]:
     loader = DataLoaderService.get_instance()
     facs = loader.critical_facilities
     if facility_type.lower() != "all":
         facs = [f for f in facs if f["facility_type"] == facility_type.lower()]
-    return facs[:100]
+    return facs[:limit]
 

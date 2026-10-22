@@ -18,7 +18,7 @@ class FloodHotspotItem(BaseModel):
     dist_to_swd_m: float
     locality: str = Field(..., description="Nearby landmark or locality name")
     timestamp: str
-    source: str = "Chennai XGBoost Baseline Model"
+    source: str = "Mumbai XGBoost Baseline Model"
     provenance_status: ProvenanceStatus = ProvenanceStatus.MODEL_PREDICTED
 
 

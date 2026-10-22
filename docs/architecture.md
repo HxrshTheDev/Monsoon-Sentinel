@@ -2,9 +2,9 @@
 
 **Project**: CityPulse — Flood-Disruption Decision-Support System  
 **Hackathon**: HackAMatch 1.0 (CityPulse Data Science + AI Challenge)  
-**Study Area**: Greater Chennai Corporation (GCC) & Contiguous Urban Catchment ($12.85^\circ - 13.25^\circ\text{ N}, 80.09^\circ - 80.35^\circ\text{ E}$)  
+**Study Area**: Brihanmumbai Municipal Corporation (BMC / MCGM) & Contiguous Urban Catchment ($18.8900^\circ - 19.3000^\circ\text{ N}, 72.7500^\circ - 73.0200^\circ\text{ E}$)  
 **Coordinate Reference Systems**:
-- Projected Metric CRS: WGS 84 / UTM Zone 44N (`EPSG:32644`) for Euclidean distances ($m$), buffering, and graph link lengths.
+- Projected Metric CRS: WGS 84 / UTM Zone 43N (`EPSG:32643`) for Euclidean distances ($m$), buffering, and graph link lengths.
 - Display / Web CRS: WGS 84 (`EPSG:4326`) for GeoJSON serialization, route path coordinates, and Leaflet/MapLibre consumption.
 
 ---
@@ -16,9 +16,9 @@ The CityPulse backend is designed as a **high-throughput, modular decision-suppo
 ```text
  ┌─────────────────────────────────────────────────────────────────────────────┐
  │                           DATA INGESTION & QUALITY ASSURANCE                │
- │  • chennai_grid_500m.geojson (3,963 terrestrial spatial sectors)            │
- │  • chennai_static_spatial_features.parquet (25 audited topographical features)│
- │  • chennai_critical_infrastructure.parquet (1,505 OSM hospitals, fire, etc.)│
+ │  • mumbai_grid_500m.geojson (1,767 terrestrial spatial sectors, EPSG:32643) │
+ │  • mumbai_static_spatial_features.parquet (25 audited topographical features)│
+ │  • mumbai_critical_infrastructure.parquet (162 verified hospitals, fire, etc)│
  │  • Dynamic Telemetric / Synthetic Rainfall Vectors                          │
  └──────────────────────────────────────┬──────────────────────────────────────┘
                                         │ (Schema & Bounds Validation)
@@ -26,16 +26,17 @@ The CityPulse backend is designed as a **high-throughput, modular decision-suppo
  ┌─────────────────────────────────────────────────────────────────────────────┐
  │                           ANALYTICAL ENGINE LAYERS                          │
  │                                                                             │
- │  1. Flood Susceptibility Layer (XGBoost Baseline Model)                     │
- │     Vectorized forward pass across 3,963 sectors -> Susceptibility [0, 1]   │
+ │  1. Flood Susceptibility Layer (XGBoost Baseline Model - Mumbai)            │
+ │     Vectorized forward pass across 1,767 sectors -> Susceptibility [0, 1]   │
+ │     Trained with 5-fold CV: 0.972 Accuracy, 0.949 F1-Score, 0.997 ROC-AUC   │
  │                                                                             │
  │  2. Road Network Graph Engine (NetworkX Directed Multigraph)                │
- │     Nodes: Key traffic centroids, inter-basin bridges, highway junctions    │
- │     Edges: Arterial links (Anna Salai, GST Rd, OMR, IRR, Bypass, Subways)   │
+ │     Nodes: 25 arterial centroids (CSMT, Dadar, Sion, Kurla, BKC, Airport)  │
+ │     Edges: 29 arterial links (WEH, EEH, Sea Link, Eastern Freeway, SCLR)   │
  │     Metrics: Betweenness Centrality, Bridge/Cut-Edge Flag, Dynamic Impedance│
  │                                                                             │
  │  3. Essential-Service Accessibility Engine                                  │
- │     Origin: Residential clusters (Velachery, Tambaram, Kolathur, etc.)      │
+ │     Origin: 8 population clusters (Kurla, Sion, Hindmata, Andheri, etc.)    │
  │     Destination: Trauma hospitals, fire stations, emergency dispatch centers│
  │     Disruption Scenarios: Baseline vs Flood-Impeded Travel Time & Isolation │
  │                                                                             │
@@ -65,21 +66,21 @@ The CityPulse backend is designed as a **high-throughput, modular decision-suppo
 
 ### A. Data Validation & Quality Assurance (`data_loader_service.py`)
 - **Schema Enforcement**: Validates required columns, datatypes, and non-null constraints before ingestion.
-- **Coordinate Bounds**: Asserts all coordinates fall strictly within the study area ($12.85 \le \text{lat} \le 13.25, 80.09 \le \text{lon} \le 80.35$).
-- **Projection Checks**: Converts between UTM Zone 44N metric coordinates and WGS84 coordinates using `pyproj`.
+- **Coordinate Bounds**: Asserts all coordinates fall strictly within the Greater Mumbai study area ($18.89 \le \text{lat} \le 19.30, 72.75 \le \text{lon} \le 73.02$).
+- **Projection Checks**: Converts between UTM Zone 43N metric coordinates (`EPSG:32643`) and WGS84 coordinates using `pyproj`.
 - **Quality Metrics**: Exposes missing-data counts, total active facilities, and data freshness timestamps.
 
 ### B. Flood Susceptibility Service (`flood_service.py`)
-- Loads the audited `chennai_xgboost_baseline.json` booster.
+- Loads the audited `mumbai_xgboost_baseline.json` booster.
 - Merges static spatial features (elevation, slope, saucer depression index, built-up ratio, distance to storm water drains) with dynamic precipitation indices.
-- Performs vectorized forward-pass scoring across all 3,963 spatial cells.
+- Performs vectorized forward-pass scoring across all 1,767 spatial cells.
 - Classifies cells into standardized risk tiers: `LOW` ($<0.20$), `MEDIUM` ($0.20-0.49$), `HIGH` ($0.50-0.74$), and `CRITICAL` ($\ge 0.75$).
 - Emits explicit `waterDepth = null` and `depth_status = "unavailable"` records to avoid fabricating continuous hydrodynamic water depth.
 
 ### C. Road Network Graph Service (`road_network_service.py`)
-- Constructs an authentic directed multigraph $G = (V, E)$ covering the Greater Chennai arterial backbone:
-  - Corridors: Anna Salai (NH 45), Grand Southern Trunk (GST) Road, Old Mahabalipuram Road (IT Expressway - OMR), Inner Ring Road (Jawaharlal Nehru Salai), Chennai Bypass, East Coast Road (ECR), Poonamallee High Road.
-  - Critical Bottlenecks: Vyasarpadi Underpass, Saidapet Bridge, Guindy Kathipara Grade Separator, Velachery Lake link, Madipakkam connector.
+- Constructs an authentic directed multigraph $G = (V, E)$ covering the Greater Mumbai arterial backbone (25 nodes, 29 links):
+  - Corridors: Western Express Highway (WEH), Eastern Express Highway (EEH), Bandra-Worli Sea Link, Eastern Freeway elevated viaducts, Mahim Causeway, Santacruz-Chembur Link Road (SCLR), Jogeshwari-Vikhroli Link Road (JVLR).
+  - Critical Chronic Bottlenecks & Depressed Subways: Andheri Subway Rail Underpass, Milan Subway, Khar Subway, Hindmata Bowl, Kurla Mithi Basin.
 - Computes structural network properties:
   - **Edge Betweenness Centrality**: Identifies links carrying disproportionate traffic flow.
   - **Bridge / Cut-Edge Detection**: Identifies single points of failure whose closure partitions the network.
@@ -89,9 +90,9 @@ The CityPulse backend is designed as a **high-throughput, modular decision-suppo
 
 ### D. Essential-Service Accessibility Service (`accessibility_service.py`)
 - Evaluates shortest paths from residential population centers to nearest essential service facilities:
-  - Level 1: Tertiary Trauma Hospitals (RGGGH, Apollo Greams, Stanley Medical, Fortis Malar).
-  - Level 2: Fire & Rescue Stations (Tambaram, Guindy, Mylapore, Royapuram).
-  - Level 3: Police Headquarters & Law Enforcement Nodes.
+  - Level 1: Tertiary Trauma Hospitals (KEM Hospital Parel, Sion Hospital, Lilavati Hospital, Kokilaben Ambani Hospital).
+  - Level 2: Fire & Heavy Rescue Stations (Byculla HQ, Andheri Fire Station, Kurla Flood Dewatering Station).
+  - Level 3: Police Headquarters & Divisional Hubs (Mumbai Police Commissionerate HQ Fort, Bandra Divisional HQ).
 - Assesses accessibility across two states:
   1. **Baseline State**: Free-flow network travel time $T_{\text{base}}(i, j)$.
   2. **Disrupted Scenario**: Travel time $T_{\text{disrupt}}(i, j)$ under flood-induced link delays or closures.

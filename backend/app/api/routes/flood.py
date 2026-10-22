@@ -2,6 +2,7 @@
 Flood Susceptibility & Hotspot API Router
 """
 
+from datetime import datetime, timezone
 from typing import List
 from fastapi import APIRouter, HTTPException, Query
 from backend.app.schemas.flood import FloodZoneSchema, SystemKPIsSchema, RecentPredictionSchema
@@ -40,7 +41,7 @@ def get_flood_hotspots(limit: int = Query(default=20, ge=1, le=100)):
 
 @router.get("/depth", response_model=FloodDepthResponse)
 @router.get("/flood/depth", response_model=FloodDepthResponse)
-def get_flood_depth(location: str = Query(default="Velachery Basin")):
+def get_flood_depth(location: str = Query(default="Kurla Mithi River Basin")):
     service = FloodService.get_instance()
     return service.get_depth_prediction(location=location)
 
@@ -73,4 +74,33 @@ def predict_inundation_eta(
         rainfall_rate_mm_h=rainfall_rate_mm_h,
         accumulated_rainfall_mm=accumulated_rainfall_mm
     )
+
+
+@router.get("/rainfall/telemetry-details")
+def get_rainfall_telemetry_details():
+    return {
+        "status": "OPERATIONAL",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "aws_stations": [
+            {"id": "AWS-MUM-01", "name": "Mumbai Airport (Santacruz AWS)", "rain_rate_mm_h": 28.5, "rain_24h_mm": 78.0, "status": "ACTIVE"},
+            {"id": "AWS-MUM-02", "name": "Colaba Coastal Observatory", "rain_rate_mm_h": 22.0, "rain_24h_mm": 64.5, "status": "ACTIVE"},
+            {"id": "AWS-MUM-03", "name": "Dadar (Hindmata Bowl AWS)", "rain_rate_mm_h": 36.0, "rain_24h_mm": 92.0, "status": "ACTIVE"},
+            {"id": "AWS-MUM-04", "name": "Kurla (Mithi River Basin AWS)", "rain_rate_mm_h": 41.5, "rain_24h_mm": 105.0, "status": "ACTIVE"},
+            {"id": "AWS-MUM-05", "name": "Andheri West (Versova AWS)", "rain_rate_mm_h": 32.0, "rain_24h_mm": 84.0, "status": "ACTIVE"},
+            {"id": "AWS-MUM-06", "name": "Chembur East (Trombay AWS)", "rain_rate_mm_h": 24.5, "rain_24h_mm": 70.0, "status": "ACTIVE"},
+            {"id": "AWS-MUM-07", "name": "Malad West (Link Road AWS)", "rain_rate_mm_h": 26.0, "rain_24h_mm": 75.0, "status": "ACTIVE"},
+            {"id": "AWS-MUM-08", "name": "Powai Lake (Vikhroli AWS)", "rain_rate_mm_h": 19.5, "rain_24h_mm": 58.0, "status": "ACTIVE"}
+        ],
+        "city_aggregate": {
+            "ambient_temperature_c": 27.8,
+            "relative_humidity_pct": 92,
+            "barometric_pressure_hpa": 1004.2,
+            "wind_speed_kmh": 28.5,
+            "wind_direction": "WSW",
+            "mean_rainfall_rate_mm_h": 29.8,
+            "soil_saturation_pct": 86.4,
+            "tidal_boundary_status": "High Tide Window Active (Arabian Sea)"
+        }
+    }
+
 

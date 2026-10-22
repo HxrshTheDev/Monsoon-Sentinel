@@ -517,7 +517,7 @@ export class FloodMapComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.mapCanvas) return;
 
     this.map = L.map(this.mapCanvas.nativeElement, {
-      center: [13.0827, 80.2707],
+      center: [19.0760, 72.8777],
       zoom: 11,
       zoomControl: false,
       attributionControl: false

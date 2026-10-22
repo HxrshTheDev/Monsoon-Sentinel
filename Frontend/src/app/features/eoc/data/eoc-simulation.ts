@@ -24,8 +24,9 @@ import {
 
 export const HORIZONS: HorizonKey[] = ['NOW', 'T+30', 'T+60', 'T+90', 'T+120'];
 
-/** City anchor — Ripon Building, Greater Chennai Corporation. */
-export const CHENNAI_CENTER = { lat: 13.0827, lng: 80.2707 };
+/** City anchor — Brihanmumbai Municipal Corporation (BMC Headquarters, Fort). */
+export const MUMBAI_CENTER = { lat: 19.0760, lng: 72.8777 };
+export const CHENNAI_CENTER = MUMBAI_CENTER;
 
 export const SIM_TELEMETRY: TelemetrySnapshot = {
   radarNowcastMmh: 64.2,

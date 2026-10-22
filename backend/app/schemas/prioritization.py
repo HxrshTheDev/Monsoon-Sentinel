@@ -23,10 +23,10 @@ class InspectionPriorityItem(BaseModel):
 
 
 class PrioritizationWeights(BaseModel):
-    w_hazard: float = Field(default=0.35, description="Weight for flood susceptibility hazard")
-    w_criticality: float = Field(default=0.30, description="Weight for network betweenness centrality")
-    w_accessibility: float = Field(default=0.25, description="Weight for essential-service delay impact")
-    w_facilities: float = Field(default=0.10, description="Weight for emergency facility exposure")
+    w_hazard: float = Field(default=0.35, ge=0.0, description="Weight for flood susceptibility hazard")
+    w_criticality: float = Field(default=0.30, ge=0.0, description="Weight for network betweenness centrality")
+    w_accessibility: float = Field(default=0.25, ge=0.0, description="Weight for essential-service delay impact")
+    w_facilities: float = Field(default=0.10, ge=0.0, description="Weight for emergency facility exposure")
 
 
 class PrioritizationRankingResponse(BaseModel):
