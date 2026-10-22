@@ -919,10 +919,10 @@ export class AnalyticsComponent implements OnInit {
       affectedArea: 'Mithi River Basin, Kurla, Kalina, Hindmata, SCLR',
       observedImpact: 'Catastrophic Deluge',
       impactClass: 'status-unsafe',
-      modelPerformance: '0.998 ROC-AUC / 0.964 F1-Score',
+      modelPerformance: 'Contextual reference only (not model validation)',
       synopsis: 'Unprecedented mesoscale cloudburst dropped 944 mm in 24 hours (over 380 mm in 3 hours) directly coinciding with 4.48m spring high tide.',
       hydrology: 'Mithi River overtopped banks by >3.5m; Kurla, Kalina, and airport runways submerged under 1.5–2.5m of water. BMC suburban rail corridors completely paralyzed.',
-      modelBehavior: 'The Mumbai Offline Spatial Flood Susceptibility Baseline achieved 0.998 ROC-AUC on this held-out benchmark split, successfully identifying low-elevation saucer depression cells with >95% sensitivity.'
+      modelBehavior: 'This historical narrative is context for BMC catchments. The prototype model was not trained or validated on chronological 2005 event labels; scores are susceptibility estimates under scenario rainfall.'
     },
     {
       id: 'EVENT_2017_CLOUDBURST',

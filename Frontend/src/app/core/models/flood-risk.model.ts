@@ -10,16 +10,19 @@ export interface FloodZone {
   riskLevel: RiskLevel;
   riskScore: number; // 0 - 100
   predictionTime: PredictionTime;
-  rainfall: number; // mm/hr (simulated)
-  elevation: number; // meters (prototype)
-  waterDepth: number; // meters (simulated)
+  rainfall: number; // mm (scenario baseline unless live feed connected)
+  elevation: number; // meters
+  /** Continuous depth is unmeasured — always null from the Mumbai backend. */
+  waterDepth: number | null;
   runoffCoefficient: number; // 0.0 - 1.0
-  slope: 'Low' | 'Moderate' | 'Steep';
+  slope: string;
   summary: string;
-  historicalFlooding: 'Low' | 'Moderate' | 'High' | 'Severe';
-  drainageStatus: 'Operational' | 'Moderate' | 'Choked' | 'Critical';
+  historicalFlooding: string;
+  drainageStatus: string;
   builtUpDensity: number; // percentage e.g. 82%
   isSimulated: boolean;
+  probability?: number;
+  provenanceStatus?: string;
 }
 
 export interface RoadSegment {
@@ -27,7 +30,8 @@ export interface RoadSegment {
   name: string;
   status: 'SAFE' | 'CAUTION' | 'UNSAFE' | 'BLOCKED';
   riskScore: number;
-  waterDepthCm: number;
+  /** Unmeasured unless a depth model exists — null in Mumbai prototype. */
+  waterDepthCm: number | null;
   coordinates: [number, number][];
   avoidedBySafeRoute: boolean;
   locality: string;

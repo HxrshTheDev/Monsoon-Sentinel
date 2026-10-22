@@ -11,7 +11,7 @@ import { EocDataService } from '../services/eoc-data.service';
       <div class="h-left">
         <div class="brand-mark">FW</div>
         <div class="brand-text">
-          <strong>FloodWatch AI</strong>
+          <strong>CityPulse EOC</strong>
           <span>EOC COMMAND CENTER</span>
         </div>
         <span class="sys-online"><span class="dot"></span>SYSTEM ONLINE</span>

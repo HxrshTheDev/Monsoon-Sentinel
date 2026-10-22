@@ -1,10 +1,12 @@
-# FloodWatch AI — API Specification (v2.0.0)
+# CityPulse / Monsoon Sentinel — API Specification (v2.1.0)
 
-## SIH26085 — AI-Powered Urban Flood Nowcasting and Safe Mobility System
+## Greater Mumbai (BMC / MCGM) flood susceptibility & decision-support API
 
 FastAPI Gateway Base URL: `http://localhost:8000/api/v1`  
 Interactive Swagger Docs: `http://localhost:8000/docs`  
 ReDoc Docs: `http://localhost:8000/redoc`
+
+Scores are prototype susceptibility estimates under scenario rainfall — not calibrated flood probabilities. Water depth is always unmeasured (`null`).
 
 ---
 
@@ -20,9 +22,9 @@ Returns gateway and microservice liveness.
 ```json
 {
   "status": "healthy",
-  "service": "FloodWatch AI API Gateway",
+  "service": "CityPulse API Gateway",
   "study_area": "Greater Mumbai (BMC)",
-  "model": "XGBoost-v2.0-Mumbai",
+  "model": "XGBoost-v1.1-Mumbai-HotspotProxy",
   "timestamp": "now"
 }
 ```

@@ -521,16 +521,14 @@ def compute_static_features(cells, facilities, dem_elevations):
     return df
 
 
-def train_mumbai_xgboost_model(df_features):
-    """Trains and calibrates XGBoost v2.0 classifier on Mumbai static predictors and BMC ground truth."""
+def build_rule_based_susceptibility(df_features: pd.DataFrame) -> np.ndarray:
+    """Transparent physical susceptibility index (NOT used as the ML training target)."""
     low_lying = df_features["low_lying_score"].values
     elev = df_features["elevation_m"].values
     swd_dist = df_features["dist_to_swd_m"].values
     built_up = df_features["built_up_ratio"].values
     river_dist = df_features["dist_to_river_stream_m"].values
-
-    # Transparent physical hazard index: low elevation + saucer depression + built-up density + proximity to rivers/SWD
-    hazard_index = (
+    return (
         0.35 * low_lying +
         0.25 * np.clip(1.0 - (elev / 18.0), 0.0, 1.0) +
         0.20 * built_up +
@@ -538,31 +536,69 @@ def train_mumbai_xgboost_model(df_features):
         0.10 * np.clip(swd_dist / 600.0, 0.0, 1.0)
     )
 
-    # Threshold for positive label: ~28% positive rate (consistent with Mumbai flood-prone area ratio)
-    threshold = np.percentile(hazard_index, 72)
-    y = (hazard_index >= threshold).astype(int)
 
-    # Baseline rainfall variation for training
+def build_bmc_hotspot_labels(df_features: pd.DataFrame, radius_m: float = 750.0) -> np.ndarray:
+    """
+    Binary labels from independent BMC chronic waterlogging hotspot coordinates.
+    Positive = grid centroid within radius_m of a documented hotspot (EPSG:32643 metres).
+    Avoids target leakage from deriving y via the same hazard formula used as predictors.
+    """
+    hotspot_xy = [
+        TRANSFORMER_WGS84_TO_UTM43.transform(h["lon"], h["lat"])
+        for h in BMC_HOTSPOT_LOCATIONS
+    ]
+    labels = np.zeros(len(df_features), dtype=int)
+    xs = df_features["x_utm"].values.astype(float)
+    ys = df_features["y_utm"].values.astype(float)
+    for i in range(len(df_features)):
+        for hx, hy in hotspot_xy:
+            if math.hypot(xs[i] - hx, ys[i] - hy) <= radius_m:
+                labels[i] = 1
+                break
+    return labels
+
+
+def train_mumbai_xgboost_model(df_features):
+    """
+    Train XGBoost susceptibility classifier on Mumbai static predictors.
+
+    Labels: proximity to BMC chronic waterlogging hotspots (independent geographic registry).
+    Metrics describe agreement with that hotspot proxy — NOT calibrated real-world flood probability.
+    A separate rule-based susceptibility index is computed for transparency and is not the ML target.
+    """
+    rule_score = build_rule_based_susceptibility(df_features)
+    y = build_bmc_hotspot_labels(df_features, radius_m=750.0)
+    pos_rate = float(y.mean())
+    print(f"[LABELS] BMC hotspot proximity positives: {int(y.sum())}/{len(y)} ({pos_rate:.1%})")
+    print(f"[RULE] Rule-based susceptibility index mean={rule_score.mean():.3f} (not used as ML target)")
+
+    # Deterministic scenario rainfall for training (no RNG — reproducible prototype)
+    rainfall_levels = np.linspace(35.0, 65.0, len(df_features))
+    rng = np.random.default_rng(42)
+    rainfall_levels = rng.permutation(rainfall_levels)
+
     df_train = df_features.copy()
-    df_train["rainfall_daily_mm"] = np.random.uniform(35.0, 65.0, size=len(df_train))
+    df_train["rainfall_daily_mm"] = rainfall_levels
     df_train["rainfall_cum_2d_mm"] = df_train["rainfall_daily_mm"] * 1.35
     df_train["rainfall_cum_3d_mm"] = df_train["rainfall_daily_mm"] * 1.70
     df_train["rainfall_cum_7d_mm"] = df_train["rainfall_daily_mm"] * 2.20
-    df_train["rainfall_delta_mm"] = np.random.uniform(2.0, 10.0, size=len(df_train))
+    df_train["rainfall_delta_mm"] = 5.0
 
     X = df_train[AUDITED_PREDICTORS]
 
-    # 5-Fold Stratified Cross-Validation
+    # 5-Fold Stratified Cross-Validation (random spatial mix; chronological event labels unavailable)
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
     accs, f1s, aucs = [], [], []
 
     params = {
         "objective": "binary:logistic",
         "eval_metric": "logloss",
-        "max_depth": 5,
+        "max_depth": 4,
         "learning_rate": 0.08,
         "subsample": 0.85,
-        "colsample_bytree": 0.85,
+        "colsample_bytree": 0.80,
+        "min_child_weight": 5,
+        "reg_lambda": 2.0,
         "seed": 42
     }
 
@@ -578,15 +614,16 @@ def train_mumbai_xgboost_model(df_features):
         pred_labels = (preds >= 0.5).astype(int)
 
         accs.append(accuracy_score(y_val, pred_labels))
-        f1s.append(f1_score(y_val, pred_labels))
-        aucs.append(roc_auc_score(y_val, preds))
+        f1s.append(f1_score(y_val, pred_labels, zero_division=0))
+        if len(np.unique(y_val)) > 1:
+            aucs.append(roc_auc_score(y_val, preds))
 
-    print(f"[MLOps] 5-Fold Evaluation Results:")
+    print(f"[MLOps] 5-Fold Evaluation vs BMC hotspot-proximity labels (PROTOTYPE — not operational flood accuracy):")
     print(f"  Mean Accuracy: {np.mean(accs):.3f} (+/- {np.std(accs):.3f})")
     print(f"  Mean F1 Score: {np.mean(f1s):.3f} (+/- {np.std(f1s):.3f})")
-    print(f"  Mean ROC-AUC : {np.mean(aucs):.3f} (+/- {np.std(aucs):.3f})")
+    print(f"  Mean ROC-AUC : {np.mean(aucs) if aucs else float('nan'):.3f}")
 
-    # Fit final booster on full dataset
+    # Fit final booster on full dataset with fixed scenario rainfall
     df_full = df_features.copy()
     df_full["rainfall_daily_mm"] = 45.0
     df_full["rainfall_cum_2d_mm"] = 45.0 * 1.35
@@ -597,10 +634,23 @@ def train_mumbai_xgboost_model(df_features):
     dfull = xgb.DMatrix(df_full[AUDITED_PREDICTORS], label=y)
     final_booster = xgb.train(params, dfull, num_boost_round=90)
 
+    from datetime import datetime, timezone
     return final_booster, {
+        "labelSource": "BMC_chronic_waterlogging_hotspot_proximity_750m",
+        "labelPositiveCount": int(y.sum()),
+        "labelPositiveRate": round(pos_rate, 4),
+        "evaluationNote": (
+            "Metrics measure agreement with BMC hotspot-proximity proxy labels under stratified CV. "
+            "They are NOT calibrated real-world flood-event predictive accuracy. "
+            "No independent chronological flood-event labels were available for this prototype."
+        ),
+        "ruleBasedIndexSeparated": True,
         "prototypeAccuracy": round(float(np.mean(accs)), 3),
         "f1Score": round(float(np.mean(f1s)), 3),
-        "rocAuc": round(float(np.mean(aucs)), 3)
+        "rocAuc": round(float(np.mean(aucs)), 3) if aucs else None,
+        "featureNames": list(AUDITED_PREDICTORS),
+        "modelVersion": "XGBoost-v1.1-Mumbai-HotspotProxy",
+        "trainedAt": datetime.now(timezone.utc).isoformat()
     }
 
 

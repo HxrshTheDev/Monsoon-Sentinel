@@ -6,16 +6,14 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     SIH_PROJECT_CODE: str = "SIH26085"
     STUDY_AREA: str = "Brihanmumbai Municipal Corporation (BMC / MCGM) & Mumbai Metropolitan Area"
-    MODEL_VERSION: str = "XGBoost-v1.0-Mumbai"
+    MODEL_VERSION: str = "XGBoost-v1.1-Mumbai-HotspotProxy"
     DATA_MODE: str = "mumbai_verified_pipeline"
     USE_DEVELOPMENT_FALLBACK: bool = False
     CORS_ORIGINS: list[str] = [
         "http://localhost:4200", "http://127.0.0.1:4200",
         "http://localhost:3000", "http://127.0.0.1:3000",
         "http://localhost:5173", "http://127.0.0.1:5173",
-        "http://localhost:8501", "http://127.0.0.1:8501",
         "http://localhost:8080", "http://127.0.0.1:8080",
-        "*"
     ]
     PORT: int = 8000
     HOST: str = "0.0.0.0"
@@ -27,9 +25,11 @@ class Settings(BaseSettings):
     BOUNDS_MAX_LAT: float = 19.30
     BOUNDS_MIN_LON: float = 72.75
     BOUNDS_MAX_LON: float = 73.02
+    CRS_PROJECTED: str = "EPSG:32643"
+    CRS_GEOGRAPHIC: str = "EPSG:4326"
 
-    # Security & JWT
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "sih26085-mumbai-citypulse-secret-key-2026-prod")
+    # Security & JWT — override SECRET_KEY in production via environment
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "dev-only-change-me-citypulse-mumbai")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7

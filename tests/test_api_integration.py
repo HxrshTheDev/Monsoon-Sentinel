@@ -36,7 +36,7 @@ def test_kpis_endpoint():
     data = res.json()
     assert "currentRainfall" in data
     assert "unsafeRoads" in data
-    assert data["isSimulated"] is False
+    assert data["isSimulated"] is True
 
 
 def test_forecast_risk_endpoint():

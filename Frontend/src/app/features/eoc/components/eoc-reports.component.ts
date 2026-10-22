@@ -10,7 +10,7 @@ import { EocDataService } from '../services/eoc-data.service';
     <div class="sum-grid">
       <div class="scard"><span>ARCHIVED STORM EVENTS</span><strong>{{ store.archive().length }}</strong></div>
       <div class="scard"><span>BASELINE F1 (5-FOLD)</span><strong>0.964</strong><em>Mumbai offline baseline</em></div>
-      <div class="scard"><span>BASELINE ROC-AUC</span><strong>0.997</strong><em>5-Fold Spatial CV (Mumbai)</em></div>
+      <div class="scard"><span>PROTOTYPE METRIC</span><strong>Hotspot proxy</strong><em>Not calibrated flood probability</em></div>
       <div class="scard ok"><span>VALIDATION STATUS</span><strong class="live">BASELINE AUDITED</strong></div>
     </div>
 
@@ -105,7 +105,7 @@ export class EocReportsComponent {
   readonly store = inject(EocDataService);
   /** Audited project evaluation — mumbai_xgboost_baseline.json (5-Fold CV). */
   readonly auditedMetrics = [
-    { label: 'ROC-AUC', value: '0.997' },
+    { label: 'Label source', value: 'BMC hotspot proximity' },
     { label: 'PR-AUC', value: '0.952' },
     { label: 'Precision', value: '0.941' },
     { label: 'Recall', value: '0.988' },

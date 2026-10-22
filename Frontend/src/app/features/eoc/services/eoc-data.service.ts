@@ -112,6 +112,85 @@ export class EocDataService {
     this.loadFeeds();
   }
 
+  /**
+   * Pull Mumbai susceptibility hotspots from the FastAPI forecast engine.
+   * Depth remains unmeasured (0 display with SIMULATION/estimate labelling).
+   */
+  loadBackendSusceptibility(): void {
+    const base = `${environment.apiBaseUrl}/api/v1`;
+    forkJoin({
+      hotspots: this.http.get<Record<string, unknown>[]>(`${base}/hotspots?limit=12`).pipe(catchError(() => of(null))),
+      kpis: this.http.get<Record<string, unknown>>(`${base}/current-risk/kpis`).pipe(catchError(() => of(null))),
+      health: this.http.get<Record<string, unknown>>(`${base}/health/system-overview`).pipe(catchError(() => of(null))),
+    }).subscribe((res) => {
+      if (Array.isArray(res.hotspots) && res.hotspots.length) {
+        const mapped: FloodZone[] = res.hotspots.map((h, idx) => {
+          const score = Math.round(Number(h['probability'] ?? 0) * 100);
+          const level = String(h['risk_level'] ?? 'MEDIUM') as FloodZone['series'][number]['riskLevel'];
+          const slice = {
+            horizon: 'NOW' as HorizonKey,
+            rainfallMmh: 45,
+            waterDepthCm: 0,
+            riskScore: score,
+            riskLevel: level,
+            state: 'CURRENT' as const,
+          };
+          return {
+            id: String(h['grid_id'] ?? `HS-${idx}`),
+            zoneName: String(h['locality'] ?? 'Mumbai sector'),
+            ward: 'BMC sector',
+            corridor: 'XGBoost susceptibility',
+            lat: Number(h['latitude']),
+            lng: Number(h['longitude']),
+            optedInCitizens: 0,
+            notifiedCitizens: 0,
+            series: [
+              slice,
+              { ...slice, horizon: 'T+30' },
+              { ...slice, horizon: 'T+60' },
+              { ...slice, horizon: 'T+90' },
+              { ...slice, horizon: 'T+120' },
+            ],
+          };
+        });
+        this.zones.set(mapped);
+        this.backendNote.set(
+          'Susceptibility hotspots from FastAPI Mumbai model · water depth unmeasured · rainfall scenario baseline.'
+        );
+        this.dataMode.set('LIVE');
+      }
+      if (res.kpis && typeof res.kpis === 'object') {
+        this.telemetry.update((t) => ({
+          ...t,
+          activeIncidents: Number(res.kpis!['highRiskZones'] ?? t.activeIncidents),
+          catchmentRiskIndex: Math.min(100, Number(res.kpis!['highRiskZones'] ?? t.catchmentRiskIndex)),
+          radarNowcastMmh: Number(res.kpis!['currentRainfall'] ?? t.radarNowcastMmh),
+          generatedAt: String(res.kpis!['lastUpdated'] ?? new Date().toISOString()),
+        }));
+      }
+      if (res.health && typeof res.health === 'object') {
+        this.health.set([
+          {
+            id: 'api',
+            label: 'FastAPI Backend',
+            status: 'ONLINE',
+            detail: 'EOC feed connected to localhost:8000',
+          },
+          {
+            id: 'model',
+            label: 'Mumbai XGBoost Susceptibility',
+            status: 'ONLINE',
+            detail: String(
+              (res.health['modelMetrics'] as Record<string, unknown>)?.['evaluationNote'] ??
+                'Prototype susceptibility model loaded'
+            ),
+          },
+        ]);
+        this.sysLive.set(true);
+      }
+    });
+  }
+
   /** Attempt live feeds; any failure keeps deterministic simulation. */
   loadFeeds(): void {
     const base = `${environment.apiBaseUrl}/api/v1`;

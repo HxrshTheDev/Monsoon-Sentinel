@@ -1,8 +1,9 @@
 """
 Road Network Graph & Criticality Service (CityPulse)
-Constructs a NetworkX directed graph of Greater Mumbai arterial network, subways, and bridges.
-Computes link length, travel times, edge betweenness centrality, bridge/cut-edge identification,
-and dynamic risk-penalized shortest path routing.
+
+Prototype NetworkX digraph of curated Greater Mumbai arterial corridors
+(WEH, EEH, Sea Link, subways, causeways). This is NOT a complete OSM road
+network and must not be presented as live traffic or official closures.
 """
 
 import math
@@ -258,7 +259,7 @@ class RoadNetworkService:
                     "pathCoordinates": path_pts,
                     "nodesVisited": [s_node],
                     "notes": f"Origin and destination are within the same arterial precinct ({locality_name}). Local intra-neighborhood traversal applied.",
-                    "isSimulated": False
+                    "isSimulated": True
                 },
                 "alternativeRoute": {
                     "id": "ALT-INTRA-PRECINCT",
@@ -273,10 +274,10 @@ class RoadNetworkService:
                     "pathCoordinates": path_pts,
                     "nodesVisited": [s_node],
                     "notes": "Direct local access within the same transit node footprint.",
-                    "isSimulated": False
+                    "isSimulated": True
                 },
                 "hazards": [],
-                "isSimulated": False
+                "isSimulated": True
             }
 
         v_type = (vehicle_type or "car").lower()
@@ -340,7 +341,7 @@ class RoadNetworkService:
                 "severity": "UNSAFE",
                 "waterDepthCm": 0,
                 "status": "RISK_BASED_AVOIDANCE",
-                "isSimulated": False
+                "isSimulated": True
             },
             {
                 "id": "HAZ-MUM-02",
@@ -350,7 +351,7 @@ class RoadNetworkService:
                 "severity": "UNSAFE",
                 "waterDepthCm": 0,
                 "status": "RISK_BASED_AVOIDANCE",
-                "isSimulated": False
+                "isSimulated": True
             }
         ]
 
@@ -372,7 +373,7 @@ class RoadNetworkService:
                 "pathCoordinates": safe_coords,
                 "nodesVisited": safe_path_nodes,
                 "notes": safe_notes,
-                "isSimulated": False
+                "isSimulated": True
             },
             "alternativeRoute": {
                 "id": "ALT-DIRECT-PATH",
@@ -387,10 +388,10 @@ class RoadNetworkService:
                 "pathCoordinates": direct_coords,
                 "nodesVisited": direct_path_nodes,
                 "notes": "Direct geographical path that crosses susceptible lowlands and depressed subway corridors.",
-                "isSimulated": False
+                "isSimulated": True
             },
             "hazards": hazards,
-            "isSimulated": False
+            "isSimulated": True
         }
 
     def _extract_path_metrics(self, path_nodes: List[str], edge_risks: Dict[str, float]) -> Tuple[List[List[float]], float, float, int]:

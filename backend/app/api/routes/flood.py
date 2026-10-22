@@ -78,18 +78,25 @@ def predict_inundation_eta(
 
 @router.get("/rainfall/telemetry-details")
 def get_rainfall_telemetry_details():
+    """Scenario rainfall demo payload — not live IMD/BMC AWS telemetry."""
     return {
-        "status": "OPERATIONAL",
+        "status": "SCENARIO_DEMO",
+        "isSimulated": True,
+        "provenanceStatus": "SIMULATED",
+        "message": (
+            "Station values are deterministic monsoon scenario placeholders for hackathon demo. "
+            "They are not live IMD or BMC AWS observations."
+        ),
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "aws_stations": [
-            {"id": "AWS-MUM-01", "name": "Mumbai Airport (Santacruz AWS)", "rain_rate_mm_h": 28.5, "rain_24h_mm": 78.0, "status": "ACTIVE"},
-            {"id": "AWS-MUM-02", "name": "Colaba Coastal Observatory", "rain_rate_mm_h": 22.0, "rain_24h_mm": 64.5, "status": "ACTIVE"},
-            {"id": "AWS-MUM-03", "name": "Dadar (Hindmata Bowl AWS)", "rain_rate_mm_h": 36.0, "rain_24h_mm": 92.0, "status": "ACTIVE"},
-            {"id": "AWS-MUM-04", "name": "Kurla (Mithi River Basin AWS)", "rain_rate_mm_h": 41.5, "rain_24h_mm": 105.0, "status": "ACTIVE"},
-            {"id": "AWS-MUM-05", "name": "Andheri West (Versova AWS)", "rain_rate_mm_h": 32.0, "rain_24h_mm": 84.0, "status": "ACTIVE"},
-            {"id": "AWS-MUM-06", "name": "Chembur East (Trombay AWS)", "rain_rate_mm_h": 24.5, "rain_24h_mm": 70.0, "status": "ACTIVE"},
-            {"id": "AWS-MUM-07", "name": "Malad West (Link Road AWS)", "rain_rate_mm_h": 26.0, "rain_24h_mm": 75.0, "status": "ACTIVE"},
-            {"id": "AWS-MUM-08", "name": "Powai Lake (Vikhroli AWS)", "rain_rate_mm_h": 19.5, "rain_24h_mm": 58.0, "status": "ACTIVE"}
+            {"id": "AWS-MUM-01", "name": "Mumbai Airport (Santacruz AWS)", "rain_rate_mm_h": 28.5, "rain_24h_mm": 78.0, "status": "SCENARIO"},
+            {"id": "AWS-MUM-02", "name": "Colaba Coastal Observatory", "rain_rate_mm_h": 22.0, "rain_24h_mm": 64.5, "status": "SCENARIO"},
+            {"id": "AWS-MUM-03", "name": "Dadar (Hindmata Bowl AWS)", "rain_rate_mm_h": 36.0, "rain_24h_mm": 92.0, "status": "SCENARIO"},
+            {"id": "AWS-MUM-04", "name": "Kurla (Mithi River Basin AWS)", "rain_rate_mm_h": 41.5, "rain_24h_mm": 105.0, "status": "SCENARIO"},
+            {"id": "AWS-MUM-05", "name": "Andheri West (Versova AWS)", "rain_rate_mm_h": 32.0, "rain_24h_mm": 84.0, "status": "SCENARIO"},
+            {"id": "AWS-MUM-06", "name": "Chembur East (Trombay AWS)", "rain_rate_mm_h": 24.5, "rain_24h_mm": 70.0, "status": "SCENARIO"},
+            {"id": "AWS-MUM-07", "name": "Malad West (Link Road AWS)", "rain_rate_mm_h": 26.0, "rain_24h_mm": 75.0, "status": "SCENARIO"},
+            {"id": "AWS-MUM-08", "name": "Powai Lake (Vikhroli AWS)", "rain_rate_mm_h": 19.5, "rain_24h_mm": 58.0, "status": "SCENARIO"}
         ],
         "city_aggregate": {
             "ambient_temperature_c": 27.8,
@@ -99,7 +106,7 @@ def get_rainfall_telemetry_details():
             "wind_direction": "WSW",
             "mean_rainfall_rate_mm_h": 29.8,
             "soil_saturation_pct": 86.4,
-            "tidal_boundary_status": "High Tide Window Active (Arabian Sea)"
+            "tidal_boundary_status": "Scenario high-tide window (Arabian Sea)"
         }
     }
 

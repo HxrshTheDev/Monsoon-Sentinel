@@ -1,13 +1,15 @@
 {
-  "name": "floodwatch-ai-root",
-  "version": "2.0.0",
-  "description": "AI-Powered Urban Flood Nowcasting & Safe Mobility System",
+  "name": "citypulse-monsoon-sentinel",
+  "version": "2.1.0",
+  "description": "CityPulse / Monsoon Sentinel — Greater Mumbai flood susceptibility & decision support",
   "private": true,
   "scripts": {
     "start": "npm --prefix Frontend start",
     "dev": "npm --prefix Frontend start",
     "fast": "npx --prefix Frontend ng serve --open",
     "build": "npm --prefix Frontend run build",
-    "watch": "npm --prefix Frontend run watch"
+    "watch": "npm --prefix Frontend run watch",
+    "backend": "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload",
+    "test:backend": "pytest tests -v"
   }
 }

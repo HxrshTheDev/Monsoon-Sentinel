@@ -29,8 +29,8 @@ interface NavItem {
         </div>
         @if (!collapsed) {
           <div class="brand-text">
-            <span class="brand-name">FloodWatch AI</span>
-            <span class="brand-sub">Greater Mumbai Nowcasting</span>
+            <span class="brand-name">CityPulse</span>
+            <span class="brand-sub">Monsoon Sentinel · Mumbai</span>
           </div>
         }
         <!-- Persistent toggle: always rendered, never hidden by collapsed state -->
@@ -363,6 +363,11 @@ export class SidebarComponent {
       path: '/flood-map',
       label: 'Flood Risk Map',
       icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>`
+    },
+    {
+      path: '/eoc',
+      label: 'EOC Command',
+      icon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l19-9-9 19-2-8-8-2z"></path></svg>`
     },
     {
       path: '/safe-route',

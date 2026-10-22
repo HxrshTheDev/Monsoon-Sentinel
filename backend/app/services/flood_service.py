@@ -168,8 +168,10 @@ class FloodService:
         hydro_prob = 1.0 / (1.0 + np.exp(-k * (surge_pressure - (1.0 - topo_vuln) * 180.0)))
         hydro_prob = np.clip(hydro_prob * (0.15 + 0.85 * topo_vuln), 0.002, 0.985)
 
-        combined_probs = np.maximum(raw_probs, hydro_prob)
-
+        # Blend model score with transparent rule-based susceptibility (explicitly labelled as estimate)
+        combined_probs = 0.65 * raw_probs + 0.35 * hydro_prob
+        combined_probs = np.clip(combined_probs, 0.002, 0.985)
+        # Rainfall forcing is a scenario baseline (not live AWS telemetry)
         zones: List[Dict[str, Any]] = []
         records = df.to_dict("records")
         for i, row in enumerate(records):
@@ -184,16 +186,16 @@ class FloodService:
 
             if prob >= settings.DISRUPTION_THRESHOLD_CRITICAL:
                 risk_level = "CRITICAL"
-                hist = "Severe Historical Inundation"
+                hist = "Near BMC chronic waterlogging corridor"
             elif prob >= settings.DISRUPTION_THRESHOLD_HIGH:
                 risk_level = "HIGH"
-                hist = "High Historical Risk"
+                hist = "Elevated susceptibility (terrain / drainage)"
             elif prob >= 0.20:
                 risk_level = "MEDIUM"
-                hist = "Moderate Historical Ponding"
+                hist = "Moderate susceptibility estimate"
             else:
                 risk_level = "LOW"
-                hist = "Low Susceptibility"
+                hist = "Low susceptibility estimate"
 
             locality = find_nearest_locality(lat, lon)
             dist_swd = float(row.get("dist_to_swd_m", 500))
@@ -213,11 +215,14 @@ class FloodService:
                 "waterDepth": None,  # Continuous depth unmeasured, not fabricated
                 "runoffCoefficient": round(0.55 + 0.35 * float(row.get("built_up_ratio", 0.5)), 2),
                 "slope": "Flat (<2 deg)" if float(row.get("slope_deg", 1.0)) < 2.0 else "Gentle Gradient",
-                "summary": f"{locality}: {risk_level} flood susceptibility index ({score}/100) based on terrain and SWD proximity.",
+                "summary": (
+                    f"{locality}: prototype flood-susceptibility estimate ({score}/100) "
+                    f"under scenario rainfall {base_daily:.0f} mm — not a calibrated flood probability."
+                ),
                 "historicalFlooding": hist,
                 "drainageStatus": drain_status,
                 "builtUpDensity": int(round(float(row.get("built_up_ratio", 0.5)) * 100)),
-                "isSimulated": False,
+                "isSimulated": True,
                 "probability": round(prob, 4),
                 "provenanceStatus": ProvenanceStatus.MODEL_PREDICTED
             })
@@ -235,15 +240,15 @@ class FloodService:
         high_risk_count = sum(1 for z in zones if z["riskLevel"] in ["HIGH", "CRITICAL"])
         return {
             "currentRainfall": 45.0,
-            "rainfallDelta": "+5.0 mm/h",
+            "rainfallDelta": "Scenario baseline (not live AWS)",
             "highRiskZones": high_risk_count,
-            "highRiskDelta": "+4 zones from prior hour",
+            "highRiskDelta": f"{high_risk_count} HIGH/CRITICAL susceptibility cells",
             "unsafeRoads": 6,
-            "unsafeRoadsStatus": "6 arterial links under severe flood advisory",
+            "unsafeRoadsStatus": "6 prototype arterial links flagged by susceptibility threshold",
             "activeAlerts": 4,
             "highPriorityAlerts": 2,
             "lastUpdated": datetime.now(timezone.utc).isoformat(),
-            "isSimulated": False
+            "isSimulated": True
         }
 
     def get_hotspots(self, limit: int = 20) -> List[Dict[str, Any]]:
@@ -322,7 +327,7 @@ class FloodService:
                 "plus1HourRisk": "HIGH" if (risk and risk["riskScore"] > 60) else "MEDIUM",
                 "plus3HoursRisk": "CRITICAL" if (risk and risk["riskScore"] > 70) else "HIGH",
                 "confidence": 88,
-                "isSimulated": False
+                "isSimulated": True
             })
         return results
 

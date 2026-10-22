@@ -97,7 +97,12 @@ export const routes: Routes = [
   {
     path: 'analytics',
     loadComponent: () => import('./features/analytics/analytics.component').then(m => m.AnalyticsComponent),
-    title: 'FloodWatch AI — AI Inundation Analytics'
+    title: 'CityPulse — Analytics & Decision Reports'
+  },
+  {
+    path: 'eoc',
+    loadComponent: () => import('./features/eoc/eoc.component').then(m => m.EocComponent),
+    title: 'CityPulse — BMC Emergency Operations Centre'
   },
 
   // Admin Command Center (Protected)
