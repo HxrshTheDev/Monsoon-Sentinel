@@ -596,7 +596,7 @@ export class LocationRiskComponent implements OnInit {
 
   private buildForecastTimeline(zone: FloodZone): void {
     const base = zone.riskScore;
-    const depth = zone.waterDepth;
+    const depth = zone.waterDepth ?? 0;
 
     this.forecastTimeline = [
       { time: 'NOW', level: zone.riskLevel, score: base, waterDepth: depth },

@@ -43,7 +43,7 @@ export class MockFloodDataProvider extends FloodDataProvider {
 
         const score = Math.min(99, Math.max(10, Math.round(zone.riskScore * (zone.riskLevel === 'HIGH' ? modifier : (modifier > 1 ? modifier * 0.9 : modifier)))));
         const rain = Math.round(zone.rainfall * modifier * 10) / 10;
-        const depth = Math.round(zone.waterDepth * modifier * 100) / 100;
+        const depth = Math.round((zone.waterDepth ?? 0) * modifier * 100) / 100;
 
         let riskLevel: FloodZone['riskLevel'] = 'LOW';
         if (score >= 80) riskLevel = 'HIGH';
