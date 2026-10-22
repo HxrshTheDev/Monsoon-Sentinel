@@ -1,0 +1,8 @@
+node_modules/
+dist/
+angular/
+coverage/
+npm-debug.log*
+.env
+.env.*
+!.env.example

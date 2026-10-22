@@ -1,0 +1,13 @@
+{
+  "name": "floodwatch-ai-root",
+  "version": "2.0.0",
+  "description": "AI-Powered Urban Flood Nowcasting & Safe Mobility System",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix Frontend start",
+    "dev": "npm --prefix Frontend start",
+    "fast": "npx --prefix Frontend ng serve --open",
+    "build": "npm --prefix Frontend run build",
+    "watch": "npm --prefix Frontend run watch"
+  }
+}

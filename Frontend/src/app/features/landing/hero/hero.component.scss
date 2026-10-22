@@ -1,0 +1,1008 @@
+// ============================================================
+// HeroComponent Styles — FloodWatch AI Landing Page
+// Dark GIS / Engineering aesthetic, glassmorphism, CSS-only
+// animations. Matches the hero.component.html class names.
+// ============================================================
+
+// ── Design Tokens ──────────────────────────────────────────
+$accent-cyan:      #06b6d4;
+$accent-blue:      #3b82f6;
+$accent-green:     #10b981;
+$accent-red:       #ef4444;
+$accent-orange:    #f97316;
+$text-main:        var(--text-main);
+$text-muted:       var(--text-muted);
+$text-dim:         var(--text-dim);
+$glass-bg:         var(--bg-card-subtle);
+$glass-border:     var(--border-subtle);
+$glass-border-em:  rgba(6, 182, 212, 0.3);
+
+// ── Keyframes ──────────────────────────────────────────────
+
+@keyframes mapFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes riskPulse {
+  0%   { transform: scale(1);   opacity: 0.55; }
+  70%  { transform: scale(2.4); opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+@keyframes routeDash {
+  from { stroke-dashoffset: 300; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  50%       { opacity: 0.6; box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scanLine {
+  0%   { top: 0; }
+  100% { top: 100%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// ── Hero Wrapper ─────────────────────────────────────────────
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  background-color: var(--bg-darkest);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding-top: 72px;
+}
+
+// ── Background Layers ────────────────────────────────────────
+
+.hero__background {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(99, 132, 180, 0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.6;
+}
+
+.hero__glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+
+  &--one {
+    top: -20%;
+    left: -10%;
+    width: 60%;
+    aspect-ratio: 1;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.09) 0%, transparent 70%);
+  }
+
+  &--two {
+    bottom: -20%;
+    right: -10%;
+    width: 55%;
+    aspect-ratio: 1;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.07) 0%, transparent 70%);
+  }
+}
+
+.hero__noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+// ── Main Container ───────────────────────────────────────────
+
+.hero__container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 5rem 2rem 4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 4rem 1.5rem 3rem;
+  }
+
+  @media (max-width: 640px) {
+    padding: 3rem 1rem 2.5rem;
+    gap: 2.5rem;
+  }
+}
+
+// ── Left Column — Content ────────────────────────────────────
+
+.hero__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  animation: fadeSlideUp 0.7s ease both;
+
+  @media (max-width: 1024px) {
+    order: 1;
+    text-align: center;
+    align-items: center;
+  }
+}
+
+// ── Status Badge ─────────────────────────────────────────────
+
+.hero-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: $accent-cyan;
+  text-transform: uppercase;
+  padding: 0.35rem 0.95rem 0.35rem 0.65rem;
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: 9999px;
+  background: rgba(6, 182, 212, 0.06);
+  backdrop-filter: blur(6px);
+  width: fit-content;
+
+  &__pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: $accent-cyan;
+    flex-shrink: 0;
+    animation: dotPulse 2.4s ease infinite;
+  }
+
+  &__separator {
+    width: 1px;
+    height: 14px;
+    background: rgba(6, 182, 212, 0.3);
+  }
+
+  &__live {
+    color: $accent-green;
+    font-weight: 800;
+  }
+}
+
+// ── Title ────────────────────────────────────────────────────
+
+.hero__title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: clamp(2.6rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: $text-main;
+}
+
+.hero__title-accent {
+  background: linear-gradient(95deg, $accent-cyan 0%, $accent-blue 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// ── Description ──────────────────────────────────────────────
+
+.hero__description {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: $text-muted;
+  max-width: 480px;
+
+  @media (max-width: 1024px) {
+    max-width: 540px;
+  }
+}
+
+// ── Action Buttons ───────────────────────────────────────────
+
+.hero__actions {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    width: 100%;
+  }
+
+  &--primary {
+    background: linear-gradient(100deg, $accent-blue, #0891b2);
+    color: #fff;
+    box-shadow: 0 4px 18px rgba(59, 130, 246, 0.35);
+
+    &:hover, &:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
+    }
+    &:active { transform: translateY(0); }
+  }
+
+  &--secondary {
+    background: rgba(15, 23, 42, 0.55);
+    color: var(--text-main);
+    border-color: var(--border-subtle);
+    backdrop-filter: blur(8px);
+
+    &:hover, &:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(6, 182, 212, 0.45);
+      background: rgba(15, 23, 42, 0.75);
+      box-shadow: 0 4px 16px rgba(6, 182, 212, 0.12);
+    }
+    &:active { transform: translateY(0); }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent-cyan;
+    outline-offset: 3px;
+  }
+
+  &__arrow {
+    display: inline-flex;
+    transition: transform 0.18s ease;
+  }
+
+  &:hover &__arrow {
+    transform: translateX(3px);
+  }
+}
+
+// ── Metrics Strip ────────────────────────────────────────────
+
+.hero__metrics {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-top: 0.5rem;
+
+  @media (max-width: 1024px) {
+    justify-content: center;
+  }
+}
+
+.hero-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  strong {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-main;
+    letter-spacing: -0.02em;
+  }
+
+  small {
+    font-size: 0.72rem;
+    color: $text-dim;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(148, 163, 184, 0.18);
+    flex-shrink: 0;
+  }
+
+  &__live {
+    color: $accent-green !important;
+
+    span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: $accent-green;
+      animation: livePulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// ── Right Column — Visual ────────────────────────────────────
+
+.hero__visual {
+  position: relative;
+  animation: fadeSlideUp 0.7s 0.15s ease both;
+
+  @media (max-width: 1024px) {
+    order: 2;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+// ── Ambient Glow ─────────────────────────────────────────────
+
+.map-aura {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.08) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+// ── Main Flood Panel (GIS Card) ──────────────────────────────
+
+.flood-panel {
+  position: relative;
+  z-index: 1;
+  border-radius: 16px;
+  border: 1px solid $glass-border-em;
+  background: rgba(8, 14, 26, 0.92);
+  box-shadow:
+    0 0 0 1px rgba(6, 182, 212, 0.08),
+    0 24px 56px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(6, 182, 212, 0.06);
+  overflow: hidden;
+  animation: mapFloat 7s ease-in-out infinite;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(6, 10, 20, 0.9);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  }
+
+  &__location {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+
+    .location-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $accent-cyan;
+      flex-shrink: 0;
+    }
+
+    strong {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: $text-main;
+      display: block;
+    }
+
+    span {
+      font-size: 0.72rem;
+      color: $text-dim;
+      display: block;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(6, 10, 20, 0.88);
+    border-top: 1px solid rgba(148, 163, 184, 0.08);
+  }
+}
+
+// ── Map Status Badge ─────────────────────────────────────────
+
+.map-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: $accent-cyan;
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $accent-green;
+    animation: livePulse 2s ease-in-out infinite;
+  }
+}
+
+// ── Flood Map Viewport ───────────────────────────────────────
+
+.flood-map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 700 / 470;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(10, 15, 30, 1) 0%, rgba(15, 23, 42, 1) 100%);
+
+  &__terrain {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 25% 60%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 35%, rgba(59, 130, 246, 0.04) 0%, transparent 45%);
+  }
+
+  &__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  &__roads {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// ── Safe Route Animation ─────────────────────────────────────
+
+.safe-route {
+  stroke-dasharray: 12 9;
+  animation: routeDash 3.5s linear infinite;
+}
+
+// ── Risk Zones ───────────────────────────────────────────────
+
+.risk-zone {
+  position: absolute;
+  border-radius: 50%;
+
+  span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    animation: livePulse 4s ease-in-out infinite alternate;
+  }
+
+  &--high {
+    width: 90px;
+    height: 90px;
+    top: 30%;
+    left: 18%;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  &--medium {
+    width: 70px;
+    height: 70px;
+    top: 50%;
+    left: 55%;
+    background: radial-gradient(circle, rgba(249, 115, 22, 0.2) 0%, transparent 70%);
+    border: 1px solid rgba(249, 115, 22, 0.15);
+  }
+
+  &--low {
+    width: 55px;
+    height: 55px;
+    top: 15%;
+    right: 20%;
+    background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+    border: 1px solid rgba(6, 182, 212, 0.12);
+  }
+}
+
+// ── Rainfall Stations ────────────────────────────────────────
+
+.station {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $accent-cyan;
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.5);
+
+  span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    animation: dotPulse 3s ease infinite;
+  }
+
+  &--1 { top: 20%; left: 12%; }
+  &--2 { top: 65%; left: 35%; }
+  &--3 { top: 25%; right: 15%; }
+  &--4 { bottom: 20%; right: 25%; }
+}
+
+// ── Risk Marker ──────────────────────────────────────────────
+
+.risk-marker {
+  position: absolute;
+  top: 35%;
+  left: 22%;
+  z-index: 5;
+
+  &__rings {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      margin-top: -20px;
+      margin-left: -20px;
+      border-radius: 50%;
+      border: 2px solid rgba(239, 68, 68, 0.4);
+      transform-origin: center;
+      animation: riskPulse 2.2s ease-out infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.5s;
+      }
+    }
+  }
+
+  &__core {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: $accent-red;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+    z-index: 2;
+  }
+}
+
+// ── Risk Tooltip ─────────────────────────────────────────────
+
+.risk-tooltip {
+  position: absolute;
+  top: 22%;
+  left: 30%;
+  z-index: 6;
+  background: rgba(10, 18, 32, 0.92);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  animation: cardFloat 5s 0.3s ease-in-out infinite;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: $accent-red;
+    text-transform: uppercase;
+  }
+
+  &__indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $accent-red;
+    animation: livePulse 1.8s ease-in-out infinite;
+  }
+
+  strong {
+    font-size: 0.82rem;
+    color: $text-main;
+  }
+
+  span {
+    font-size: 0.7rem;
+    color: $text-dim;
+  }
+}
+
+// ── Map Labels ───────────────────────────────────────────────
+
+.map-label {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: $text-muted;
+  white-space: nowrap;
+
+  span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &--start {
+    bottom: 8%;
+    left: 5%;
+
+    span {
+      background: $accent-blue;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    }
+  }
+
+  &--end {
+    top: 12%;
+    right: 3%;
+
+    span {
+      background: $accent-green;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+    }
+  }
+}
+
+// ── Map Controls ─────────────────────────────────────────────
+
+.map-controls {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  button {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    color: $text-muted;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:first-child {
+      border-radius: 6px 6px 0 0;
+    }
+    &:last-child {
+      border-radius: 0 0 6px 6px;
+    }
+
+    &:hover {
+      background: rgba(30, 41, 59, 0.9);
+      color: $text-main;
+    }
+  }
+}
+
+// ── Map Legend ────────────────────────────────────────────────
+
+.map-legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 5;
+  display: flex;
+  gap: 0.85rem;
+  background: rgba(10, 18, 32, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  backdrop-filter: blur(8px);
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.65rem;
+    color: $text-dim;
+    white-space: nowrap;
+  }
+}
+
+.legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--red   { background: $accent-red; box-shadow: 0 0 5px rgba(239, 68, 68, 0.4); }
+  &--amber { background: $accent-orange; box-shadow: 0 0 5px rgba(249, 115, 22, 0.4); }
+  &--green { background: $accent-green; box-shadow: 0 0 5px rgba(16, 185, 129, 0.4); }
+}
+
+// ── Risk Summary (Footer Left) ──────────────────────────────
+
+.risk-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  &__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $accent-red;
+    flex-shrink: 0;
+  }
+
+  strong {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: $text-main;
+    display: block;
+    line-height: 1.2;
+  }
+
+  span {
+    font-size: 0.68rem;
+    color: $text-dim;
+    display: block;
+    line-height: 1.2;
+  }
+}
+
+// ── Confidence Display (Footer Right) ────────────────────────
+
+.confidence {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 0.1rem;
+
+  span {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: $text-dim;
+    text-transform: uppercase;
+  }
+
+  &__value {
+    display: flex;
+    align-items: baseline;
+
+    strong {
+      font-family: 'Outfit', 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: $accent-cyan;
+      line-height: 1;
+    }
+
+    small {
+      font-family: 'Outfit', 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: $accent-cyan;
+    }
+  }
+}
+
+// ── Floating Intel Cards ─────────────────────────────────────
+
+.intel-card {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.9rem;
+  background: rgba(10, 18, 32, 0.88);
+  border: 1px solid $glass-border;
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  &--prediction {
+    top: -1rem;
+    left: -1.25rem;
+    animation: cardFloat 5s ease-in-out infinite;
+
+    @media (max-width: 640px) {
+      top: -0.5rem;
+      left: 0.25rem;
+    }
+  }
+
+  &--route {
+    bottom: 3.5rem;
+    right: -1.25rem;
+    animation: cardFloat 5.5s 0.8s ease-in-out infinite;
+
+    @media (max-width: 640px) {
+      bottom: 3rem;
+      right: 0.25rem;
+    }
+  }
+
+  &__icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $accent-blue;
+    flex-shrink: 0;
+
+    &--green {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.25);
+      color: $accent-green;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+
+    span {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: $text-dim;
+      text-transform: uppercase;
+    }
+
+    strong {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: $text-main;
+      white-space: nowrap;
+    }
+  }
+
+  &__check {
+    font-size: 0.85rem;
+    color: $accent-green;
+    font-weight: 700;
+  }
+}
+
+.route-arrow {
+  font-size: 1rem;
+  color: $accent-green;
+  font-weight: 700;
+}
+
+// ── Scroll Indicator ─────────────────────────────────────────
+
+.hero-scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 2;
+
+  span {
+    width: 20px;
+    height: 32px;
+    border: 2px solid rgba(148, 163, 184, 0.25);
+    border-radius: 10px;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 6px;
+      background: $accent-cyan;
+      border-radius: 2px;
+      animation: scanLine 1.5s ease-in-out infinite;
+    }
+  }
+
+  p {
+    font-size: 0.7rem;
+    color: $text-dim;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
