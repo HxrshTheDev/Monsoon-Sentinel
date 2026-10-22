@@ -32,7 +32,7 @@ import { CitizenLocationService } from '../../../core/services/citizen-location.
               Report Code: <strong class="font-mono">{{ reportCode() }}</strong><br />
               Status: <span class="badge-unverified">UNVERIFIED (Under EOC Review)</span>
             </p>
-            <p class="sub">Thank you for contributing to Greater Chennai's crowd-sourced flood resilience.</p>
+            <p class="sub">Thank you for contributing to Greater Mumbai's crowd-sourced flood resilience.</p>
             <button class="btn btn-primary" (click)="close()">Close</button>
           </div>
         } @else {
@@ -47,7 +47,7 @@ import { CitizenLocationService } from '../../../core/services/citizen-location.
                 type="text"
                 [(ngModel)]="payload.location_name"
                 name="location_name"
-                placeholder="e.g. Madley Subway Underpass, T. Nagar"
+                placeholder="e.g. Andheri Subway Underpass, SV Road"
                 class="form-control"
                 required
               />
@@ -270,7 +270,7 @@ import { CitizenLocationService } from '../../../core/services/citizen-location.
   `]
 })
 export class FeedbackModalComponent {
-  @Input() initialArea: string = 'T. Nagar / Madley Subway';
+  @Input() initialArea: string = 'Kurla West / LBS Marg';
   @Output() closed = new EventEmitter<void>();
 
   isSubmitting = signal<boolean>(false);
@@ -279,8 +279,8 @@ export class FeedbackModalComponent {
   errorMessage = signal<string | null>(null);
 
   payload: CitizenFloodReportPayload = {
-    latitude: 13.0418,
-    longitude: 80.2335,
+    latitude: 19.0680,
+    longitude: 72.8800,
     location_name: this.initialArea,
     water_depth_level: 'KNEE_DEEP',
     water_depth_cm: 25,

@@ -57,10 +57,10 @@ export interface SimResult {
           <div class="header-badges">
             <h1 class="page-title">XGBoost Flood Susceptibility Simulation Studio</h1>
             <span class="badge-tag">XGBoost v2.0 Production Surrogate</span>
-            <span class="badge-crs">3,963 Grid Cells (500m)</span>
+            <span class="badge-crs">1,767 Grid Cells (500m)</span>
           </div>
           <p class="page-desc">
-            Interactively simulate extreme weather scenarios across Greater Chennai to evaluate model predictions, inundation spatial footprints, and infrastructure vulnerability.
+            Interactively simulate extreme weather scenarios across Greater Mumbai to evaluate model predictions, inundation spatial footprints, and infrastructure vulnerability.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export interface SimResult {
           <span class="presets-label">Storm Presets:</span>
           <button class="btn-preset" (click)="loadPreset(45, 60, 5, 0.0)">Normal Monsoon (45mm)</button>
           <button class="btn-preset" (click)="loadPreset(135, 210, 25, 0.3)">Severe Surge (135mm)</button>
-          <button class="btn-preset highlight" (click)="loadPreset(345, 490, 65, 0.8)">2015 Historic Deluge (345mm)</button>
+          <button class="btn-preset highlight" (click)="loadPreset(540, 944, 95, 0.85)">July 26, 2005 Deluge (540mm)</button>
           <button class="btn-preset" (click)="loadPreset(180, 150, 80, 1.0)">Cloudburst + Tidal Lock (180mm)</button>
         </div>
       </div>
@@ -161,7 +161,7 @@ export interface SimResult {
               <span class="kpi-val font-mono">{{ (simulationResult.summary.population_exposure_index / 1000) | number:'1.1-1' }}k</span>
               <span class="kpi-unit">citizens</span>
             </div>
-            <span class="kpi-sub">GCC urban density index</span>
+            <span class="kpi-sub">BMC urban density index</span>
           </div>
 
           <div class="kpi-card info">
@@ -195,7 +195,7 @@ export interface SimResult {
           <!-- Top Impacted Localities -->
           <div class="detail-card">
             <div class="detail-header">
-              <span class="detail-title">Top Impacted Chennai Localities</span>
+              <span class="detail-title">Top Impacted Mumbai Localities</span>
               <span class="badge-count font-mono" *ngIf="simulationResult">{{ simulationResult.impacted_zones.length }} zones</span>
             </div>
             <div class="localities-list" *ngIf="simulationResult">
@@ -742,7 +742,7 @@ export class SimulationComponent implements OnInit, AfterViewInit, OnDestroy {
     const container = this.mapRef.nativeElement;
 
     this.map = L.map(container, {
-      center: [13.0400, 80.2200],
+      center: [19.0760, 72.8777],
       zoom: 11,
       zoomControl: true,
       preferCanvas: true
@@ -768,26 +768,26 @@ export class SimulationComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private createLocalSimFallback(daily: number, cum3d: number, tide: number): SimResult {
     const keyZones: SimZone[] = [
-      { gridId: 'CHN-2941', name: 'Velachery South Basin', locality: 'Velachery', latitude: 12.9815, longitude: 80.2180, bounds: [[12.977, 80.213], [12.986, 80.223]], probability: Math.min(0.98, (daily / 200) * 0.9), riskScore: Math.round(Math.min(98, (daily / 200) * 90)), riskLevel: daily > 80 ? 'CRITICAL' : 'HIGH', elevation: 4.8, lowLyingScore: 0.92, drainageDistM: 140 },
-      { gridId: 'CHN-2810', name: 'Madipakkam Lake Lowlands', locality: 'Madipakkam', latitude: 12.9640, longitude: 80.1980, bounds: [[12.960, 80.193], [12.968, 80.203]], probability: Math.min(0.96, (daily / 210) * 0.88), riskScore: Math.round(Math.min(96, (daily / 210) * 88)), riskLevel: daily > 90 ? 'CRITICAL' : 'HIGH', elevation: 5.2, lowLyingScore: 0.88, drainageDistM: 220 },
-      { gridId: 'CHN-3120', name: 'Adyar Kotturpuram Riverbank', locality: 'Kotturpuram', latitude: 13.0080, longitude: 80.2450, bounds: [[13.004, 80.240], [13.012, 80.250]], probability: Math.min(0.95, (daily / 220) * 0.85), riskScore: Math.round(Math.min(95, (daily / 220) * 85)), riskLevel: daily > 100 ? 'CRITICAL' : 'HIGH', elevation: 3.9, lowLyingScore: 0.86, drainageDistM: 80 },
-      { gridId: 'CHN-2450', name: 'Mudichur / Tambaram Floodplain', locality: 'Mudichur', latitude: 12.9150, longitude: 80.0850, bounds: [[12.910, 80.080], [12.920, 80.090]], probability: Math.min(0.94, (daily / 230) * 0.82), riskScore: Math.round(Math.min(94, (daily / 230) * 82)), riskLevel: daily > 95 ? 'CRITICAL' : 'HIGH', elevation: 5.0, lowLyingScore: 0.84, drainageDistM: 310 },
-      { gridId: 'CHN-3410', name: 'Vyasarpadi Otteri Nallah', locality: 'Vyasarpadi', latitude: 13.1185, longitude: 80.2615, bounds: [[13.114, 80.257], [13.123, 80.266]], probability: Math.min(0.92, (daily / 240) * 0.80), riskScore: Math.round(Math.min(92, (daily / 240) * 80)), riskLevel: daily > 110 ? 'CRITICAL' : 'HIGH', elevation: 3.5, lowLyingScore: 0.90, drainageDistM: 110 },
-      { gridId: 'CHN-2210', name: 'Perumbakkam Marsh Basin', locality: 'Perumbakkam', latitude: 12.8950, longitude: 80.1920, bounds: [[12.890, 80.187], [12.900, 80.197]], probability: Math.min(0.89, (daily / 250) * 0.78), riskScore: Math.round(Math.min(89, (daily / 250) * 78)), riskLevel: 'MODERATE', elevation: 4.2, lowLyingScore: 0.82, drainageDistM: 420 },
-      { gridId: 'CHN-3380', name: 'Kolathur Retteri Sump', locality: 'Kolathur', latitude: 13.1238, longitude: 80.2185, bounds: [[13.119, 80.213], [13.128, 80.224]], probability: Math.min(0.85, (daily / 260) * 0.75), riskScore: Math.round(Math.min(85, (daily / 260) * 75)), riskLevel: 'MODERATE', elevation: 6.1, lowLyingScore: 0.76, drainageDistM: 190 },
-      { gridId: 'CHN-3050', name: 'T. Nagar Panagal Park Commercial', locality: 'T. Nagar', latitude: 13.0418, longitude: 80.2341, bounds: [[13.037, 80.229], [13.046, 80.239]], probability: Math.min(0.82, (daily / 270) * 0.72), riskScore: Math.round(Math.min(82, (daily / 270) * 72)), riskLevel: 'MODERATE', elevation: 8.5, lowLyingScore: 0.70, drainageDistM: 60 }
+      { gridId: 'MUM-0101', name: 'Kurla Mithi River Catchment Lowlands', locality: 'Kurla', latitude: 19.0680, longitude: 72.8800, bounds: [[19.064, 72.875], [19.073, 72.886]], probability: Math.min(0.98, (daily / 200) * 0.9), riskScore: Math.round(Math.min(98, (daily / 200) * 90)), riskLevel: daily > 80 ? 'CRITICAL' : 'HIGH', elevation: 3.2, lowLyingScore: 0.94, drainageDistM: 80 },
+      { gridId: 'MUM-0102', name: 'Hindmata / Parel Bowl Depression', locality: 'Parel / Hindmata', latitude: 19.0080, longitude: 72.8430, bounds: [[19.004, 72.838], [19.013, 72.849]], probability: Math.min(0.96, (daily / 210) * 0.88), riskScore: Math.round(Math.min(96, (daily / 210) * 88)), riskLevel: daily > 90 ? 'CRITICAL' : 'HIGH', elevation: 2.8, lowLyingScore: 0.96, drainageDistM: 120 },
+      { gridId: 'MUM-0103', name: 'Andheri Subway Rail Underpass', locality: 'Andheri West', latitude: 19.1197, longitude: 72.8464, bounds: [[19.115, 72.841], [19.124, 72.852]], probability: Math.min(0.95, (daily / 220) * 0.85), riskScore: Math.round(Math.min(95, (daily / 220) * 85)), riskLevel: daily > 100 ? 'CRITICAL' : 'HIGH', elevation: 2.4, lowLyingScore: 0.95, drainageDistM: 150 },
+      { gridId: 'MUM-0104', name: 'Sion Circle / Gandhi Market Basin', locality: 'Sion', latitude: 19.0400, longitude: 72.8620, bounds: [[19.036, 72.857], [19.045, 72.868]], probability: Math.min(0.94, (daily / 230) * 0.82), riskScore: Math.round(Math.min(94, (daily / 230) * 82)), riskLevel: daily > 95 ? 'CRITICAL' : 'HIGH', elevation: 4.1, lowLyingScore: 0.88, drainageDistM: 190 },
+      { gridId: 'MUM-0105', name: 'Milan Subway Low-Lying Underpass', locality: 'Santacruz', latitude: 19.0880, longitude: 72.8420, bounds: [[19.084, 72.837], [19.093, 72.848]], probability: Math.min(0.92, (daily / 240) * 0.80), riskScore: Math.round(Math.min(92, (daily / 240) * 80)), riskLevel: daily > 110 ? 'CRITICAL' : 'HIGH', elevation: 3.6, lowLyingScore: 0.90, drainageDistM: 210 },
+      { gridId: 'MUM-0106', name: 'Bandra West / Linking Road Corridor', locality: 'Bandra West', latitude: 19.0544, longitude: 72.8402, bounds: [[19.050, 72.835], [19.059, 72.846]], probability: Math.min(0.89, (daily / 250) * 0.78), riskScore: Math.round(Math.min(89, (daily / 250) * 78)), riskLevel: 'MODERATE', elevation: 8.5, lowLyingScore: 0.72, drainageDistM: 260 },
+      { gridId: 'MUM-0107', name: 'Chembur SCLR Commercial Basin', locality: 'Chembur', latitude: 19.0620, longitude: 72.9000, bounds: [[19.058, 72.895], [19.067, 72.906]], probability: Math.min(0.85, (daily / 260) * 0.75), riskScore: Math.round(Math.min(85, (daily / 260) * 75)), riskLevel: 'MODERATE', elevation: 10.2, lowLyingScore: 0.74, drainageDistM: 180 },
+      { gridId: 'MUM-0108', name: 'Malad Western Link Road Lowlands', locality: 'Malad', latitude: 19.1860, longitude: 72.8485, bounds: [[19.181, 72.843], [19.191, 72.854]], probability: Math.min(0.82, (daily / 270) * 0.72), riskScore: Math.round(Math.min(82, (daily / 270) * 72)), riskLevel: 'MODERATE', elevation: 7.2, lowLyingScore: 0.78, drainageDistM: 240 }
     ];
 
     const inunCount = Math.round((daily / 250) * 240);
     return {
       scenario: { rainfall_daily_mm: daily, rainfall_cum_3d_mm: cum3d, rainfall_delta_mm: 15, tidal_lock_penalty: tide },
       summary: {
-        total_sectors_evaluated: 3963,
+        total_sectors_evaluated: 1767,
         inundated_sectors_count: inunCount,
         inundated_area_km2: Math.round(inunCount * 0.25 * 10) / 10,
         critical_sectors_count: Math.round(inunCount * 0.35),
         moderate_sectors_count: Math.round(inunCount * 0.45),
-        low_risk_sectors_count: 3963 - inunCount,
+        low_risk_sectors_count: 1767 - inunCount,
         mean_risk_probability: Math.round((daily / 350) * 1000) / 1000,
         population_exposure_index: inunCount * 1850,
         critical_infrastructure_at_risk: Math.min(42, Math.round(inunCount * 0.12))

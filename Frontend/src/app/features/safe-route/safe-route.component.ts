@@ -694,26 +694,26 @@ import { environment } from '../../../environments/environment';
 export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('routeMapCanvas') routeMapCanvas!: ElementRef;
 
-  sourceLocation = 'Chennai Central';
-  destinationLocation = 'Chennai Airport';
+  sourceLocation = 'CSMT Fort';
+  destinationLocation = 'CSMIA International Airport';
   vehicleType = 'car';
   presetRoutes: PresetRoute[] = [];
   routePlan: RoutePlanResult | null = null;
   loading = false;
   emergencyFacilities: any[] = [
-    { id: 'FAC-HOSP-01', name: 'Rajiv Gandhi Govt General Hospital (RGGGH)', type: 'hospital', category: 'Tertiary Trauma Center', lat: 13.0818, lon: 80.2778, phone: '044-25305000' },
-    { id: 'FAC-HOSP-02', name: 'Apollo Hospital (Greams Road)', type: 'hospital', category: 'Multispecialty Super Center', lat: 13.0594, lon: 80.2508, phone: '044-28290200' },
-    { id: 'FAC-HOSP-03', name: 'MIOT International Hospital', type: 'hospital', category: 'Trauma & Flood Evacuation Center', lat: 13.0232, lon: 80.1795, phone: '044-42002288' },
-    { id: 'FAC-HOSP-04', name: 'Govt Stanley Medical College Hospital', type: 'hospital', category: 'North Chennai General Hospital', lat: 13.1072, lon: 80.2883, phone: '044-25281351' },
-    { id: 'FAC-HOSP-05', name: 'Dr. Kamakshi Memorial Hospital', type: 'hospital', category: 'South Chennai / Pallikaranai Hub', lat: 12.9468, lon: 80.2084, phone: '044-66300300' },
-    { id: 'FAC-FIRE-01', name: 'Kilpauk Fire & Rescue Station (Command HQ)', type: 'fire_station', category: 'Disaster Rescue Command', lat: 13.0805, lon: 80.2435, phone: '101' },
-    { id: 'FAC-FIRE-02', name: 'T. Nagar Fire Station', type: 'fire_station', category: 'Urban Flood Dewatering Unit', lat: 13.0378, lon: 80.2335, phone: '101' },
-    { id: 'FAC-FIRE-03', name: 'Tambaram Fire & Rescue Station', type: 'fire_station', category: 'South Corridor Evacuation Command', lat: 12.9249, lon: 80.1250, phone: '101' },
-    { id: 'FAC-FIRE-04', name: 'Ashok Nagar Fire & Rescue Unit', type: 'fire_station', category: 'Rapid Inundation Relief Station', lat: 13.0345, lon: 80.2118, phone: '101' },
-    { id: 'FAC-POL-01', name: 'Greater Chennai Police Commissionerate', type: 'police', category: 'Central Command & Control', lat: 13.0833, lon: 80.2600, phone: '100' },
-    { id: 'FAC-POL-02', name: 'Adyar Police District Headquarters', type: 'police', category: 'South Coastal Traffic & Safety Command', lat: 13.0067, lon: 80.2572, phone: '100' },
-    { id: 'FAC-POL-03', name: 'Mylapore Police Station', type: 'police', category: 'East Coastal Patrol & Evac', lat: 13.0335, lon: 80.2685, phone: '100' },
-    { id: 'FAC-POL-04', name: 'Guindy Traffic & Emergency Police Post', type: 'police', category: 'Industrial Hub Traffic Management', lat: 13.0100, lon: 80.2120, phone: '100' }
+    { id: 'FAC-HOSP-01', name: 'King Edward Memorial Hospital (KEM Hospital)', type: 'hospital', category: 'Level 1 Trauma Center', lat: 19.0028, lon: 72.8431, phone: '022-24107000' },
+    { id: 'FAC-HOSP-02', name: 'Lokmanya Tilak Municipal General Hospital (Sion Hospital)', type: 'hospital', category: 'Metropolitan Disaster Trauma Center', lat: 19.0378, lon: 72.8606, phone: '022-24076381' },
+    { id: 'FAC-HOSP-03', name: 'Lilavati Hospital & Research Centre', type: 'hospital', category: 'Emergency Cardiac & Trauma', lat: 19.0514, lon: 72.8295, phone: '022-26751000' },
+    { id: 'FAC-HOSP-04', name: 'Kokilaben Dhirubhai Ambani Hospital', type: 'hospital', category: 'Western Suburbs Trauma Center', lat: 19.1312, lon: 72.8252, phone: '022-42696969' },
+    { id: 'FAC-HOSP-05', name: 'K. B. Bhabha Municipal General Hospital Kurla', type: 'hospital', category: 'Suburban Municipal Trauma Center', lat: 19.0650, lon: 72.8790, phone: '022-26500241' },
+    { id: 'FAC-FIRE-01', name: 'Mumbai Fire Brigade Headquarters (Byculla)', type: 'fire_station', category: 'Metropolitan Dispatch', lat: 18.9780, lon: 72.8310, phone: '101' },
+    { id: 'FAC-FIRE-02', name: 'Andheri Fire & Rescue Station', type: 'fire_station', category: 'Mid-Suburbs Heavy Rescue Hub', lat: 19.1180, lon: 72.8490, phone: '101' },
+    { id: 'FAC-FIRE-03', name: 'Kurla Fire & Rescue Station', type: 'fire_station', category: 'Mithi Catchment Flood Dispatch', lat: 19.0680, lon: 72.8780, phone: '101' },
+    { id: 'FAC-FIRE-04', name: 'Bandra Fire Station', type: 'fire_station', category: 'Coastal Rescue Unit', lat: 19.0550, lon: 72.8350, phone: '101' },
+    { id: 'FAC-POL-01', name: 'Mumbai Police Commissionerate Headquarters', type: 'police', category: 'Metropolitan Command & Control', lat: 18.9440, lon: 72.8340, phone: '100 / 112' },
+    { id: 'FAC-POL-02', name: 'Bandra Police Divisional Headquarters', type: 'police', category: 'Western Suburbs Traffic & Safety Command', lat: 19.0550, lon: 72.8350, phone: '100 / 112' },
+    { id: 'FAC-POL-03', name: 'Kurla Police Station Hub', type: 'police', category: 'Central Suburbs Disaster Division', lat: 19.0670, lon: 72.8795, phone: '100 / 112' },
+    { id: 'FAC-POL-04', name: 'Andheri Police Station', type: 'police', category: 'Suburban Arterial Safety Division', lat: 19.1190, lon: 72.8470, phone: '100 / 112' }
   ];
 
   private map?: L.Map;

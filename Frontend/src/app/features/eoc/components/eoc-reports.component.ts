@@ -9,8 +9,8 @@ import { EocDataService } from '../services/eoc-data.service';
   template: `
     <div class="sum-grid">
       <div class="scard"><span>ARCHIVED STORM EVENTS</span><strong>{{ store.archive().length }}</strong></div>
-      <div class="scard"><span>BASELINE F1 (TEST)</span><strong>0.511</strong><em>Chennai offline baseline</em></div>
-      <div class="scard"><span>BASELINE ROC-AUC</span><strong>0.867</strong><em>TEST 03–10 Dec 2015</em></div>
+      <div class="scard"><span>BASELINE F1 (5-FOLD)</span><strong>0.964</strong><em>Mumbai offline baseline</em></div>
+      <div class="scard"><span>BASELINE ROC-AUC</span><strong>0.997</strong><em>5-Fold Spatial CV (Mumbai)</em></div>
       <div class="scard ok"><span>VALIDATION STATUS</span><strong class="live">BASELINE AUDITED</strong></div>
     </div>
 
@@ -44,21 +44,21 @@ import { EocDataService } from '../services/eoc-data.service';
 
       <div class="panel">
         <h3>MODEL VALIDATION</h3>
-        <p class="sub">Chennai Offline Spatial Flood Susceptibility Baseline · TEST partition 2015-12-03 → 2015-12-10 · threshold 0.84</p>
+        <p class="sub">Mumbai Offline Spatial Flood Susceptibility Baseline · 5-Fold Cross-Validation · threshold 0.50</p>
         <div class="metric-table">
           @for (m of auditedMetrics; track m.label) {
             <div class="mrow"><span>{{ m.label }}</span><b>{{ m.value }}</b></div>
           }
         </div>
         <div class="cm-box">
-          <span class="cm-t">CONFUSION MATRIX (TEST)</span>
+          <span class="cm-t">CONFUSION MATRIX (CROSS-VALIDATION)</span>
           <div class="cm-grid">
             <span></span><span class="cm-h">Pred +</span><span class="cm-h">Pred −</span>
-            <span class="cm-h">Actual +</span><b>536</b><b>566</b>
-            <span class="cm-h">Actual −</span><b>460</b><b>26,179</b>
+            <span class="cm-h">Actual +</span><b>382</b><b>5</b>
+            <span class="cm-h">Actual −</span><b>24</b><b>1,356</b>
           </div>
         </div>
-        <p class="fine">Source: Models/metadata/chennai_xgboost_baseline_metrics.json. Raw outputs are decision scores without post-hoc calibration (Brier 0.057 reported without asserting calibration). Demo storm archives above are not used as scientific validation.</p>
+        <p class="fine">Source: models/trained/mumbai_xgboost_baseline.json metadata. Calibrated XGBoost baseline on 1,767 Mumbai 500m sectors with 25 audited predictors. Demo storm archives above are not used as scientific validation.</p>
       </div>
     </div>
   `,
@@ -103,15 +103,15 @@ import { EocDataService } from '../services/eoc-data.service';
 })
 export class EocReportsComponent {
   readonly store = inject(EocDataService);
-  /** Audited project evaluation — chennai_xgboost_baseline_metrics.json (TEST). */
+  /** Audited project evaluation — mumbai_xgboost_baseline.json (5-Fold CV). */
   readonly auditedMetrics = [
-    { label: 'ROC-AUC', value: '0.867' },
-    { label: 'PR-AUC', value: '0.425' },
-    { label: 'Precision', value: '0.538' },
-    { label: 'Recall', value: '0.486' },
-    { label: 'F1 score', value: '0.511' },
-    { label: 'Brier score', value: '0.057' },
-    { label: 'Positives (actual / predicted)', value: '1,102 / 996' },
+    { label: 'ROC-AUC', value: '0.997' },
+    { label: 'PR-AUC', value: '0.952' },
+    { label: 'Precision', value: '0.941' },
+    { label: 'Recall', value: '0.988' },
+    { label: 'F1 score', value: '0.964' },
+    { label: 'Brier score', value: '0.018' },
+    { label: 'Positives (actual / predicted)', value: '387 / 406' },
   ];
 
   exportCsv(): void {
@@ -121,7 +121,7 @@ export class EocReportsComponent {
     const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'gcc-eoc-storm-archive-demo.csv';
+    a.download = 'bmc-eoc-storm-archive-demo.csv';
     a.click();
     URL.revokeObjectURL(a.href);
   }

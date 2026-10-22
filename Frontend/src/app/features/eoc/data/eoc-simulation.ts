@@ -1,5 +1,5 @@
 /**
- * FloodWatch AI — EOC deterministic DEMO/SIMULATION dataset (Chennai, GCC).
+ * FloodWatch AI — EOC deterministic DEMO/SIMULATION dataset (Mumbai, BMC).
  * ==========================================================================
  * ALL values here are illustrative simulation inputs for UI development.
  * They MUST NOT be presented as live measurements. The EOC shell renders a
@@ -26,7 +26,6 @@ export const HORIZONS: HorizonKey[] = ['NOW', 'T+30', 'T+60', 'T+90', 'T+120'];
 
 /** City anchor — Brihanmumbai Municipal Corporation (BMC Headquarters, Fort). */
 export const MUMBAI_CENTER = { lat: 19.0760, lng: 72.8777 };
-export const CHENNAI_CENTER = MUMBAI_CENTER;
 
 export const SIM_TELEMETRY: TelemetrySnapshot = {
   radarNowcastMmh: 64.2,
@@ -53,8 +52,8 @@ export const SIM_RAINFALL_SERIES: RainfallSample[] = [
 
 export const SIM_ZONES: FloodZone[] = [
   {
-    id: 'Z-VELACHERY', zoneName: 'Velachery Lowland', ward: 'Zone 13 (Adyar)',
-    corridor: 'Velachery Lake Catchment', lat: 12.9816, lng: 80.218,
+    id: 'Z-KURLA', zoneName: 'Kurla Mithi River Basin', ward: 'Ward L (Kurla)',
+    corridor: 'Mithi River Basin', lat: 19.0680, lng: 72.8800,
     optedInCitizens: 125, notifiedCitizens: 112,
     series: [
       { horizon: 'NOW', rainfallMmh: 58, waterDepthCm: 22, riskScore: 82, riskLevel: 'HIGH', state: 'RISING' },
@@ -65,8 +64,8 @@ export const SIM_ZONES: FloodZone[] = [
     ],
   },
   {
-    id: 'Z-MADLEY', zoneName: 'Madley Subway / T. Nagar', ward: 'Zone 10 (Kodambakkam)',
-    corridor: 'Madley Underpass Basin', lat: 13.0418, lng: 80.2341,
+    id: 'Z-HINDMATA', zoneName: 'Hindmata / Parel Bowl', ward: 'Ward F/South (Parel)',
+    corridor: 'Hindmata Lowland Depression', lat: 19.0080, lng: 72.8430,
     optedInCitizens: 94, notifiedCitizens: 89,
     series: [
       { horizon: 'NOW', rainfallMmh: 61, waterDepthCm: 28, riskScore: 86, riskLevel: 'CRITICAL', state: 'RISING' },
@@ -77,8 +76,8 @@ export const SIM_ZONES: FloodZone[] = [
     ],
   },
   {
-    id: 'Z-EGMORE', zoneName: 'Gengu Reddy Subway / Egmore', ward: 'Zone 5 (Royapuram)',
-    corridor: 'Cooum Outfall Corridor', lat: 13.0732, lng: 80.2609,
+    id: 'Z-ANDHERI', zoneName: 'Andheri Subway Corridor', ward: 'Ward K/East (Andheri)',
+    corridor: 'Western Railway Culvert Corridor', lat: 19.1180, lng: 72.8430,
     optedInCitizens: 78, notifiedCitizens: 74,
     series: [
       { horizon: 'NOW', rainfallMmh: 55, waterDepthCm: 24, riskScore: 80, riskLevel: 'HIGH', state: 'RISING' },
@@ -89,8 +88,8 @@ export const SIM_ZONES: FloodZone[] = [
     ],
   },
   {
-    id: 'Z-MUDICHUR', zoneName: 'Mudichur / Adyar Buffer', ward: 'Zone 14 (Perungudi)',
-    corridor: 'Adyar River Floodplain', lat: 12.9226, lng: 80.0768,
+    id: 'Z-SION', zoneName: 'Sion Circle / Gandhi Market', ward: 'Ward F/North (Sion)',
+    corridor: 'EEH Lowland Sump', lat: 19.0400, lng: 72.8620,
     optedInCitizens: 62, notifiedCitizens: 58,
     series: [
       { horizon: 'NOW', rainfallMmh: 44, waterDepthCm: 15, riskScore: 58, riskLevel: 'CAUTION', state: 'RISING' },
@@ -101,8 +100,8 @@ export const SIM_ZONES: FloodZone[] = [
     ],
   },
   {
-    id: 'Z-ADYAR', zoneName: 'Adyar River Corridor', ward: 'Zone 13 (Adyar)',
-    corridor: 'Adyar Bridge Approach', lat: 13.0105, lng: 80.2647,
+    id: 'Z-MILAN', zoneName: 'Milan Subway Santacruz', ward: 'Ward H/West (Santacruz)',
+    corridor: 'Milan Subway Underpass', lat: 19.0830, lng: 72.8420,
     optedInCitizens: 88, notifiedCitizens: 81,
     series: [
       { horizon: 'NOW', rainfallMmh: 52, waterDepthCm: 18, riskScore: 66, riskLevel: 'HIGH', state: 'RISING' },
@@ -113,20 +112,8 @@ export const SIM_ZONES: FloodZone[] = [
     ],
   },
   {
-    id: 'Z-AMBATTUR', zoneName: 'Ambattur Industrial Corridor', ward: 'Zone 7 (Ambattur)',
-    corridor: 'Surface Runoff Belt', lat: 13.1143, lng: 80.1548,
-    optedInCitizens: 54, notifiedCitizens: 47,
-    series: [
-      { horizon: 'NOW', rainfallMmh: 38, waterDepthCm: 11, riskScore: 47, riskLevel: 'MEDIUM', state: 'RISING' },
-      { horizon: 'T+30', rainfallMmh: 52, waterDepthCm: 18, riskScore: 60, riskLevel: 'HIGH', state: 'RISING' },
-      { horizon: 'T+60', rainfallMmh: 66, waterDepthCm: 27, riskScore: 74, riskLevel: 'HIGH', state: 'PEAK' },
-      { horizon: 'T+90', rainfallMmh: 60, waterDepthCm: 29, riskScore: 75, riskLevel: 'HIGH', state: 'SEVERE FLOOD' },
-      { horizon: 'T+120', rainfallMmh: 44, waterDepthCm: 22, riskScore: 64, riskLevel: 'HIGH', state: 'RECEDING' },
-    ],
-  },
-  {
-    id: 'Z-GUINDY', zoneName: 'Kathipara / Guindy Elevated', ward: 'Zone 12 (Alandur)',
-    corridor: 'Grade Separator Ridge', lat: 13.0067, lng: 80.2206,
+    id: 'Z-BANDRA', zoneName: 'Bandra-Kurla Complex (BKC)', ward: 'Ward H/East (Bandra)',
+    corridor: 'Mithi Estuary Inflow', lat: 19.0550, lng: 72.8650,
     optedInCitizens: 140, notifiedCitizens: 140,
     series: [
       { horizon: 'NOW', rainfallMmh: 30, waterDepthCm: 4, riskScore: 18, riskLevel: 'SAFE', state: 'CURRENT' },
@@ -137,8 +124,20 @@ export const SIM_ZONES: FloodZone[] = [
     ],
   },
   {
-    id: 'Z-MARINA', zoneName: 'Marina Coastal Lowland', ward: 'Zone 9 (Teynampet)',
-    corridor: 'Tidal + Pluvial Interface', lat: 13.05, lng: 80.282,
+    id: 'Z-MALAD', zoneName: 'Malad Subway & Marve Basin', ward: 'Ward P/North (Malad)',
+    corridor: 'Poisar River Outfall', lat: 19.1860, lng: 72.8480,
+    optedInCitizens: 54, notifiedCitizens: 47,
+    series: [
+      { horizon: 'NOW', rainfallMmh: 38, waterDepthCm: 11, riskScore: 47, riskLevel: 'MEDIUM', state: 'RISING' },
+      { horizon: 'T+30', rainfallMmh: 52, waterDepthCm: 18, riskScore: 60, riskLevel: 'HIGH', state: 'RISING' },
+      { horizon: 'T+60', rainfallMmh: 66, waterDepthCm: 27, riskScore: 74, riskLevel: 'HIGH', state: 'PEAK' },
+      { horizon: 'T+90', rainfallMmh: 60, waterDepthCm: 29, riskScore: 75, riskLevel: 'HIGH', state: 'SEVERE FLOOD' },
+      { horizon: 'T+120', rainfallMmh: 44, waterDepthCm: 22, riskScore: 64, riskLevel: 'HIGH', state: 'RECEDING' },
+    ],
+  },
+  {
+    id: 'Z-DADAR', zoneName: 'Dadar TT Circle & Chitra', ward: 'Ward G/North (Dadar)',
+    corridor: 'Central Island Basin', lat: 19.0178, lng: 72.8478,
     optedInCitizens: 71, notifiedCitizens: 63,
     series: [
       { horizon: 'NOW', rainfallMmh: 49, waterDepthCm: 20, riskScore: 70, riskLevel: 'HIGH', state: 'RISING' },
@@ -152,8 +151,8 @@ export const SIM_ZONES: FloodZone[] = [
 
 export const SIM_DRAINAGE_NODES: DrainageNode[] = [
   {
-    id: 'NODE-20', name: 'South Coastal Sluice — Spillway Gate C', nodeType: 'OUTFALL',
-    lat: 12.965, lng: 80.251, flowM3s: 41.2, hydraulicLoadPct: 264, waterLevelM: 4.8,
+    id: 'NODE-MITHI-04', name: 'Mithi River Mahim Causeway Outfall', nodeType: 'OUTFALL',
+    lat: 19.0425, lng: 72.8415, flowM3s: 41.2, hydraulicLoadPct: 264, waterLevelM: 4.8,
     surchargePct: 264, status: 'CRITICAL', isDemo: true,
     series: [
       { horizon: 'NOW', surchargePct: 198, status: 'CRITICAL' },
@@ -164,8 +163,8 @@ export const SIM_DRAINAGE_NODES: DrainageNode[] = [
     ],
   },
   {
-    id: 'NODE-10', name: 'Estuary Main Discharge — Outfall B', nodeType: 'OUTFALL',
-    lat: 13.012, lng: 80.272, flowM3s: 38.6, hydraulicLoadPct: 263, waterLevelM: 4.5,
+    id: 'NODE-BRITANNIA-OUTFALL', name: 'Britannia Pumping Station Outfall', nodeType: 'OUTFALL',
+    lat: 18.9720, lng: 72.8520, flowM3s: 38.6, hydraulicLoadPct: 263, waterLevelM: 4.5,
     surchargePct: 263, status: 'CRITICAL', isDemo: true,
     series: [
       { horizon: 'NOW', surchargePct: 196, status: 'CRITICAL' },
@@ -176,8 +175,8 @@ export const SIM_DRAINAGE_NODES: DrainageNode[] = [
     ],
   },
   {
-    id: 'NODE-09', name: 'Harbor Tidal Outfall — Gate A', nodeType: 'OUTFALL',
-    lat: 13.095, lng: 80.29, flowM3s: 36.1, hydraulicLoadPct: 260, waterLevelM: 4.3,
+    id: 'NODE-LOVEGROVE-OUTFALL', name: 'Lovegrove Worli Tidal Outfall', nodeType: 'OUTFALL',
+    lat: 19.0040, lng: 72.8160, flowM3s: 36.1, hydraulicLoadPct: 260, waterLevelM: 4.3,
     surchargePct: 260, status: 'CRITICAL', isDemo: true,
     series: [
       { horizon: 'NOW', surchargePct: 188, status: 'CRITICAL' },
@@ -188,8 +187,8 @@ export const SIM_DRAINAGE_NODES: DrainageNode[] = [
     ],
   },
   {
-    id: 'NODE-24', name: 'Lowland Siphon Terminal Manhole', nodeType: 'MANHOLE',
-    lat: 12.985, lng: 80.222, flowM3s: 12.4, hydraulicLoadPct: 250, waterLevelM: 3.9,
+    id: 'NODE-ANDHERI-SUBWAY', name: 'Andheri Subway Low Point Sump', nodeType: 'MANHOLE',
+    lat: 19.1180, lng: 72.8430, flowM3s: 12.4, hydraulicLoadPct: 250, waterLevelM: 3.9,
     surchargePct: 250, status: 'CRITICAL', isDemo: true,
     series: [
       { horizon: 'NOW', surchargePct: 176, status: 'WARNING' },
@@ -200,8 +199,8 @@ export const SIM_DRAINAGE_NODES: DrainageNode[] = [
     ],
   },
   {
-    id: 'NODE-12', name: 'Adyar Bridge Regulator', nodeType: 'REGULATOR',
-    lat: 13.0105, lng: 80.2647, flowM3s: 22.8, hydraulicLoadPct: 168, waterLevelM: 3.1,
+    id: 'NODE-MITHI-03', name: 'Kurla-BKC Siphon Reach', nodeType: 'REGULATOR',
+    lat: 19.0680, lng: 72.8750, flowM3s: 22.8, hydraulicLoadPct: 168, waterLevelM: 3.1,
     surchargePct: 168, status: 'WARNING', isDemo: true,
     series: [
       { horizon: 'NOW', surchargePct: 121, status: 'WARNING' },
@@ -212,8 +211,8 @@ export const SIM_DRAINAGE_NODES: DrainageNode[] = [
     ],
   },
   {
-    id: 'NODE-04', name: 'Pallikaranai Pump Station', nodeType: 'PUMP STATION',
-    lat: 12.9341, lng: 80.213, flowM3s: 9.6, hydraulicLoadPct: 92, waterLevelM: 1.8,
+    id: 'NODE-BRITANNIA-PUMP', name: 'Britannia Storm Water Pumping Station', nodeType: 'PUMP STATION',
+    lat: 18.9740, lng: 72.8490, flowM3s: 9.6, hydraulicLoadPct: 92, waterLevelM: 1.8,
     surchargePct: 92, status: 'NOMINAL', isDemo: true,
     series: [
       { horizon: 'NOW', surchargePct: 74, status: 'NOMINAL' },
@@ -224,8 +223,8 @@ export const SIM_DRAINAGE_NODES: DrainageNode[] = [
     ],
   },
   {
-    id: 'NODE-17', name: 'Cooum Barrage Shutter 3', nodeType: 'BARRAGE',
-    lat: 13.065, lng: 80.265, flowM3s: 15.3, hydraulicLoadPct: 118, waterLevelM: 2.4,
+    id: 'NODE-OSHIWARA-OUTFALL', name: 'Oshiwara River Tidal Outfall', nodeType: 'BARRAGE',
+    lat: 19.1480, lng: 72.8190, flowM3s: 15.3, hydraulicLoadPct: 118, waterLevelM: 2.4,
     surchargePct: 118, status: 'WARNING', isDemo: true,
     series: [
       { horizon: 'NOW', surchargePct: 96, status: 'NOMINAL' },
@@ -236,8 +235,8 @@ export const SIM_DRAINAGE_NODES: DrainageNode[] = [
     ],
   },
   {
-    id: 'NODE-31', name: 'Buckingham Canal Sluice — Perungudi', nodeType: 'SLUICE',
-    lat: 12.9698, lng: 80.2505, flowM3s: 7.2, hydraulicLoadPct: 64, waterLevelM: 1.2,
+    id: 'NODE-LOVEGROVE-PUMP', name: 'Lovegrove Storm Water Pumping Station', nodeType: 'SLUICE',
+    lat: 19.0060, lng: 72.8180, flowM3s: 7.2, hydraulicLoadPct: 64, waterLevelM: 1.2,
     surchargePct: 64, status: 'NOMINAL', isDemo: true,
     series: [
       { horizon: 'NOW', surchargePct: 52, status: 'NOMINAL' },
@@ -250,52 +249,52 @@ export const SIM_DRAINAGE_NODES: DrainageNode[] = [
 ];
 
 export const SIM_DRAINAGE_LINKS: DrainageLink[] = [
-  { from: 'NODE-24', to: 'NODE-12', path: [{ lat: 12.985, lng: 80.222 }, { lat: 12.998, lng: 80.244 }, { lat: 13.0105, lng: 80.2647 }] },
-  { from: 'NODE-12', to: 'NODE-10', path: [{ lat: 13.0105, lng: 80.2647 }, { lat: 13.011, lng: 80.269 }] },
-  { from: 'NODE-04', to: 'NODE-20', path: [{ lat: 12.9341, lng: 80.213 }, { lat: 12.95, lng: 80.232 }, { lat: 12.965, lng: 80.251 }] },
-  { from: 'NODE-17', to: 'NODE-09', path: [{ lat: 13.065, lng: 80.265 }, { lat: 13.08, lng: 80.278 }, { lat: 13.095, lng: 80.29 }] },
+  { from: 'NODE-ANDHERI-SUBWAY', to: 'NODE-OSHIWARA-OUTFALL', path: [{ lat: 19.118, lng: 72.843 }, { lat: 19.135, lng: 72.830 }, { lat: 19.148, lng: 72.819 }] },
+  { from: 'NODE-MITHI-03', to: 'NODE-MITHI-04', path: [{ lat: 19.068, lng: 72.875 }, { lat: 19.055, lng: 72.855 }, { lat: 19.0425, lng: 72.8415 }] },
+  { from: 'NODE-BRITANNIA-PUMP', to: 'NODE-BRITANNIA-OUTFALL', path: [{ lat: 18.974, lng: 72.849 }, { lat: 18.972, lng: 72.852 }] },
+  { from: 'NODE-LOVEGROVE-PUMP', to: 'NODE-LOVEGROVE-OUTFALL', path: [{ lat: 19.006, lng: 72.818 }, { lat: 19.004, lng: 72.816 }] },
 ];
 
 export const SIM_INCIDENTS: EocIncident[] = [
   {
-    id: 'INC-2041', severity: 'CRITICAL', location: 'Adyar River Corridor', ward: 'Zone 13 (Adyar)',
-    description: 'Predicted road inundation approaching critical depth on Adyar Bridge approach.',
+    id: 'INC-2041', severity: 'CRITICAL', location: 'Mithi River Corridor', ward: 'Ward L (Kurla)',
+    description: 'Predicted river overflow approaching critical bank crest near Kurla-BKC border.',
     waterDepthCm: 44, expectedAt: 'T+60', issuedAt: new Date(Date.now() - 12 * 60000).toISOString(),
-    status: 'RESPONDING', actionLabel: 'Dispatch field verification',
+    status: 'RESPONDING', actionLabel: 'Deploy NDRF inflatable boats',
   },
   {
-    id: 'INC-2040', severity: 'CRITICAL', location: 'Velachery Lowland', ward: 'Zone 13 (Adyar)',
-    description: 'Rapid rainfall accumulation and drainage surcharge detected near Velachery lake.',
+    id: 'INC-2040', severity: 'CRITICAL', location: 'Kurla Mithi Basin', ward: 'Ward L (Kurla)',
+    description: 'Rapid water accumulation and drainage surcharge detected near Kurla Station West.',
     waterDepthCm: 55, expectedAt: 'T+60', issuedAt: new Date(Date.now() - 26 * 60000).toISOString(),
     status: 'RESPONDING', actionLabel: 'Activate dewatering pumps',
   },
   {
-    id: 'INC-2039', severity: 'CRITICAL', location: 'Marina Coastal Lowland', ward: 'Zone 9 (Teynampet)',
-    description: 'Combined tidal + pluvial inundation; 68 cm predicted by T+90.',
+    id: 'INC-2039', severity: 'CRITICAL', location: 'Hindmata / Parel Bowl', ward: 'Ward F/South (Parel)',
+    description: 'Severe saucer depression waterlogging on Dr. Ambedkar Road; traffic diverted.',
     waterDepthCm: 68, expectedAt: 'T+90', issuedAt: new Date(Date.now() - 34 * 60000).toISOString(),
-    status: 'MONITORING', actionLabel: 'Restrict coastal access',
+    status: 'MONITORING', actionLabel: 'Divert to Lalbaug Flyover',
   },
   {
-    id: 'INC-2038', severity: 'CRITICAL', location: 'Madley Subway / T. Nagar', ward: 'Zone 10 (Kodambakkam)',
-    description: 'Underpass depression filling faster than pump discharge capacity.',
+    id: 'INC-2038', severity: 'CRITICAL', location: 'Andheri Subway Corridor', ward: 'Ward K/East (Andheri)',
+    description: 'Underpass depression filling faster than 3 submersible pumps discharge capacity.',
     waterDepthCm: 63, expectedAt: 'T+60', issuedAt: new Date(Date.now() - 48 * 60000).toISOString(),
     status: 'RESPONDING', actionLabel: 'Close subway to traffic',
   },
   {
-    id: 'INC-2037', severity: 'WARNING', location: 'Perungudi Basin', ward: 'Zone 14 (Perungudi)',
-    description: 'Drainage capacity approaching threshold along Buckingham Canal reach.',
+    id: 'INC-2037', severity: 'WARNING', location: 'Sion Circle / Gandhi Market', ward: 'Ward F/North (Sion)',
+    description: 'Drainage capacity approaching threshold along Eastern Express Highway reach.',
     waterDepthCm: 35, expectedAt: 'T+60', issuedAt: new Date(Date.now() - 63 * 60000).toISOString(),
     status: 'MONITORING', actionLabel: 'Monitor continuously',
   },
   {
-    id: 'INC-2036', severity: 'WARNING', location: 'Ambattur Industrial Corridor', ward: 'Zone 7 (Ambattur)',
-    description: 'Surface runoff increasing across industrial estate low pockets.',
+    id: 'INC-2036', severity: 'WARNING', location: 'Milan Subway Santacruz', ward: 'Ward H/West (Santacruz)',
+    description: 'Surface runoff accumulating; pumping station operational.',
     waterDepthCm: 27, expectedAt: 'T+60', issuedAt: new Date(Date.now() - 81 * 60000).toISOString(),
-    status: 'MONITORING', actionLabel: 'Alert estate control room',
+    status: 'MONITORING', actionLabel: 'Alert traffic control room',
   },
   {
-    id: 'INC-2035', severity: 'CAUTION', location: 'Saidapet / Taramani Link', ward: 'Zone 12 (Alandur)',
-    description: 'Minor waterlogging reported; runoff within drain capacity.',
+    id: 'INC-2035', severity: 'CAUTION', location: 'Bandra-Kurla Complex (BKC)', ward: 'Ward H/East (Bandra)',
+    description: 'Minor waterlogging reported on BKC Connector ramp; traffic moving slow.',
     waterDepthCm: 9, expectedAt: 'T+60', issuedAt: new Date(Date.now() - 104 * 60000).toISOString(),
     status: 'OPEN', actionLabel: 'Routine patrol',
   },
@@ -303,67 +302,67 @@ export const SIM_INCIDENTS: EocIncident[] = [
 
 export const SIM_ROUTES: RouteAdvisory[] = [
   {
-    id: 'RD-01', roadName: 'Velachery Main Road', corridor: 'Velachery → Guindy',
-    floodDepthCm: 68, status: 'CLOSED', recommendedAction: 'Use alternate route via Taramani Link Road',
-    path: [{ lat: 12.9816, lng: 80.218 }, { lat: 12.993, lng: 80.2195 }, { lat: 13.0067, lng: 80.2206 }],
+    id: 'RD-01', roadName: 'Western Express Highway (WEH)', corridor: 'Bandra → Andheri → Dahisar',
+    floodDepthCm: 8, status: 'OPEN', recommendedAction: 'Preferred elevated arterial corridor',
+    path: [{ lat: 19.055, lng: 72.840 }, { lat: 19.118, lng: 72.852 }, { lat: 19.220, lng: 72.860 }],
   },
   {
-    id: 'RD-02', roadName: 'Adyar Bridge Approach', corridor: 'Adyar → Besant Nagar',
-    floodDepthCm: 42, status: 'RESTRICTED', recommendedAction: 'Emergency vehicles only',
-    path: [{ lat: 13.0105, lng: 80.2647 }, { lat: 13.008, lng: 80.272 }],
+    id: 'RD-02', roadName: 'Eastern Express Highway (EEH)', corridor: 'Sion → Kurla → Mulund',
+    floodDepthCm: 12, status: 'OPEN', recommendedAction: 'Elevated segments fully passable',
+    path: [{ lat: 19.040, lng: 72.862 }, { lat: 19.070, lng: 72.890 }, { lat: 19.175, lng: 72.955 }],
   },
   {
-    id: 'RD-03', roadName: 'Perungudi Link Road', corridor: 'Perungudi → Sholinganallur',
-    floodDepthCm: 31, status: 'WARNING', recommendedAction: 'Monitor continuously; reduce speed',
-    path: [{ lat: 12.9698, lng: 80.2435 }, { lat: 12.945, lng: 80.238 }, { lat: 12.923, lng: 80.23 }],
+    id: 'RD-03', roadName: 'Andheri Subway Underpass', corridor: 'Andheri East ↔ Andheri West',
+    floodDepthCm: 68, status: 'CLOSED', recommendedAction: 'Closed due to surge. Divert via Gokhale Bridge flyover.',
+    path: [{ lat: 19.118, lng: 72.843 }, { lat: 19.119, lng: 72.847 }],
   },
   {
-    id: 'RD-04', roadName: 'Madley Subway Underpass', corridor: 'T. Nagar → Saidapet',
-    floodDepthCm: 63, status: 'CLOSED', recommendedAction: 'Divert via GN Chetty Rd flyover',
-    path: [{ lat: 13.0418, lng: 80.2341 }, { lat: 13.032, lng: 80.2285 }],
+    id: 'RD-04', roadName: 'Milan Subway Santacruz', corridor: 'Santacruz West ↔ WEH East',
+    floodDepthCm: 62, status: 'CLOSED', recommendedAction: 'Subway flooded. Use Milan Flyover.',
+    path: [{ lat: 19.083, lng: 72.842 }, { lat: 19.085, lng: 72.846 }],
   },
   {
-    id: 'RD-05', roadName: 'Kathipara Grade Separator', corridor: 'Guindy → Airport',
-    floodDepthCm: 4, status: 'OPEN', recommendedAction: 'Preferred emergency corridor',
-    path: [{ lat: 13.0067, lng: 80.2206 }, { lat: 12.998, lng: 80.21 }, { lat: 12.99, lng: 80.193 }],
+    id: 'RD-05', roadName: 'Bandra-Worli Sea Link (BWSL)', corridor: 'Worli ↔ Bandra Toll Plaza',
+    floodDepthCm: 0, status: 'OPEN', recommendedAction: 'Marine viaduct unaffected by surface ponding',
+    path: [{ lat: 19.015, lng: 72.815 }, { lat: 19.035, lng: 72.818 }, { lat: 19.052, lng: 72.825 }],
   },
 ];
 
 const RESCUE_PATH = [
-  { lat: 13.0067, lng: 80.2206 }, { lat: 12.998, lng: 80.232 },
-  { lat: 12.9867, lng: 80.2433 }, { lat: 12.9816, lng: 80.218 },
+  { lat: 19.040, lng: 72.862 }, { lat: 19.060, lng: 72.870 },
+  { lat: 19.068, lng: 72.880 }, { lat: 19.076, lng: 72.8777 },
 ];
 
 export function planSafeRoute(vehicle: VehicleKind): SafeRoutePlan {
   const base = {
-    CAR: { name: 'Kathipara → Taramani → Velachery relief corridor', distanceKm: 9.4, etaMin: 26, maxDepthCm: 12 },
-    SUV: { name: 'Kathipara → Guindy Estate → Velachery lowland edge', distanceKm: 8.1, etaMin: 22, maxDepthCm: 22 },
-    TRUCK: { name: 'Airport Rd → Pallavaram → Velachery bypass', distanceKm: 12.6, etaMin: 34, maxDepthCm: 18 },
-    RESCUE: { name: 'Rescue priority corridor (open roads, min depth)', distanceKm: 7.3, etaMin: 17, maxDepthCm: 8 },
+    CAR: { name: 'EEH → BKC Connector → Kurla Relief Corridor', distanceKm: 8.6, etaMin: 22, maxDepthCm: 10 },
+    SUV: { name: 'WEH → Kalina University Flyover → Kurla West', distanceKm: 7.4, etaMin: 18, maxDepthCm: 18 },
+    TRUCK: { name: 'Eastern Freeway → SCLR Elevated Bypass', distanceKm: 11.2, etaMin: 28, maxDepthCm: 15 },
+    RESCUE: { name: 'Emergency priority corridor (Elevated viaducts, min risk)', distanceKm: 6.8, etaMin: 14, maxDepthCm: 5 },
   }[vehicle];
   return { vehicle, path: RESCUE_PATH, ...base };
 }
 
 export const SIM_SHELTERS: Shelter[] = [
-  { id: 'SH-01', name: 'Taramani Relief Shelter', lat: 12.9867, lng: 80.2433, capacity: 800, occupied: 312 },
-  { id: 'SH-02', name: 'Guindy Community Hall', lat: 13.0025, lng: 80.2125, capacity: 500, occupied: 148 },
-  { id: 'SH-03', name: 'Perungudi School Shelter', lat: 12.9698, lng: 80.2485, capacity: 650, occupied: 401 },
+  { id: 'SH-01', name: 'Kurla Municipal Secondary School Relief Camp', lat: 19.0710, lng: 72.8820, capacity: 850, occupied: 340 },
+  { id: 'SH-02', name: 'K. B. Bhabha Hospital Ground Hall', lat: 19.0650, lng: 72.8780, capacity: 600, occupied: 195 },
+  { id: 'SH-03', name: 'Parel Shirodkar High School Shelter', lat: 19.0110, lng: 72.8420, capacity: 700, occupied: 420 },
 ];
 
 export const SIM_ARCHIVE: StormArchiveEntry[] = [
-  { id: 'ST-06', eventName: 'Northeast Monsoon Burst VI', eventDate: '2025-11-18', peakRainfallMmh: 88.4, maxDepthCm: 61, affectedZones: ['Velachery Lowland', 'Adyar River Corridor'], leadTimeMin: 52, isDemo: true },
-  { id: 'ST-05', eventName: 'Northeast Monsoon Burst V', eventDate: '2025-11-02', peakRainfallMmh: 74.1, maxDepthCm: 48, affectedZones: ['Madley Subway / T. Nagar', 'Mudichur / Adyar Buffer'], leadTimeMin: 44, isDemo: true },
-  { id: 'ST-04', eventName: 'Cyclonic Inflow Event IV', eventDate: '2025-10-21', peakRainfallMmh: 96.7, maxDepthCm: 68, affectedZones: ['Marina Coastal Lowland', 'Adyar River Corridor'], leadTimeMin: 58, isDemo: true },
-  { id: 'ST-03', eventName: 'Convective Storm Cell III', eventDate: '2025-09-30', peakRainfallMmh: 62.3, maxDepthCm: 35, affectedZones: ['Ambattur Industrial Corridor'], leadTimeMin: 31, isDemo: true },
-  { id: 'ST-02', eventName: 'Monsoon Trough Event II', eventDate: '2025-09-12', peakRainfallMmh: 55.8, maxDepthCm: 29, affectedZones: ['Perungudi Basin', 'Sholinganallur fringe'], leadTimeMin: 39, isDemo: true },
-  { id: 'ST-01', eventName: 'Pre-monsoon Squall I', eventDate: '2025-08-27', peakRainfallMmh: 41.2, maxDepthCm: 16, affectedZones: ['Kathipara / Guindy Elevated'], leadTimeMin: 28, isDemo: true },
+  { id: 'ST-06', eventName: 'Mumbai Cloudburst & Mithi Inundation', eventDate: '2025-07-26', peakRainfallMmh: 94.4, maxDepthCm: 72, affectedZones: ['Kurla Mithi River Basin', 'Hindmata / Parel Bowl'], leadTimeMin: 48, isDemo: true },
+  { id: 'ST-05', eventName: 'August 29 Flash Monsoon Surge', eventDate: '2025-08-29', peakRainfallMmh: 78.5, maxDepthCm: 56, affectedZones: ['Andheri Subway Corridor', 'Milan Subway Santacruz'], leadTimeMin: 42, isDemo: true },
+  { id: 'ST-04', eventName: 'Sept High Tide + Downpour Event', eventDate: '2025-09-23', peakRainfallMmh: 86.2, maxDepthCm: 64, affectedZones: ['Sion Circle / Gandhi Market', 'Kurla Mithi River Basin'], leadTimeMin: 55, isDemo: true },
+  { id: 'ST-03', eventName: 'Suburban Convective Trough', eventDate: '2025-09-14', peakRainfallMmh: 58.0, maxDepthCm: 32, affectedZones: ['Malad Subway & Marve Basin'], leadTimeMin: 35, isDemo: true },
+  { id: 'ST-02', eventName: 'Monsoon Depression Wave II', eventDate: '2025-08-04', peakRainfallMmh: 52.4, maxDepthCm: 26, affectedZones: ['Dadar TT Circle & Chitra'], leadTimeMin: 38, isDemo: true },
+  { id: 'ST-01', eventName: 'Pre-Monsoon Line Squall', eventDate: '2025-06-12', peakRainfallMmh: 42.1, maxDepthCm: 15, affectedZones: ['Bandra-Kurla Complex (BKC)'], leadTimeMin: 25, isDemo: true },
 ];
 
 export const SIM_HEALTH: HealthCheck[] = [
-  { id: 'radar', label: 'Doppler Radar', status: 'ONLINE', detail: 'Chennai Port Trust radar · sweep 6 min ago' },
-  { id: 'rain', label: 'Rainfall Feed', status: 'ONLINE', detail: 'GCC AWS network · 64 stations reporting' },
-  { id: 'floodmodel', label: 'Flood Model', status: 'ONLINE', detail: 'Nowcast surrogate · inference 38 ms' },
-  { id: 'drainmodel', label: 'Drainage Model', status: 'DEGRADED', detail: '2 outfall sensors stale > 15 min' },
-  { id: 'db', label: 'Database', status: 'ONLINE', detail: 'Primary reachable · replication lag 2 s' },
-  { id: 'api', label: 'FastAPI Backend', status: 'OFFLINE', detail: 'EOC feed endpoints unreachable — simulation active' },
+  { id: 'radar', label: 'Doppler Weather Radar', status: 'ONLINE', detail: 'IMD Colaba & Veravali radar · sweep 4 min ago' },
+  { id: 'rain', label: 'Rainfall Telemetry', status: 'ONLINE', detail: 'BMC Automatic Weather Station (AWS) network · 60 stations reporting' },
+  { id: 'floodmodel', label: 'Flood Model', status: 'ONLINE', detail: 'Calibrated Mumbai XGBoost · inference 16 ms' },
+  { id: 'drainmodel', label: 'Drainage Model', status: 'DEGRADED', detail: 'Mithi outfall sensor telemetry stale > 10 min' },
+  { id: 'db', label: 'Database', status: 'ONLINE', detail: 'Primary reachable · replication lag 1.2 s' },
+  { id: 'api', label: 'FastAPI Backend', status: 'ONLINE', detail: 'EOC feed connected to localhost:8000' },
 ];

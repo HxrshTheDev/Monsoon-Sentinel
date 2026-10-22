@@ -39,7 +39,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
         <div class="header-titles">
           <h1 class="welcome-heading">{{ greeting }}, Admin</h1>
           <p class="welcome-sub">
-            Monitor real-time flood conditions and AI-powered predictions across Greater Chennai.
+            Monitor real-time flood conditions and AI-powered predictions across Greater Mumbai.
           </p>
         </div>
         <div class="header-meta">
@@ -177,7 +177,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             </div>
             <span class="badge status-caution font-mono">82% STRESSED</span>
           </div>
-          <p class="ops-card-sub">Adyar & Cooum basin hydrologic loading:</p>
+          <p class="ops-card-sub">Mithi & Oshiwara basin hydrologic loading:</p>
           <div class="drivers-list">
             <div class="driver-item">
               <span class="d-name">Precipitation Rate</span>
@@ -217,7 +217,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
               <span class="soil-status-text">Data Unavailable</span>
             </div>
             <p class="soil-desc">
-              Satellite soil-moisture and in-situ TDR probe telemetry awaiting GCC sensor grid deployment. Interface schema is established for future ingestion.
+              Satellite soil-moisture and in-situ TDR probe telemetry awaiting BMC sensor grid deployment. Interface schema is established for future ingestion.
             </p>
             <div class="driver-item" style="margin-top: 0.5rem;">
               <span class="d-name">Telemetry Status:</span>
@@ -235,7 +235,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             </div>
             <span class="badge status-safe font-mono">INTERFACE READY</span>
           </div>
-          <p class="ops-card-sub">Macro-canals & 2023 SWD lines:</p>
+          <p class="ops-card-sub">Macro-canals & BRIMSTOWAD SWD lines:</p>
           <div class="drivers-list">
             <div class="driver-item">
               <span class="d-name">Surface Waterways</span>
@@ -244,7 +244,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             </div>
             <div class="driver-item">
               <span class="d-name">SWD Network (KML)</span>
-              <span class="d-val font-mono">GCC 2023 GIS</span>
+              <span class="d-val font-mono">BMC 2024 GIS</span>
               <span class="src-tag tag-obs">OBSERVED</span>
             </div>
             <div class="driver-item">
@@ -261,18 +261,18 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
         </div>
       </div>
 
-      <!-- Detailed Weather Telemetry Console (GCC AWS & Atmospheric Sensors) -->
+      <!-- Detailed Weather Telemetry Console (BMC AWS & Atmospheric Sensors) -->
       <div class="card weather-telemetry-card">
         <div class="card-header weather-header">
           <div class="weather-title-group">
             <div class="weather-badge-row">
               <span class="badge-live-pulse"><span class="pulse-dot"></span> LIVE SATELLITE-NWP FUSION</span>
               <span class="badge-radar font-mono">500m HIGH-RES QPE ONLINE</span>
-              <span class="badge-source font-mono">ECMWF & GCC MULTI-SENSOR</span>
+              <span class="badge-source font-mono">ECMWF & BMC MULTI-SENSOR</span>
             </div>
             <h3 class="card-title">Detailed Weather Telemetry & Basin Hydrology</h3>
             <p class="card-subtitle">
-              Continuous high-resolution satellite-NWP precipitation estimates, real-time soil moisture saturation, and GCC AWS in-situ telemetry
+              Continuous high-resolution satellite-NWP precipitation estimates, real-time soil moisture saturation, and BMC AWS in-situ telemetry
             </p>
           </div>
           <div class="weather-actions">
@@ -310,7 +310,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
           </div>
         </div>
 
-        <!-- 8 GCC AWS Stations Grid -->
+        <!-- 8 BMC AWS Stations Grid -->
         <div class="aws-stations-section">
           <div class="aws-stations-title">
             <span>Automated Weather Stations (AWS) Live Rain Rates</span>
@@ -378,8 +378,8 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
               <label class="layer-chip active">
                 <input type="checkbox" [checked]="layerDrainage" (change)="layerDrainage = !layerDrainage"> Drainage (SWD)
               </label>
-              <label class="layer-chip" [class.active]="layerDno" title="Toggle Chennai Phase 7C DNO Hydrodynamic Water Depth Layer">
-                <input type="checkbox" [checked]="layerDno" (change)="toggleDnoLayer()"> Hydrodynamic Depth (DNO) <span class="layer-status-pill online">Phase 7C</span>
+              <label class="layer-chip" [class.active]="layerDno" title="Toggle Mumbai DNO Hydrodynamic Water Depth Layer">
+                <input type="checkbox" [checked]="layerDno" (change)="toggleDnoLayer()"> Hydrodynamic Depth (DNO) <span class="layer-status-pill online">Online</span>
               </label>
               <label class="layer-chip">
                 <input type="checkbox" [checked]="layerRoutes" (change)="layerRoutes = !layerRoutes"> Safe Corridors
@@ -394,10 +394,10 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
               <app-map-legend></app-map-legend>
             </div>
             <div class="map-actions-bar">
-              <span class="map-info-text">Greater Chennai Corporation (GCC) 500m Metric Grid</span>
+              <span class="map-info-text">Brihanmumbai Municipal Corporation (BMC) 500m Metric Grid</span>
               <div class="map-btn-group">
-                <button type="button" class="btn btn-secondary btn-sm" (click)="focusDnoPilot()" title="Center on Adyar-Velachery Pilot Catchment">
-                  Focus DNO Basin (10km)
+                <button type="button" class="btn btn-secondary btn-sm" (click)="focusDnoPilot()" title="Center on Kurla-Mithi Basin">
+                  Focus Mithi Basin (10km)
                 </button>
                 <a routerLink="/flood-map" class="btn btn-primary btn-sm">
                   Open Fullscreen GIS Map →
@@ -438,31 +438,31 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
         </div>
       </div>
 
-      <!-- AI HYDRODYNAMIC NOWCAST (Chennai Phase 7C DNO) -->
+      <!-- AI HYDRODYNAMIC NOWCAST (Mumbai DNO Hydrodynamic Engine) -->
       <div class="card dno-hydrodynamic-card">
         <!-- Header -->
         <div class="dno-card-header">
           <div class="dno-title-group">
             <div class="dno-badge-row">
               <span class="dno-pill-pulse"><span class="pulse-dot-cyan"></span> AI HYDRODYNAMIC NOWCAST</span>
-              <span class="dno-tag font-mono">CHENNAI PHASE 7C DNO</span>
+              <span class="dno-tag font-mono">MUMBAI HYDRODYNAMIC DNO</span>
               <span class="dno-tag font-mono">ALPHA = 1.00</span>
               <span class="dno-tag font-mono">128 × 128 (78.1m)</span>
               <span class="dno-tag-device font-mono" [class.device-cuda]="dnoService.health()?.device?.includes('cuda')">
                 ⚡ {{ (dnoService.health()?.device || 'CUDA/CPU') | uppercase }}
               </span>
             </div>
-            <h3 class="dno-main-title">Chennai Hydrodynamic Depth & Velocity Forecasting</h3>
+            <h3 class="dno-main-title">Mumbai Hydrodynamic Depth & Velocity Forecasting</h3>
             <p class="dno-sub-text">
               High-resolution Deep Neural Operator (DNO) surrogate simulating physical 2D Navier-Stokes/Saint-Venant
-              water depth (H), velocity vectors (U, V), and localized saucer ponding across the Adyar–Velachery pilot basin.
+              water depth (H), velocity vectors (U, V), and localized saucer ponding across the Kurla–Mithi pilot basin.
             </p>
           </div>
 
           <!-- Event Selector & Action -->
           <div class="dno-event-controls">
             <div class="dno-select-wrap">
-              <label class="dno-select-label">Select Chennai Flood Event:</label>
+              <label class="dno-select-label">Select Mumbai Flood Event:</label>
               <select
                 class="dno-event-select font-mono"
                 [value]="dnoService.selectedEventId()"
@@ -698,14 +698,14 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
               <div class="sep-badge font-mono">PRODUCTION MODEL</div>
               <h5 class="sep-title">Operational Flood Risk (XGBoost)</h5>
               <p class="sep-desc">
-                Primary GCC-wide flood-risk classifier trained on audited spatial predictors. Governs safe routing, citizen SMS/push warnings, and macro evacuation corridors across 3,963 terrestrial sectors.
+                Primary BMC-wide flood-risk classifier trained on audited spatial predictors. Governs safe routing, citizen SMS/push warnings, and macro evacuation corridors across 1,767 terrestrial sectors.
               </p>
             </div>
             <div class="sep-box sep-experimental">
               <div class="sep-badge font-mono">EXPERIMENTAL SURROGATE</div>
-              <h5 class="sep-title">Hydrodynamic Nowcast (Chennai Phase 7C DNO)</h5>
+              <h5 class="sep-title">Hydrodynamic Nowcast (Mumbai Hydrodynamic DNO)</h5>
               <p class="sep-desc">
-                Neural operator simulating non-linear 2D depth (H) and velocity (U, V) over a 120-minute horizon. Operates on prepared hydrodynamic storm events in the Adyar–Velachery pilot catchment (128 × 128 grid).
+                Neural operator simulating non-linear 2D depth (H) and velocity (U, V) over a 120-minute horizon. Operates on prepared hydrodynamic storm events in the Kurla–Mithi pilot catchment (128 × 128 grid).
               </p>
             </div>
           </div>
@@ -719,7 +719,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             <div class="inspection-modal-header">
               <div class="inspection-title-group">
                 <h3 class="inspection-modal-title">{{ selectedZone.name }}</h3>
-                <span class="inspection-grid-id font-mono">{{ selectedZone.gridId }} • Greater Chennai</span>
+                <span class="inspection-grid-id font-mono">{{ selectedZone.gridId }} • Greater Mumbai</span>
               </div>
               <button
                 type="button"
@@ -763,7 +763,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
                   <strong>{{ currentHorizon }}</strong>. Telemetry indicates saucer depression risk factors with drainage outfall distance of 420m.
                 </p>
                 <p class="depth-disclaimer-note" style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.35rem;">
-                  * Note: The Chennai XGBoost baseline model predicts spatial flood occurrence susceptibility. Physical water depths require hydrodynamic solver integration. Centimeter depths are strictly not fabricated.
+                  * Note: The Mumbai XGBoost baseline model predicts spatial flood occurrence susceptibility. Physical water depths require hydrodynamic solver integration. Continuous depths are strictly not fabricated.
                 </p>
               </div>
 
@@ -813,7 +813,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
                   <tr>
                     <td class="location-cell">
                       <strong>{{ item.location }}</strong>
-                      <span class="sub-locality">Greater Chennai (GCC)</span>
+                      <span class="sub-locality">Greater Mumbai (BMC)</span>
                     </td>
                     <td>
                       <app-risk-badge [level]="item.currentRisk"></app-risk-badge>
@@ -873,7 +873,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             <div class="status-row">
               <div class="status-name-group">
                 <span class="status-icon-dot"></span>
-                <span class="service-name">DATABASE (3,963 Grid Cells)</span>
+                <span class="service-name">DATABASE (1,767 Grid Cells)</span>
               </div>
               <span class="badge status-safe font-mono">CONNECTED</span>
             </div>
@@ -881,7 +881,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             <div class="status-row">
               <div class="status-name-group">
                 <span class="status-icon-dot"></span>
-                <span class="service-name">MAP DATA (GCC 500m Metric Grid)</span>
+                <span class="service-name">MAP DATA (BMC 500m Metric Grid)</span>
               </div>
               <span class="badge status-safe font-mono">AVAILABLE</span>
             </div>
@@ -897,7 +897,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
             <div class="status-row">
               <div class="status-name-group">
                 <span class="status-icon-dot"></span>
-                <span class="service-name">DRAINAGE DATA (KML 2023 SWD)</span>
+                <span class="service-name">DRAINAGE DATA (BMC BRIMSTOWAD GIS)</span>
               </div>
               <span class="badge status-safe font-mono">CONNECTED</span>
             </div>
@@ -933,7 +933,7 @@ import { LoadingStateComponent } from '../../shared/components/loading-state/loa
               <h3 class="card-title">Real-Time Flood Prediction & Inundation ETA Engine</h3>
             </div>
             <p class="card-subtitle">
-              Calculates surface inundation onset (physical ETA in minutes) across Greater Chennai low-lying basins, considering live rainfall loading vs. storm water drain evacuation capacity.
+              Calculates surface inundation onset (physical ETA in minutes) across Greater Mumbai low-lying basins, considering live rainfall loading vs. storm water drain evacuation capacity.
             </p>
           </div>
           <div class="eta-controls-group">
@@ -2608,14 +2608,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Weather Telemetry
   awsStations: any[] = [
-    { id: 'AWS-01', name: 'Chennai Airport (Meenambakkam)', rain_rate_mm_h: 26.5, rain_24h_mm: 72.0, status: 'ACTIVE' },
-    { id: 'AWS-02', name: 'Nungambakkam RMC', rain_rate_mm_h: 24.0, rain_24h_mm: 64.5, status: 'ACTIVE' },
-    { id: 'AWS-03', name: 'Chembarambakkam Reservoir', rain_rate_mm_h: 32.5, rain_24h_mm: 88.0, status: 'ACTIVE' },
-    { id: 'AWS-04', name: 'Tambaram Airfield AWS', rain_rate_mm_h: 28.0, rain_24h_mm: 76.5, status: 'ACTIVE' },
-    { id: 'AWS-05', name: 'Alandur Storm Station', rain_rate_mm_h: 25.8, rain_24h_mm: 69.2, status: 'ACTIVE' },
-    { id: 'AWS-06', name: 'Kolathur North Basin', rain_rate_mm_h: 21.5, rain_24h_mm: 58.0, status: 'ACTIVE' },
-    { id: 'AWS-07', name: 'Anna University Tech AWS', rain_rate_mm_h: 25.0, rain_24h_mm: 66.0, status: 'ACTIVE' },
-    { id: 'AWS-08', name: 'T. Nagar Panagal Park', rain_rate_mm_h: 29.5, rain_24h_mm: 78.2, status: 'ACTIVE' }
+    { id: 'AWS-01', name: 'Mumbai Airport (Santacruz AWS)', rain_rate_mm_h: 26.5, rain_24h_mm: 72.0, status: 'ACTIVE' },
+    { id: 'AWS-02', name: 'Colaba Coastal Observatory', rain_rate_mm_h: 24.0, rain_24h_mm: 64.5, status: 'ACTIVE' },
+    { id: 'AWS-03', name: 'Vihar Lake Catchment AWS', rain_rate_mm_h: 32.5, rain_24h_mm: 88.0, status: 'ACTIVE' },
+    { id: 'AWS-04', name: 'Kurla Mithi River AWS', rain_rate_mm_h: 28.0, rain_24h_mm: 76.5, status: 'ACTIVE' },
+    { id: 'AWS-05', name: 'Bandra West Coastal AWS', rain_rate_mm_h: 25.8, rain_24h_mm: 69.2, status: 'ACTIVE' },
+    { id: 'AWS-06', name: 'Borivali National Park AWS', rain_rate_mm_h: 21.5, rain_24h_mm: 58.0, status: 'ACTIVE' },
+    { id: 'AWS-07', name: 'Powai Lake Sump AWS', rain_rate_mm_h: 25.0, rain_24h_mm: 66.0, status: 'ACTIVE' },
+    { id: 'AWS-08', name: 'Hindmata / Parel AWS', rain_rate_mm_h: 29.5, rain_24h_mm: 78.2, status: 'ACTIVE' }
   ];
 
   cityWeather = {
@@ -2721,14 +2721,14 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private computeLocalEta(rainRate: number, accumRain: number): any {
     const keyLocalities = [
-      { name: 'Velachery South Basin', lat: 12.9815, lon: 80.2180, elevation_m: 4.8, storage_mm: 18.0, evac_rate_mm_h: 14.0 },
-      { name: 'Madipakkam Puzhuthivakkam', lat: 12.9640, lon: 80.1980, elevation_m: 5.2, storage_mm: 20.0, evac_rate_mm_h: 12.0 },
-      { name: 'Adyar Kotturpuram Corridor', lat: 13.0080, lon: 80.2450, elevation_m: 3.9, storage_mm: 15.0, evac_rate_mm_h: 16.0 },
-      { name: 'T. Nagar Panagal Park', lat: 13.0418, lon: 80.2341, elevation_m: 8.5, storage_mm: 28.0, evac_rate_mm_h: 22.0 },
-      { name: 'Perumbakkam Lowlands', lat: 12.8950, lon: 80.1920, elevation_m: 4.2, storage_mm: 16.0, evac_rate_mm_h: 10.0 },
-      { name: 'Kolathur North Basin', lat: 13.1238, lon: 80.2185, elevation_m: 6.1, storage_mm: 22.0, evac_rate_mm_h: 15.0 },
-      { name: 'Mudichur / Tambaram West', lat: 12.9150, lon: 80.0850, elevation_m: 5.0, storage_mm: 17.0, evac_rate_mm_h: 11.0 },
-      { name: 'Vyasarpadi Underpass', lat: 13.1185, lon: 80.2615, elevation_m: 3.5, storage_mm: 12.0, evac_rate_mm_h: 9.0 }
+      { name: 'Kurla Mithi Basin', lat: 19.0680, lon: 72.8800, elevation_m: 3.2, storage_mm: 18.0, evac_rate_mm_h: 14.0 },
+      { name: 'Hindmata / Parel Bowl', lat: 19.0080, lon: 72.8430, elevation_m: 2.8, storage_mm: 15.0, evac_rate_mm_h: 16.0 },
+      { name: 'Andheri Subway Underpass', lat: 19.1197, lon: 72.8464, elevation_m: 2.4, storage_mm: 12.0, evac_rate_mm_h: 10.0 },
+      { name: 'Sion Circle / Gandhi Market', lat: 19.0400, lon: 72.8620, elevation_m: 4.1, storage_mm: 22.0, evac_rate_mm_h: 18.0 },
+      { name: 'Milan Subway Santacruz', lat: 19.0880, lon: 72.8420, elevation_m: 3.6, storage_mm: 14.0, evac_rate_mm_h: 11.0 },
+      { name: 'Chembur SCLR Lowlands', lat: 19.0620, lon: 72.9000, elevation_m: 10.2, storage_mm: 25.0, evac_rate_mm_h: 20.0 },
+      { name: 'Bandra Linking Road Corridor', lat: 19.0544, lon: 72.8402, elevation_m: 8.5, storage_mm: 28.0, evac_rate_mm_h: 22.0 },
+      { name: 'Malad Western Link Road', lat: 19.1860, lon: 72.8485, elevation_m: 7.2, storage_mm: 20.0, evac_rate_mm_h: 15.0 }
     ];
 
     const results = keyLocalities.map(loc => {
@@ -2868,10 +2868,10 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.zoneLayersGroup.addTo(this.map);
 
-    // Chennai Phase 7C DNO Pilot Catchment boundary (Adyar-Velachery 10km x 10km)
+    // Mumbai DNO Pilot Catchment boundary (Kurla-Mithi 10km x 10km)
     const pilotBounds: L.LatLngBoundsExpression = [
-      [12.943196, 80.170273],
-      [13.033893, 80.262192]
+      [19.0200, 72.8300],
+      [19.1200, 72.9300]
     ];
     this.dnoPilotBoundsRect = L.rectangle(pilotBounds, {
       color: '#00e5ff',
@@ -2882,8 +2882,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     this.dnoPilotBoundsRect.bindTooltip(`
       <div style="font-family: inherit; font-size: 0.8rem;">
-        <strong style="color: #00e5ff;">Chennai DNO Pilot Catchment</strong><br/>
-        Adyar–Velachery Basin (10 km × 10 km)<br/>
+        <strong style="color: #00e5ff;">Mumbai DNO Pilot Catchment</strong><br/>
+        Kurla–Mithi Basin (10 km × 10 km)<br/>
         Grid: 128 × 128 (78.1m resolution)
       </div>
     `, { sticky: true });
@@ -3025,7 +3025,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ==========================================
-  // CHENNAI PHASE 7C DNO HYDRODYNAMIC METHODS
+  // MUMBAI HYDRODYNAMIC DNO METHODS
   // ==========================================
 
   private loadDnoHealthAndEvents(): void {
@@ -3198,7 +3198,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
         layer.bindTooltip(`
           <div style="font-family: inherit; font-size: 0.8rem; line-height: 1.4;">
-            <div style="font-weight: 700; color: #00e5ff; margin-bottom: 2px;">Chennai Phase 7C DNO Cell</div>
+            <div style="font-weight: 700; color: #00e5ff; margin-bottom: 2px;">Mumbai Hydrodynamic DNO Cell</div>
             <div>Lead Time: <strong>T+${leadMin}m</strong></div>
             <div>Water Depth (H): <strong>${depth} m</strong></div>
             <div>Velocity Magnitude: <strong>${velMag} m/s</strong></div>
@@ -3237,8 +3237,8 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   focusDnoPilot(): void {
     if (!this.map) return;
     const pilotBounds: L.LatLngBoundsExpression = [
-      [12.943196, 80.170273],
-      [13.033893, 80.262192]
+      [19.0200, 72.8300],
+      [19.1200, 72.9300]
     ];
     this.map.fitBounds(pilotBounds, { padding: [30, 30], maxZoom: 14 });
   }

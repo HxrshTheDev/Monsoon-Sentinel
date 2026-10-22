@@ -1,5 +1,5 @@
 /**
- * FloodWatch AI — Phase 7E: Chennai Hydrodynamic DNO Models
+ * FloodWatch AI — Phase 7E: Mumbai Hydrodynamic DNO Models
  * TypeScript interfaces matching backend/app/schemas/dno.py Pydantic contract
  */
 
@@ -10,7 +10,8 @@ export interface DNOGridMetadata {
   height: number;
   cell_size_meters: number;
   cell_area_m2: number;
-  bounds_utm44n: number[];
+  bounds_utm43n?: number[];
+  bounds_utm44n?: number[];
   bounds_wgs84: {
     min_lat: number;
     max_lat: number;

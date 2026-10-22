@@ -33,7 +33,7 @@ const BASE_TILES = {
 
       <!-- Floating risk panel -->
       <div class="risk-panel">
-        <span class="rp-title">CHENNAI FLOOD RISK</span>
+        <span class="rp-title">MUMBAI FLOOD RISK</span>
         <span class="rp-sub">Real-time Catchment Risk Index</span>
         <div class="rp-score"><strong>{{ riskIndex() }}</strong><span>/ 100</span></div>
         <span class="rp-status" [style.color]="riskColor()">{{ riskLabel() }}</span>
@@ -514,9 +514,9 @@ export class EocMapComponent implements OnInit, OnDestroy {
     }
     if (L_.emergencyRoutes) {
       this.groups['evac'].addLayer(L.polyline(
-        [[13.0067, 80.2206], [12.998, 80.21], [12.99, 80.193]],
+        [[19.055, 72.855], [19.068, 72.880], [19.076, 72.8777]],
         { color: '#34d399', weight: 3, dashArray: '4 6', opacity: 0.9 }
-      ).bindTooltip('Designated evacuation route — Kathipara → Airport corridor', { sticky: true }));
+      ).bindTooltip('Designated evacuation route — BKC Connector → Kurla Relief Corridor', { sticky: true }));
     }
   }
 

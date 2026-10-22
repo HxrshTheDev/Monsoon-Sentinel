@@ -14,7 +14,7 @@ import { GovernmentService, BroadcastAlertPayload } from '../../../core/services
           <div class="header-icon">📢</div>
           <div class="header-titles">
             <h3>Broadcast Emergency Warning Alert</h3>
-            <p>EOC Officer Dispatch • Greater Chennai Corporation Ward Command</p>
+            <p>EOC Officer Dispatch • Brihanmumbai Municipal Corporation (BMC) Ward Command</p>
           </div>
           <button class="btn-close" (click)="close()">✕</button>
         </div>
@@ -38,7 +38,7 @@ import { GovernmentService, BroadcastAlertPayload } from '../../../core/services
                 type="text"
                 [(ngModel)]="payload.title"
                 name="title"
-                placeholder="e.g. Flash Flood Warning: Madley Subway - T. Nagar Corridor"
+                placeholder="e.g. Flash Flood Warning: Andheri Subway - Western Express Highway Corridor"
                 class="form-control"
                 required
               />
@@ -58,11 +58,11 @@ import { GovernmentService, BroadcastAlertPayload } from '../../../core/services
               <div class="form-group">
                 <label>Affected Ward</label>
                 <select [(ngModel)]="payload.affected_ward" name="affected_ward" class="form-control" (change)="onWardChange()">
-                  <option value="Zone 10 (Kodambakkam / T. Nagar)">Zone 10 (Kodambakkam / T. Nagar)</option>
-                  <option value="Zone 13 (Adyar / Velachery)">Zone 13 (Adyar / Velachery)</option>
-                  <option value="Zone 5 (Royapuram / George Town)">Zone 5 (Royapuram / George Town)</option>
-                  <option value="Zone 9 (Teynampet / Egmore)">Zone 9 (Teynampet / Egmore)</option>
-                  <option value="Zone 12 (Alandur / Guindy)">Zone 12 (Alandur / Guindy)</option>
+                  <option value="Ward L (Kurla / Sakinaka / Mithi Basin)">Ward L (Kurla / Sakinaka / Mithi Basin)</option>
+                  <option value="Ward F/North (Sion / Matunga / Gandhi Market)">Ward F/North (Sion / Matunga / Gandhi Market)</option>
+                  <option value="Ward F/South (Parel / Hindmata / Lalbaug)">Ward F/South (Parel / Hindmata / Lalbaug)</option>
+                  <option value="Ward K/East (Andheri East / WEH)">Ward K/East (Andheri East / WEH)</option>
+                  <option value="Ward H/East (Bandra East / BKC)">Ward H/East (Bandra East / BKC)</option>
                 </select>
               </div>
             </div>
@@ -263,41 +263,45 @@ export class BroadcastModalComponent {
   isSending = signal<boolean>(false);
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
-  recommendedRoute = 'Anna Salai Elevated Corridor';
+  recommendedRoute = 'Eastern Express Highway Elevated Corridor';
 
   payload: BroadcastAlertPayload = {
-    title: 'Flash Flood Warning: Madley Subway - T. Nagar Corridor',
+    title: 'Flash Flood Warning: Andheri Subway - WEH Corridor',
     severity: 'CRITICAL',
     flood_category: 'FLASH_FLOOD',
-    affected_ward: 'Zone 10 (Kodambakkam / T. Nagar)',
-    affected_landmarks: ['Madley Subway', 'Usman Road Flyover', 'Panagal Park'],
+    affected_ward: 'Ward L (Kurla / Sakinaka / Mithi Basin)',
+    affected_landmarks: ['Kurla Station West', 'LBS Marg', 'Mithi River Basin'],
     message: 'Rapid storm runoff accumulation exceeding 25cm. Surface drainage overwhelmed.',
-    safety_instructions: 'Avoid ground-level underpasses. Divert to Anna Salai or elevated flyovers.',
-    recommended_safe_routes: ['Anna Salai via Mount Road'],
-    target_latitude: 13.0418,
-    target_longitude: 80.2335,
+    safety_instructions: 'Avoid ground-level underpasses. Divert to Eastern Express Highway or elevated flyovers.',
+    recommended_safe_routes: ['Eastern Express Highway via BKC Connector'],
+    target_latitude: 19.0680,
+    target_longitude: 72.8800,
     radius_meters: 500
   };
 
   constructor(private govService: GovernmentService) {}
 
   onWardChange(): void {
-    if (this.payload.affected_ward.includes('Velachery') || this.payload.affected_ward.includes('Zone 13')) {
-      this.payload.target_latitude = 12.9815;
-      this.payload.target_longitude = 80.2180;
-      this.payload.affected_landmarks = ['Velachery Main Road', 'Bypass Road', 'MRTS Station Corridor'];
-    } else if (this.payload.affected_ward.includes('Royapuram') || this.payload.affected_ward.includes('Zone 5')) {
-      this.payload.target_latitude = 13.0860;
-      this.payload.target_longitude = 80.2870;
-      this.payload.affected_landmarks = ['RBI Subway', 'Rajaji Salai', 'Parrys Corner'];
-    } else if (this.payload.affected_ward.includes('Egmore') || this.payload.affected_ward.includes('Zone 9')) {
-      this.payload.target_latitude = 13.0780;
-      this.payload.target_longitude = 80.2605;
-      this.payload.affected_landmarks = ['Gengu Reddy Subway', 'Gandhi Irwin Road'];
+    if (this.payload.affected_ward.includes('Kurla') || this.payload.affected_ward.includes('Ward L')) {
+      this.payload.target_latitude = 19.0680;
+      this.payload.target_longitude = 72.8800;
+      this.payload.affected_landmarks = ['Kurla Station West', 'LBS Marg', 'Mithi River Basin'];
+    } else if (this.payload.affected_ward.includes('Sion') || this.payload.affected_ward.includes('Ward F/North')) {
+      this.payload.target_latitude = 19.0400;
+      this.payload.target_longitude = 72.8620;
+      this.payload.affected_landmarks = ['Sion Circle', 'Gandhi Market', 'Sulochana Shetty Road'];
+    } else if (this.payload.affected_ward.includes('Parel') || this.payload.affected_ward.includes('Ward F/South')) {
+      this.payload.target_latitude = 19.0080;
+      this.payload.target_longitude = 72.8430;
+      this.payload.affected_landmarks = ['Hindmata Cinema Junction', 'Dr. Ambedkar Road', 'Parel TT'];
+    } else if (this.payload.affected_ward.includes('Andheri') || this.payload.affected_ward.includes('Ward K/East')) {
+      this.payload.target_latitude = 19.1180;
+      this.payload.target_longitude = 72.8430;
+      this.payload.affected_landmarks = ['Andheri Subway', 'Swami Vivekananda Road', 'Western Express Highway'];
     } else {
-      this.payload.target_latitude = 13.0418;
-      this.payload.target_longitude = 80.2335;
-      this.payload.affected_landmarks = ['Madley Subway', 'Panagal Park'];
+      this.payload.target_latitude = 19.0550;
+      this.payload.target_longitude = 72.8550;
+      this.payload.affected_landmarks = ['BKC Connector', 'Kalanagar Junction', 'Bandra East'];
     }
   }
 

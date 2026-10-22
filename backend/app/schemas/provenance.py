@@ -18,7 +18,7 @@ class ProvenanceStatus(str, Enum):
 
 
 class ProvenanceRecord(BaseModel):
-    source: str = Field(..., description="Origin data system or model (e.g. GCC SWD GIS, XGBoost Baseline)")
+    source: str = Field(..., description="Origin data system or model (e.g. BMC SWD GIS, XGBoost Baseline)")
     timestamp: str = Field(..., description="ISO-8601 observation or generation timestamp")
     status: ProvenanceStatus = Field(..., description="Status of the measurement or inference")
     unit: Optional[str] = Field(None, description="Physical unit of measurement")

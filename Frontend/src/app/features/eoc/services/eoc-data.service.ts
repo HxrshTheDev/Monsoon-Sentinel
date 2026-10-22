@@ -1,5 +1,5 @@
 /**
- * FloodWatch AI — EOC central data store (Chennai, GCC fixed geography).
+ * FloodWatch AI — EOC central data store (Mumbai, BMC fixed geography).
  * Tries real FastAPI government feeds first; falls back to the isolated
  * deterministic simulation dataset and flags SIMULATION mode in the UI.
  */
@@ -26,7 +26,7 @@ import {
   Waterway,
 } from '../models/eoc-models';
 import {
-  CHENNAI_CENTER,
+  MUMBAI_CENTER,
   HORIZONS,
   SIM_ARCHIVE,
   SIM_DRAINAGE_LINKS,
@@ -48,7 +48,7 @@ export type EocView =
 
 @Injectable({ providedIn: 'root' })
 export class EocDataService {
-  readonly center = CHENNAI_CENTER;
+  readonly center = MUMBAI_CENTER;
   readonly horizons = HORIZONS;
 
   // ---- data state ----
@@ -142,7 +142,7 @@ export class EocDataService {
                 id: String(w['id']), name: String(w['name'] ?? w['id']),
                 type: String(w['type'] ?? ''), coordinates: coords as Array<[number, number]>,
                 basin: typeof w['basin'] === 'string' ? w['basin'] : undefined,
-                source: String(w['source'] ?? 'GCC GIS'),
+                source: String(w['source'] ?? 'BMC GIS'),
               });
             }
           }
@@ -234,7 +234,7 @@ export class EocDataService {
         generatedAt: new Date().toISOString(),
       });
       this.dataMode.set('LIVE');
-      this.backendNote.set('Connected to GCC EOC live feeds.');
+      this.backendNote.set('Connected to BMC EOC live feeds.');
     } catch {
       this.dataMode.set('SIMULATION');
     }

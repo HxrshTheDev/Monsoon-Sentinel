@@ -50,7 +50,7 @@ interface ForecastTimelineStep {
             <input
               type="text"
               class="location-input"
-              placeholder="Enter location, area, or coordinates (e.g. Velachery, T. Nagar)..."
+              placeholder="Enter location, area, or coordinates (e.g. Kurla, Hindmata, Andheri)..."
               [(ngModel)]="searchQuery"
               (keyup.enter)="onSearch()"
             />
@@ -113,11 +113,11 @@ interface ForecastTimelineStep {
 
             <p class="zone-summary-text">{{ zoneData.summary }}</p>
             <p class="depth-disclaimer-note" style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.25rem;">
-              * Note: The Chennai XGBoost baseline predicts spatial flood probability. Physical water depth requires hydrodynamic solver integration.
+              * Note: The Mumbai XGBoost baseline predicts spatial flood probability. Physical water depth requires hydrodynamic solver integration. Continuous depths are strictly not fabricated.
             </p>
 
             <div class="card-footer-action">
-              <a [routerLink]="['/safe-route']" [queryParams]="{ from: selectedLocalityName, to: 'T. Nagar' }" class="btn btn-secondary btn-sm" style="width: 100%;">
+              <a [routerLink]="['/safe-route']" [queryParams]="{ from: selectedLocalityName, to: 'Bandra-Kurla Complex (BKC)' }" class="btn btn-secondary btn-sm" style="width: 100%;">
                 Find Safe Evacuation Route from {{ selectedLocalityName }} →
               </a>
             </div>
@@ -232,9 +232,9 @@ interface ForecastTimelineStep {
       } @else {
         <app-empty-state
           title="Location Not Found"
-          description="We could not find flood analysis data for the specified query. Try searching for Velachery, Guindy, T. Nagar, or Adyar."
-          actionLabel="Reset to Velachery"
-          (action)="selectQuickLocation('Velachery')"
+          description="We could not find flood analysis data for the specified query. Try searching for Kurla, Hindmata, Andheri, or Sion."
+          actionLabel="Reset to Kurla"
+          (action)="selectQuickLocation('Kurla')"
         ></app-empty-state>
       }
     </div>
@@ -531,20 +531,20 @@ interface ForecastTimelineStep {
   `]
 })
 export class LocationRiskComponent implements OnInit {
-  searchQuery = 'Velachery';
-  selectedLocalityName = 'Velachery';
+  searchQuery = 'Kurla';
+  selectedLocalityName = 'Kurla';
   loading = false;
   zoneData: FloodZone | null = null;
 
   readonly quickLocations = [
-    'Velachery',
-    'Guindy',
-    'T. Nagar',
-    'Adyar',
-    'Saidapet',
-    'Mylapore',
-    'Tambaram',
-    'Perungudi'
+    'Kurla',
+    'Hindmata',
+    'Andheri',
+    'Sion',
+    'Bandra',
+    'Chembur',
+    'Malad',
+    'Dadar'
   ];
 
   forecastTimeline: ForecastTimelineStep[] = [];

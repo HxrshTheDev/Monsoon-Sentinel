@@ -46,7 +46,7 @@ export class DnoService {
   }
 
   /**
-   * Retrieves list of the 30 prepared Chennai storm events in the library.
+   * Retrieves list of the prepared Mumbai storm events in the library.
    */
   getEvents(): Observable<DNOEventsResponse> {
     return this.http.get<DNOEventsResponse>(`${this.baseUrl}/api/v1/dno/events`).pipe(
@@ -54,7 +54,7 @@ export class DnoService {
         this.availableEvents.set(eventsData);
       }),
       catchError(err => {
-        this.errorMessage.set('Failed to load prepared Chennai storm library.');
+        this.errorMessage.set('Failed to load prepared Mumbai storm library.');
         return throwError(() => err);
       })
     );
