@@ -55,6 +55,14 @@ htmlcov/
 *~
 .DS_Store
 
+# Angular / frontend build & cache
+Frontend/.angular/
+Frontend/dist/
+Frontend/node_modules/
+node_modules/
+.angular/
+dist/
+
 # Large datasets, rasters, raw heavy dumps (preserve verified processed test fixtures)
 data/raw/
 *.tif

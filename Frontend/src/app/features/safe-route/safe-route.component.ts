@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
@@ -17,7 +17,8 @@ import { environment } from '../../../environments/environment';
   imports: [
     CommonModule,
     FormsModule,
-    LoadingStateComponent
+    LoadingStateComponent,
+    DecimalPipe
   ],
   template: `
     <div class="safe-route-page">
@@ -29,7 +30,7 @@ import { environment } from '../../../environments/environment';
               <h2 class="page-title">Safe Mobility & Route Planner</h2>
               <span class="badge-role">Flood-Avoidance Engine</span>
             </div>
-            <p class="page-sub">Calculates optimal evacuation and transit paths avoiding inundated road corridors</p>
+            <p class="page-sub">Prototype arterial routing with flood-susceptibility penalties (curated BMC corridors — not a full city OSM network)</p>
           </div>
         </div>
 
@@ -140,41 +141,43 @@ import { environment } from '../../../environments/environment';
             <div class="route-map-legend">
               <div class="legend-row">
                 <span class="legend-line route-safe-line"></span>
-                <span>Recommended Safer Route</span>
+                <span>Safer route (selected emphasis)</span>
               </div>
-              <div class="legend-row">
-                <span class="legend-line route-alt-line"></span>
-                <span>Higher-Risk Alternative</span>
-              </div>
+              @if (routePlan?.alternativeRoute) {
+                <div class="legend-row">
+                  <span class="legend-line route-alt-line"></span>
+                  <span>Higher-risk alternative</span>
+                </div>
+              }
               <div class="legend-row">
                 <span class="hazard-dot"></span>
-                <span>Flood Hazard</span>
-              </div>
-              <div class="legend-row">
-                <span style="font-size: 13px;">🏥</span>
-                <span>Hospital POI</span>
-              </div>
-              <div class="legend-row">
-                <span style="font-size: 13px;">🚒</span>
-                <span>Fire & Rescue Station</span>
+                <span>High-susceptibility edge</span>
               </div>
             </div>
           </div>
+          @if (routeError) {
+            <div class="map-error-banner">{{ routeError }}</div>
+          }
         </div>
 
         <!-- Route Comparison Sidebar -->
         <div class="comparison-column">
           @if (loading) {
-            <app-loading-state message="Evaluating roadway water levels & calculating safe paths..."></app-loading-state>
+            <app-loading-state message="Evaluating arterial susceptibility & calculating network paths..."></app-loading-state>
           } @else if (routePlan) {
             <!-- Card 1: Recommended Safe Route -->
-            <div class="card route-card recommended-card">
+            <button
+              type="button"
+              class="card route-card recommended-card selectable"
+              [class.selected]="selectedRouteId === routePlan.recommendedRoute.id"
+              (click)="selectRoute(routePlan.recommendedRoute.id)"
+            >
               <div class="route-card-top">
                 <div class="rec-badge">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
-                  RECOMMENDED SAFE ROUTE
+                  SAFER ROUTE
                 </div>
                 <span class="safety-score font-mono status-safe">
                   {{ routePlan.recommendedRoute.safetyScore }}% SAFE
@@ -194,58 +197,76 @@ import { environment } from '../../../environments/environment';
                   <span class="r-val font-mono">{{ routePlan.recommendedRoute.etaMinutes }} min</span>
                 </div>
                 <div class="r-metric">
-                  <span class="r-lbl">Flood Risk</span>
-                  <span class="badge status-safe">LOW</span>
+                  <span class="r-lbl">Risk score</span>
+                  <span class="r-val font-mono">{{ (routePlan.recommendedRoute.riskExposureScore ?? 0) | number:'1.2-2' }}</span>
                 </div>
                 <div class="r-metric">
-                  <span class="r-lbl">Hazards Avoided</span>
-                  <span class="r-val font-mono text-safe">{{ routePlan.recommendedRoute.floodPointsAvoided }}</span>
+                  <span class="r-lbl">High-risk edges</span>
+                  <span class="r-val font-mono text-safe">{{ routePlan.recommendedRoute.highRiskEdgeCount ?? routePlan.recommendedRoute.floodPointsAvoided }}</span>
                 </div>
               </div>
-            </div>
+            </button>
 
-            <!-- Card 2: Faster Alternative Route -->
-            <div class="card route-card alternative-card">
-              <div class="route-card-top">
-                <span class="alt-badge">HIGHER-RISK ALTERNATIVE</span>
-                <span class="safety-score font-mono status-unsafe">
-                  {{ routePlan.alternativeRoute.safetyScore }}% SAFE
-                </span>
+            <!-- Card 2: Alternative (only when backend returns a distinct path) -->
+            @if (routePlan.alternativeRoute; as alt) {
+              <button
+                type="button"
+                class="card route-card alternative-card selectable"
+                [class.selected]="selectedRouteId === alt.id"
+                (click)="selectRoute(alt.id)"
+              >
+                <div class="route-card-top">
+                  <span class="alt-badge">HIGHER-RISK ALTERNATIVE</span>
+                  <span class="safety-score font-mono status-unsafe">
+                    {{ alt.safetyScore }}% SAFE
+                  </span>
+                </div>
+
+                <h4 class="route-name">{{ alt.name }}</h4>
+                <p class="route-notes">{{ alt.notes }}</p>
+
+                <div class="route-metrics-row">
+                  <div class="r-metric">
+                    <span class="r-lbl">Distance</span>
+                    <span class="r-val font-mono">{{ alt.distanceKm }} km</span>
+                  </div>
+                  <div class="r-metric">
+                    <span class="r-lbl">Est. Time</span>
+                    <span class="r-val font-mono">{{ alt.etaMinutes }} min</span>
+                  </div>
+                  <div class="r-metric">
+                    <span class="r-lbl">Risk score</span>
+                    <span class="r-val font-mono">{{ (alt.riskExposureScore ?? 0) | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="r-metric">
+                    <span class="r-lbl">Exposure</span>
+                    <span class="badge status-unsafe">{{ alt.hazardExposure }}</span>
+                  </div>
+                </div>
+
+                <div class="alternative-disclaimer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                  <span>
+                    Trade-off uses backend distance, time, and length-weighted susceptibility — not frontend estimates.
+                  </span>
+                </div>
+              </button>
+            } @else {
+              <div class="card route-card alt-unavailable">
+                <span class="alt-badge">NO DISTINCT ALTERNATIVE</span>
+                <p class="route-notes">
+                  {{ routePlan.alternativeUnavailableReason || 'Only one feasible arterial corridor was found between these endpoints.' }}
+                </p>
               </div>
+            }
 
-              <h4 class="route-name">{{ routePlan.alternativeRoute.name }}</h4>
-              <p class="route-notes">{{ routePlan.alternativeRoute.notes }}</p>
-
-              <div class="route-metrics-row">
-                <div class="r-metric">
-                  <span class="r-lbl">Distance</span>
-                  <span class="r-val font-mono">{{ routePlan.alternativeRoute.distanceKm }} km</span>
-                </div>
-                <div class="r-metric">
-                  <span class="r-lbl">Est. Time</span>
-                  <span class="r-val font-mono">{{ routePlan.alternativeRoute.etaMinutes }} min</span>
-                </div>
-                <div class="r-metric">
-                  <span class="r-lbl">Flood Risk</span>
-                  <span class="badge status-unsafe">UNSAFE</span>
-                </div>
-                <div class="r-metric">
-                  <span class="r-lbl">Exposure</span>
-                  <span class="badge status-unsafe">{{ routePlan.alternativeRoute.hazardExposure }}</span>
-                </div>
-              </div>
-
-              <div class="alternative-disclaimer">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="8" x2="12" y2="12"></line>
-                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-                <span>
-                  The recommended route prioritizes lower flood risk and avoids deep water accumulation.
-                </span>
-              </div>
-            </div>
+            @if (routePlan.networkProvenance) {
+              <p class="provenance-note">{{ routePlan.networkProvenance }}</p>
+            }
 
             <!-- Active Hazards on Route -->
             <div class="card hazards-card">
@@ -507,11 +528,55 @@ import { environment } from '../../../environments/environment';
     .map-inner-wrap {
       position: relative;
       width: 100%;
-      height: 540px;
+      height: clamp(320px, 55vh, 640px);
+      min-height: 320px;
     }
     .leaflet-map-canvas {
       width: 100%;
       height: 100%;
+      min-height: 320px;
+      z-index: 1;
+    }
+    .map-error-banner {
+      padding: 0.65rem 1rem;
+      background: rgba(239, 68, 68, 0.12);
+      color: #fecaca;
+      font-size: 0.8125rem;
+      border-top: 1px solid rgba(239, 68, 68, 0.35);
+    }
+    .selectable {
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      font: inherit;
+      color: inherit;
+    }
+    .selectable.selected {
+      outline: 2px solid #10b981;
+      outline-offset: 1px;
+    }
+    .alternative-card.selectable.selected {
+      outline-color: #f97316;
+    }
+    .alt-unavailable {
+      border-color: rgba(148, 163, 184, 0.35);
+      opacity: 0.95;
+    }
+    .provenance-note {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+      margin: 0;
+      padding: 0 0.25rem;
+    }
+    @media (max-width: 700px) {
+      .map-inner-wrap {
+        height: min(70vh, 520px);
+        min-height: 280px;
+      }
+      .route-metrics-row {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
     }
     .route-map-legend {
       position: absolute;
@@ -699,6 +764,8 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   vehicleType = 'car';
   presetRoutes: PresetRoute[] = [];
   routePlan: RoutePlanResult | null = null;
+  selectedRouteId: string | null = null;
+  routeError: string | null = null;
   loading = false;
   emergencyFacilities: any[] = [
     { id: 'FAC-HOSP-01', name: 'King Edward Memorial Hospital (KEM Hospital)', type: 'hospital', category: 'Level 1 Trauma Center', lat: 19.0028, lon: 72.8431, phone: '022-24107000' },
@@ -719,6 +786,8 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   private map?: L.Map;
   private routeLayersGroup = L.layerGroup();
   private emergencyLayersGroup = L.layerGroup();
+  private resizeObserver?: ResizeObserver;
+  private resizeHandler = () => this.map?.invalidateSize();
 
   constructor(
     private routingService: RoutingService,
@@ -759,8 +828,11 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    window.removeEventListener('resize', this.resizeHandler);
+    this.resizeObserver?.disconnect();
     if (this.map) {
       this.map.remove();
+      this.map = undefined;
     }
   }
 
@@ -771,10 +843,15 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initRouteMap(): void {
-    if (!this.routeMapCanvas) return;
+    if (!this.routeMapCanvas?.nativeElement) return;
+    if (this.map) {
+      this.map.remove();
+      this.map = undefined;
+    }
 
-    this.map = L.map(this.routeMapCanvas.nativeElement, {
-      center: [19.0760, 72.8777],
+    const el = this.routeMapCanvas.nativeElement as HTMLElement;
+    this.map = L.map(el, {
+      center: [environment.defaultMapCenter.lat, environment.defaultMapCenter.lon],
       zoom: 12,
       zoomControl: false,
       attributionControl: false
@@ -791,9 +868,23 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
     this.routeLayersGroup.addTo(this.map);
     this.renderEmergencyMarkers();
 
-    setTimeout(() => {
-      this.map?.invalidateSize();
-    }, 150);
+    window.addEventListener('resize', this.resizeHandler);
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.map?.invalidateSize({ animate: false });
+      });
+      this.resizeObserver.observe(el);
+    }
+
+    setTimeout(() => this.map?.invalidateSize(), 50);
+    setTimeout(() => this.map?.invalidateSize(), 300);
+  }
+
+  selectRoute(routeId: string): void {
+    this.selectedRouteId = routeId;
+    if (this.routePlan) {
+      this.renderRouteOnMap(this.routePlan);
+    }
   }
 
   targetEmergencyFacility(type: string): void {
@@ -853,14 +944,22 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
 
   calculateRoute(): void {
     this.loading = true;
+    this.routeError = null;
     this.routingService.calculateSafeRoute(this.sourceLocation, this.destinationLocation, this.vehicleType).subscribe({
       next: plan => {
         this.routePlan = plan;
+        this.selectedRouteId = plan.recommendedRoute.id;
         this.renderRouteOnMap(plan);
         this.loading = false;
+        setTimeout(() => this.map?.invalidateSize(), 80);
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
+        this.routePlan = null;
+        const detail = err?.error?.detail;
+        this.routeError = typeof detail === 'string'
+          ? detail
+          : 'Route calculation failed. Confirm the backend is reachable and endpoints are on the arterial network.';
       }
     });
   }
@@ -881,85 +980,97 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
   private renderRouteOnMap(plan: RoutePlanResult): void {
     if (!this.map) return;
     this.routeLayersGroup.clearLayers();
+    this.map.invalidateSize({ animate: false });
 
-    // 1. Recommended Safe Route (Solid green/safe)
-    const safePolyline = L.polyline(plan.recommendedRoute.pathCoordinates as any, {
+    const selectedId = this.selectedRouteId || plan.recommendedRoute.id;
+    const safeSelected = selectedId === plan.recommendedRoute.id;
+    const alt = plan.alternativeRoute;
+    const altSelected = !!alt && selectedId === alt.id;
+
+    // Draw alternative first (under), then safer on top — selected gets casing + heavier stroke
+    let altPolyline: L.Polyline | null = null;
+    if (alt?.pathCoordinates?.length) {
+      if (altSelected) {
+        this.routeLayersGroup.addLayer(L.polyline(alt.pathCoordinates as L.LatLngExpression[], {
+          color: '#7c2d12',
+          weight: 10,
+          opacity: 0.55,
+          interactive: false
+        }));
+      }
+      altPolyline = L.polyline(alt.pathCoordinates as L.LatLngExpression[], {
+        color: '#f97316',
+        weight: altSelected ? 7 : 4,
+        dashArray: altSelected ? undefined : '10, 8',
+        opacity: altSelected ? 0.95 : 0.65
+      });
+      altPolyline.bindTooltip(
+        `<strong>${alt.name}</strong><br/>${alt.distanceKm} km • ${alt.etaMinutes} min • risk ${alt.riskExposureScore ?? '—'}`
+      );
+      altPolyline.on('click', () => this.selectRoute(alt.id));
+      this.routeLayersGroup.addLayer(altPolyline);
+    }
+
+    if (safeSelected) {
+      this.routeLayersGroup.addLayer(L.polyline(plan.recommendedRoute.pathCoordinates as L.LatLngExpression[], {
+        color: '#064e3b',
+        weight: 10,
+        opacity: 0.5,
+        interactive: false
+      }));
+    }
+    const safePolyline = L.polyline(plan.recommendedRoute.pathCoordinates as L.LatLngExpression[], {
       color: '#10b981',
-      weight: 6,
-      opacity: 0.9
+      weight: safeSelected ? 7 : 4,
+      opacity: safeSelected ? 0.95 : 0.55
     });
-    safePolyline.bindTooltip(`
-      <strong>${plan.recommendedRoute.name}</strong><br/>
-      ${plan.recommendedRoute.distanceKm} km • ${plan.recommendedRoute.etaMinutes} min • Safety: ${plan.recommendedRoute.safetyScore}%
-    `);
+    safePolyline.bindTooltip(
+      `<strong>${plan.recommendedRoute.name}</strong><br/>` +
+      `${plan.recommendedRoute.distanceKm} km • ${plan.recommendedRoute.etaMinutes} min • risk ${plan.recommendedRoute.riskExposureScore ?? '—'}`
+    );
+    safePolyline.on('click', () => this.selectRoute(plan.recommendedRoute.id));
     this.routeLayersGroup.addLayer(safePolyline);
 
-    // 2. Alternative Route (Dashed orange/caution)
-    const altPolyline = L.polyline(plan.alternativeRoute.pathCoordinates as any, {
-      color: '#f97316',
-      weight: 5,
-      dashArray: '8, 8',
-      opacity: 0.75
-    });
-    altPolyline.bindTooltip(`
-      <strong>${plan.alternativeRoute.name}</strong><br/>
-      ${plan.alternativeRoute.distanceKm} km • ${plan.alternativeRoute.etaMinutes} min (Hazards Exposure: High)
-    `);
-    this.routeLayersGroup.addLayer(altPolyline);
-
-    // 3. Custom SVG Marker for Origin
     const originIcon = L.divIcon({
       className: 'custom-map-pin',
-      html: `
-        <div style="background-color: #10b981; border: 2px solid #ffffff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 11px;">
-          A
-        </div>
-      `,
+      html: `<div style="background-color: #10b981; border: 2px solid #ffffff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 11px;">A</div>`,
       iconSize: [26, 26],
       iconAnchor: [13, 13]
     });
-    const originMarker = L.marker(plan.sourceCoords as any, { icon: originIcon });
+    const originMarker = L.marker(plan.sourceCoords as L.LatLngExpression, { icon: originIcon });
     originMarker.bindTooltip(`<strong>Origin:</strong> ${plan.source}`);
     this.routeLayersGroup.addLayer(originMarker);
 
-    // 4. Custom SVG Marker for Destination
     const destIcon = L.divIcon({
       className: 'custom-map-pin',
-      html: `
-        <div style="background-color: #3b82f6; border: 2px solid #ffffff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 11px;">
-          B
-        </div>
-      `,
+      html: `<div style="background-color: #3b82f6; border: 2px solid #ffffff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 11px;">B</div>`,
       iconSize: [26, 26],
       iconAnchor: [13, 13]
     });
-    const destMarker = L.marker(plan.destCoords as any, { icon: destIcon });
+    const destMarker = L.marker(plan.destCoords as L.LatLngExpression, { icon: destIcon });
     destMarker.bindTooltip(`<strong>Destination:</strong> ${plan.destination}`);
     this.routeLayersGroup.addLayer(destMarker);
 
-    // 5. Hazard Markers (Underpass ponding)
-    plan.hazards.forEach(h => {
+    (plan.hazards || []).forEach(h => {
       const hazardIcon = L.divIcon({
         className: 'custom-map-pin',
-        html: `
-          <div style="background-color: #ef4444; border: 2px solid #ffffff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; box-shadow: 0 0 10px #ef4444;">
-            ⚠
-          </div>
-        `,
+        html: `<div style="background-color: #ef4444; border: 2px solid #ffffff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; box-shadow: 0 0 10px #ef4444;">⚠</div>`,
         iconSize: [24, 24],
         iconAnchor: [12, 12]
       });
-      const marker = L.marker(h.coordinates as any, { icon: hazardIcon });
-      marker.bindTooltip(`
-        <strong>${h.title}</strong><br/>
-        Depth: <strong>${h.waterDepthCm} cm</strong><br/>
-        Status: ${h.status}
-      `);
+      const marker = L.marker(h.coordinates as L.LatLngExpression, { icon: hazardIcon });
+      marker.bindTooltip(
+        `<strong>${h.title}</strong><br/>Status: ${h.status}<br/><em>Proxy susceptibility (depth unmeasured)</em>`
+      );
       this.routeLayersGroup.addLayer(marker);
     });
 
-    // Fit map bounds to routes
-    const bounds = safePolyline.getBounds();
-    this.map.fitBounds(bounds, { padding: [40, 40] });
+    const bounds = L.latLngBounds(plan.recommendedRoute.pathCoordinates as L.LatLngExpression[]);
+    bounds.extend(plan.sourceCoords as L.LatLngExpression);
+    bounds.extend(plan.destCoords as L.LatLngExpression);
+    if (altPolyline) {
+      bounds.extend(altPolyline.getBounds());
+    }
+    this.map.fitBounds(bounds.pad(0.12), { padding: [36, 36], maxZoom: 14 });
   }
 }

@@ -1,7 +1,12 @@
+import { resolveApiBaseUrl } from '../app/core/utils/api-base-url';
+
+const configuredApiBaseUrl = 'http://localhost:8000';
+
 export const environment = {
   production: false,
   useMockData: false,
-  apiBaseUrl: 'http://localhost:8000',
+  /** Prefer LAN-reachable host when the page is not on localhost. */
+  apiBaseUrl: resolveApiBaseUrl(configuredApiBaseUrl),
   appName: 'CityPulse',
   appSubtitle: 'Monsoon Sentinel — Greater Mumbai Flood Decision Support',
   sihProjectCode: 'SIH26085',

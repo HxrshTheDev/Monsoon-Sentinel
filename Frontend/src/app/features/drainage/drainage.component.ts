@@ -1135,7 +1135,7 @@ export class DrainageComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // High-contrast Dark Carto basemap
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_4s5y_1_1e7c1c7f9b42043537db27b8', {
       maxZoom: 18,
       subdomains: ['a', 'b', 'c'],
       attribution: '&copy; OpenStreetMap contributors &copy; CARTO'

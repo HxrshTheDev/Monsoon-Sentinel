@@ -1,7 +1,16 @@
+import { resolveApiBaseUrl } from '../app/core/utils/api-base-url';
+
+/**
+ * Production builds should set a reachable API host via build-time replacement
+ * or reverse proxy. Default remains loopback for local production builds;
+ * resolveApiBaseUrl rewrites the host when the SPA is opened from a LAN IP.
+ */
+const configuredApiBaseUrl = 'http://localhost:8000';
+
 export const environment = {
   production: true,
   useMockData: false,
-  apiBaseUrl: 'http://localhost:8000',
+  apiBaseUrl: resolveApiBaseUrl(configuredApiBaseUrl),
   appName: 'CityPulse',
   appSubtitle: 'Monsoon Sentinel — Greater Mumbai Flood Decision Support',
   sihProjectCode: 'SIH26085',
