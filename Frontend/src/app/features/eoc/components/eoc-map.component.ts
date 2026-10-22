@@ -482,9 +482,23 @@ export class EocMapComponent implements OnInit, OnDestroy {
     }
     const plan = this.store.safeRoute();
     if (plan && L_.emergencyRoutes) {
-      this.groups['route'].addLayer(L.polyline(plan.path.map((p) => [p.lat, p.lng] as [number, number]), {
+      const alternative = plan.alternativeRoute;
+      if (alternative) {
+        this.groups['route'].addLayer(L.polyline(
+          alternative.pathCoordinates.map(([lat, lon]) => [lat, lon] as [number, number]),
+          { color: '#fbbf24', weight: 3, dashArray: '4 8', opacity: 0.75 },
+        ).bindTooltip(
+          `<strong>${alternative.name}</strong><br/>${alternative.distanceKm} km · ETA ${alternative.etaMinutes} min · ${alternative.riskStatus} modeled risk`,
+          { sticky: true },
+        ));
+      }
+      const route = plan.recommendedRoute;
+      this.groups['route'].addLayer(L.polyline(route.pathCoordinates.map(([lat, lon]) => [lat, lon] as [number, number]), {
         color: '#22d3ee', weight: 4, dashArray: '10 8', opacity: 0.95,
-      }).bindTooltip(`<strong>${plan.name}</strong><br/>${plan.distanceKm} km · ETA ${plan.etaMin} min · max depth ${plan.maxDepthCm} cm`, { sticky: true }));
+      }).bindTooltip(
+        `<strong>${route.name}</strong><br/>${route.distanceKm} km · ETA ${route.etaMinutes} min · ${route.riskStatus} modeled risk`,
+        { sticky: true },
+      ));
     }
   }
 

@@ -333,6 +333,7 @@ const RESCUE_PATH = [
   { lat: 19.068, lng: 72.880 }, { lat: 19.076, lng: 72.8777 },
 ];
 
+/** Demo-only sample; EOC route requests use the FastAPI routing service. */
 export function planSafeRoute(vehicle: VehicleKind): SafeRoutePlan {
   const base = {
     CAR: { name: 'EEH → BKC Connector → Kurla Relief Corridor', distanceKm: 8.6, etaMin: 22, maxDepthCm: 10 },
@@ -340,7 +341,7 @@ export function planSafeRoute(vehicle: VehicleKind): SafeRoutePlan {
     TRUCK: { name: 'Eastern Freeway → SCLR Elevated Bypass', distanceKm: 11.2, etaMin: 28, maxDepthCm: 15 },
     RESCUE: { name: 'Emergency priority corridor (Elevated viaducts, min risk)', distanceKm: 6.8, etaMin: 14, maxDepthCm: 5 },
   }[vehicle];
-  return { vehicle, path: RESCUE_PATH, ...base };
+  return { vehicle, path: RESCUE_PATH, ...base, isDemo: true };
 }
 
 export const SIM_SHELTERS: Shelter[] = [

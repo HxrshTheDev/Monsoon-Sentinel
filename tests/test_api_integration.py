@@ -70,8 +70,15 @@ def test_safe_route_endpoint():
     assert res.status_code == 200
     data = res.json()
     assert "recommendedRoute" in data
-    assert data["recommendedRoute"]["safetyScore"] >= 50
-    assert len(data["recommendedRoute"]["pathCoordinates"]) >= 2
+    route = data["recommendedRoute"]
+    assert 0 <= route["safetyScore"] <= 100
+    assert route["riskStatus"] != "SAFE"
+    assert route["isSimulated"] is False
+    assert data["isSimulated"] is False
+    assert data["riskIsSimulated"] is True
+    assert route["pathCoordinates"][0] == data["sourceCoords"]
+    assert route["pathCoordinates"][-1] == data["destCoords"]
+    assert len(route["pathCoordinates"]) >= 2
 
 
 def test_preset_routes_endpoint():
@@ -138,4 +145,3 @@ def test_analytics_endpoints():
     report = res_report.json()
     assert "budget_comparison" in report
     assert len(report["limitations_and_assumptions"]) >= 2
-

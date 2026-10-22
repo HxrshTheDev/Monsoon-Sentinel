@@ -48,7 +48,16 @@ Raw downloads (when present) live under `backend/data/mumbai/raw/` (DEM cache, m
 
 ## 4. Road network
 
-The NetworkX graph is a **prototype arterial coverage** (manually curated WEH, EEH, Sea Link, subways, etc.). It is not a complete OSM road network and must not be presented as live traffic or official closures.
+**Source:** OpenStreetMap highway ways via the Overpass API (ODbL).  
+**Builder:** `python scripts/build_mumbai_road_network.py`  
+**Cache:** `data/processed/roads/mumbai_drive_network.json.gz` (+ `.meta.json`)  
+**Coverage:** Greater Mumbai bbox (`18.89–19.30 N`, `72.75–73.02 E`), arterial/collector classes by default (`motorway`…`tertiary` + link roads). Use `--full` to include residential/unclassified (larger download).  
+**Geometry:** Consecutive OSM node pairs only — no synthetic chords across Mahim Bay or other water. Bridges/tunnels follow OSM tags.  
+**Routing CRS:** lengths via haversine / edge `length_m`; map output `[lat, lon]` for Leaflet. Stored cache geometry is GeoJSON `[lon, lat]`.  
+**Flood-aware cost:** `edge_cost = length_m + length_m * RISK_PENALTY_FACTOR * risk^RISK_PENALTY_EXPONENT` (see `config.py`). Unknown risk uses `UNKNOWN_RISK_DEFAULT` (not treated as safe).  
+**Risk source:** Risk values are sampled along mapped edge geometry from the current XGBoost scenario susceptibility grid; they are not live water-depth or road-closure observations.  
+Route samples are at most 250 m apart and use the nearest grid centroid within 0.008 degrees; uncovered samples make that edge unknown and apply the configured conservative default.
+**Limitations:** Not live traffic; residential streets omitted unless `--full`; Overpass mirrors can fail — rebuild when the cache is missing.
 
 ---
 
