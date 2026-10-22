@@ -25,8 +25,8 @@ export class MockRoutingDataProvider extends RoutingDataProvider {
       return of(SEED_ROUTE_PLANS[reverseKey]).pipe(delay(300));
     }
 
-    // Default fallback to Chennai Central -> Airport plan with updated labels
-    const base = SEED_ROUTE_PLANS['Central_Airport'] || SEED_ROUTE_PLAN;
+    // Default fallback to CSMT Fort -> CSMIA Airport plan with updated labels
+    const base = SEED_ROUTE_PLANS['CSMT_CSMIA'] || SEED_ROUTE_PLANS['Central_Airport'] || SEED_ROUTE_PLAN;
     return of({
       ...base,
       source,

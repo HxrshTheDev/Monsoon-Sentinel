@@ -28,7 +28,7 @@ import { EocDataService } from '../services/eoc-data.service';
           {{ store.dataMode() === 'LIVE' ? '● LIVE DATA' : '◐ DEMO SIMULATION' }}
         </span>
         <span class="clock">{{ store.now() | date:'HH:mm:ss' }} IST</span>
-        <span class="loc">📍 CHENNAI<span>Greater Chennai Corporation</span></span>
+        <span class="loc">📍 MUMBAI<span>Brihanmumbai Municipal Corporation</span></span>
       </div>
     </header>
   `,

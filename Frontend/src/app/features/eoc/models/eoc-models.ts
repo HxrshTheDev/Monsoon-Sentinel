@@ -1,6 +1,6 @@
 /**
  * FloodWatch AI — EOC Command Center typed data contracts.
- * Chennai (GCC) is the fixed operational geography.
+ * Mumbai (BMC / MCGM) is the fixed operational geography.
  *
  * These interfaces mirror the intended FastAPI responses so the
  * simulation layer can be swapped for real backends without UI changes.
@@ -71,7 +71,7 @@ export interface DrainageNode extends LatLng {
   waterLevelM: number;
   surchargePct: number;
   status: DrainageStatus;
-  /** True when this node is illustrative demo geometry, not confirmed GCC infrastructure. */
+  /** True when this node is illustrative demo geometry, not confirmed BMC infrastructure. */
   isDemo: boolean;
   series: Array<{ horizon: HorizonKey; surchargePct: number; status: DrainageStatus }>;
 }
@@ -172,7 +172,7 @@ export interface Shelter extends LatLng {
   occupied: number;
 }
 
-/** Observed radar rain cell (IMD/GCC telemetry). */
+/** Observed radar rain cell (IMD/BMC telemetry). */
 export interface RadarCell {
   center: [number, number];
   radiusMeters: number;
@@ -182,7 +182,7 @@ export interface RadarCell {
   source: string;
 }
 
-/** Drainage corridor geometry (GCC GIS stormwater database). */
+/** Drainage corridor geometry (BMC GIS stormwater database). */
 export interface Waterway {
   id: string;
   name: string;

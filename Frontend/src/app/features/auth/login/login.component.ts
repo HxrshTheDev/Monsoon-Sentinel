@@ -29,7 +29,7 @@ import { ThemeService } from '../../../core/services/theme.service';
         <div class="nav-right">
           <div class="eoc-badge">
             <span class="live-dot"></span>
-            <span>GCC Disaster Management</span>
+            <span>BMC Disaster Management</span>
           </div>
 
           <button
@@ -73,7 +73,7 @@ import { ThemeService } from '../../../core/services/theme.service';
               </svg>
             </div>
             <h1 class="brand-heading">FloodWatch <span class="accent-ai">AI</span></h1>
-            <p class="brand-subheading">Urban Flood Nowcasting & Safe Mobility System — Greater Chennai</p>
+            <p class="brand-subheading">Urban Flood Nowcasting & Safe Mobility System — Greater Mumbai</p>
           </div>
 
           <!-- Glass Form Card -->
@@ -212,7 +212,7 @@ import { ThemeService } from '../../../core/services/theme.service';
                   <div class="demo-icon-wrap gov-icon">🏛️</div>
                   <div class="demo-texts">
                     <span class="demo-title">EOC Officer</span>
-                    <span class="demo-hint">GCC Ripon Building</span>
+                    <span class="demo-hint">BMC Head Office Fort</span>
                   </div>
                 </button>
 
@@ -233,7 +233,7 @@ import { ThemeService } from '../../../core/services/theme.service';
 
             <!-- Footer Link -->
             <div class="auth-card-footer">
-              <span>New to FloodWatch Chennai?</span>
+              <span>New to FloodWatch Mumbai?</span>
               <a routerLink="/register" class="register-anchor">Register as Citizen →</a>
             </div>
           </div>
@@ -244,7 +244,7 @@ import { ThemeService } from '../../../core/services/theme.service';
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
-            <span>Greater Chennai Corporation • Disaster Management Cell</span>
+            <span>Brihanmumbai Municipal Corporation • Disaster Management Cell</span>
           </footer>
         </div>
       </main>
@@ -816,11 +816,11 @@ export class LoginComponent {
       this.loginId = 'rohan.citizen@gmail.com';
       this.password = 'Citizen@2026';
     } else if (role === 'gov') {
-      this.loginId = 'eoc.officer@chennai.gov.in';
-      this.password = 'Gov@Chennai2026';
+      this.loginId = 'eoc.officer@mcgm.gov.in';
+      this.password = 'Gov@Mumbai2026';
     } else if (role === 'admin') {
-      this.loginId = 'admin@floodwatch.chennai.gov.in';
-      this.password = 'Admin@Chennai2026';
+      this.loginId = 'admin@floodwatch.mcgm.gov.in';
+      this.password = 'Admin@Mumbai2026';
     }
   }
 

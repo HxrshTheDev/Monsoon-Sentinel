@@ -43,7 +43,7 @@ import { MapLegendComponent } from '../../shared/components/map-legend/map-legen
             </svg>
             <input
               type="text"
-              placeholder="Search locality (e.g. Velachery, Adyar, T. Nagar)..."
+              placeholder="Search locality (e.g. Kurla, Hindmata, Andheri, Sion)..."
               [(ngModel)]="searchQuery"
               (keyup.enter)="searchLocality()"
               class="search-input"
@@ -596,14 +596,14 @@ export class FloodMapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.roadGroup.clearLayers();
     if (!this.layers.roads) return;
 
-    // Greater Chennai Arterial Road Network & Monitored Underpasses
+    // Greater Mumbai Arterial Road Network & Monitored Underpasses
     const roadLines = [
-      { coords: [[13.0030, 80.2010], [13.0150, 80.2150], [13.0350, 80.2300], [13.0600, 80.2500]], status: 'SAFE', label: 'Anna Salai / Kathipara Elevated Flyover Corridor' },
-      { coords: [[12.9250, 80.1100], [12.9650, 80.1500], [13.0067, 80.2026]], status: 'SAFE', label: 'Grand Southern Trunk (GST) Road' },
-      { coords: [[12.9850, 80.2450], [12.9500, 80.2400], [12.9010, 80.2280]], status: 'SAFE', label: 'Rajiv Gandhi Salai (OMR IT Expressway)' },
-      { coords: [[13.1180, 80.2610], [13.1190, 80.2620]], status: 'UNSAFE', label: 'Vyasarpadi Railway Subway (Susceptible Depression)' },
-      { coords: [[13.1090, 80.2650], [13.1105, 80.2660]], status: 'UNSAFE', label: 'Ganesapuram Railway Underpass (Susceptible Grade)' },
-      { coords: [[13.0360, 80.2280], [13.0370, 80.2290]], status: 'CAUTION', label: 'Madley Subway T. Nagar (Low Clearance)' }
+      { coords: [[19.0544, 72.8402], [19.0880, 72.8420], [19.1197, 72.8464], [19.1860, 72.8485], [19.2300, 72.8570]], status: 'SAFE', label: 'Western Express Highway (WEH) Spine' },
+      { coords: [[18.9440, 72.8340], [18.9800, 72.8550], [19.0250, 72.8760], [19.0620, 72.9000]], status: 'SAFE', label: 'Eastern Freeway Elevated Viaduct Corridor' },
+      { coords: [[19.0080, 72.8150], [19.0350, 72.8180], [19.0544, 72.8402]], status: 'SAFE', label: 'Bandra-Worli Sea Link & Coastal Link' },
+      { coords: [[19.1180, 72.8450], [19.1210, 72.8480]], status: 'UNSAFE', label: 'Andheri Subway Rail Underpass' },
+      { coords: [[19.0860, 72.8400], [19.0890, 72.8430]], status: 'UNSAFE', label: 'Milan Subway Low-Lying Underpass (Santacruz)' },
+      { coords: [[19.0060, 72.8410], [19.0100, 72.8450]], status: 'CAUTION', label: 'Hindmata Dr. Ambedkar Road Depression' }
     ];
 
     roadLines.forEach(r => {
@@ -623,11 +623,12 @@ export class FloodMapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.drainageGroup.clearLayers();
     if (!this.layers.drainage) return;
 
-    // Greater Chennai Surface Water Channels (Adyar, Cooum, Buckingham Canal)
+    // Greater Mumbai Surface Water Channels (Mithi, Oshiwara, Dahisar, Poisar)
     const surfaceRivers = [
-      { coords: [[12.9850, 80.0500], [12.9980, 80.1200], [13.0080, 80.1800], [13.0110, 80.2200], [13.0125, 80.2500], [13.0090, 80.2780]], label: 'Adyar River Channel (GCC Basin GIS)' },
-      { coords: [[13.0720, 80.1400], [13.0740, 80.1800], [13.0750, 80.2200], [13.0760, 80.2550], [13.0690, 80.2850]], label: 'Cooum River Channel (GCC Basin GIS)' },
-      { coords: [[13.1500, 80.2950], [13.1000, 80.2900], [13.0500, 80.2750], [13.0000, 80.2550], [12.9500, 80.2500], [12.8700, 80.2450]], label: 'Buckingham Canal Navigation Corridor' }
+      { coords: [[19.1450, 72.9050], [19.1100, 72.8850], [19.0700, 72.8700], [19.0500, 72.8400]], label: 'Mithi River Primary Channel (Vihar Lake to Mahim Bay)' },
+      { coords: [[19.1550, 72.8750], [19.1500, 72.8500], [19.1450, 72.8250]], label: 'Oshiwara River Channel (Aarey to Arabian Sea)' },
+      { coords: [[19.2350, 72.8900], [19.2450, 72.8650], [19.2500, 72.8400]], label: 'Dahisar River Channel (National Park to Manori Creek)' },
+      { coords: [[19.2050, 72.8750], [19.2100, 72.8500], [19.2150, 72.8250]], label: 'Poisar River Channel (Sanjay Gandhi NP to Marve Creek)' }
     ];
 
     surfaceRivers.forEach(river => {
@@ -645,11 +646,12 @@ export class FloodMapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rainfallGroup.clearLayers();
     if (!this.layers.rainfall) return;
 
-    // Real IMD & GCC Automated Weather Station (AWS) Cells
+    // Real IMD & BMC Automated Weather Station (AWS) Cells
     const radarCells = [
-      { center: [12.9941, 80.1807], radius: 3500, color: '#ef4444', label: 'Chennai Airport Meenambakkam AWS (24.5 mm/hr)' },
-      { center: [13.0626, 80.2425], radius: 2800, color: '#f97316', label: 'Nungambakkam Regional Met Center (22.0 mm/hr)' },
-      { center: [13.0117, 80.0575], radius: 4000, color: '#f59e0b', label: 'Chembarambakkam Catchment Station (28.0 mm/hr)' }
+      { center: [19.0880, 72.8420], radius: 3500, color: '#ef4444', label: 'Santacruz IMD Observatory AWS (32.5 mm/hr)' },
+      { center: [18.8990, 72.8080], radius: 2800, color: '#f97316', label: 'Colaba IMD Coastal Observatory (24.0 mm/hr)' },
+      { center: [18.9440, 72.8340], radius: 3200, color: '#f59e0b', label: 'BMC Disaster Management HQ AWS (28.0 mm/hr)' },
+      { center: [19.1250, 72.9050], radius: 3000, color: '#f59e0b', label: 'Powai Catchment Station (29.5 mm/hr)' }
     ];
 
     radarCells.forEach(c => {

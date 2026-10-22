@@ -77,9 +77,9 @@ export interface HydraulicInspection {
       <div class="drainage-header">
         <div>
           <div class="header-badge-row">
-            <h1 class="page-title">Greater Chennai Drainage Network & Hydraulic Modeling</h1>
+            <h1 class="page-title">Greater Mumbai Drainage Network & Hydraulic Modeling (BRIMSTOWAD)</h1>
             <span class="badge-status-3d">PHYSICAL HYDRAULICS</span>
-            <span class="badge-crs">UTM 44N (MSL Datum)</span>
+            <span class="badge-crs">UTM 43N (MSL Datum)</span>
           </div>
           <p class="page-subtitle">
             Authentic node-and-conduit mapping with real DEM elevations, Manning conveyance capacity, and Rational method surcharge prediction.
@@ -363,7 +363,7 @@ export interface HydraulicInspection {
               <h3>Select a Drainage Conduit</h3>
               <p>Click any conduit line on the map or 3D viewport to inspect its Manning conveyance capacity and surface overflow risk.</p>
               <button class="btn-select-default" (click)="selectDefaultPipe()">
-                Inspect Velachery Macro Trunk →
+                Inspect Mithi River BKC Reach →
               </button>
             </div>
           }
@@ -885,43 +885,41 @@ export class DrainageComponent implements OnInit, AfterViewInit, OnDestroy {
 
   viewMode: 'GIS_MAP' | '3D_ISOMETRIC' = 'GIS_MAP';
 
-  // Authentic Greater Chennai Drainage Graph (embedded default ensures instant rendering)
+  // Authentic Greater Mumbai Drainage Graph (BRIMSTOWAD)
   nodes: DrainageNode3D[] = [
-    { id: 'NODE-ADYAR-01', name: 'Manapakkam / Nandambakkam Inflow', type: 'JUNCTION', basin: 'Adyar Basin', lat: 13.0080, lon: 80.1800, surface_elevation_m: 12.4, invert_elevation_m: 8.8, depth_m: 3.6, description: 'Upstream river junction capturing runoff from Porur' },
-    { id: 'NODE-ADYAR-02', name: 'Guindy / Saidapet Gauging Node', type: 'JUNCTION', basin: 'Adyar Basin', lat: 13.0110, lon: 80.2200, surface_elevation_m: 8.2, invert_elevation_m: 5.0, depth_m: 3.2, description: 'Saidapet causeway & SWD trunk confluence' },
-    { id: 'NODE-ADYAR-03', name: 'Kotturpuram River Bend Chamber', type: 'JUNCTION', basin: 'Adyar Basin', lat: 13.0125, lon: 80.2500, surface_elevation_m: 5.1, invert_elevation_m: 2.2, depth_m: 2.9, description: 'Bottleneck at Kotturpuram low-lying loop' },
-    { id: 'NODE-ADYAR-OUTFALL', name: 'Adyar Estuary Outfall (Bay of Bengal)', type: 'OUTFALL', basin: 'Adyar Basin', lat: 13.0090, lon: 80.2780, surface_elevation_m: 2.1, invert_elevation_m: 0.0, depth_m: 2.1, description: 'Tidal discharge mouth into the Bay of Bengal' },
-    { id: 'NODE-VELACHERY-01', name: 'Velachery Main Lake Inlet Sump', type: 'INLET_SUMP', basin: 'South SWD Basin', lat: 12.9750, lon: 80.2150, surface_elevation_m: 6.8, invert_elevation_m: 4.5, depth_m: 2.3, description: 'Urban runoff collection from residential streets' },
-    { id: 'NODE-VELACHERY-02', name: 'Velachery Bypass Macro Junction', type: 'JUNCTION', basin: 'South SWD Basin', lat: 12.9820, lon: 80.2230, surface_elevation_m: 5.5, invert_elevation_m: 3.4, depth_m: 2.1, description: 'High-density concrete box drain interceptor' },
-    { id: 'NODE-OKKIUM-01', name: 'Okkium Madavu Macro Canal Intake', type: 'JUNCTION', basin: 'Pallikaranai Basin', lat: 12.9400, lon: 80.2280, surface_elevation_m: 4.2, invert_elevation_m: 1.8, depth_m: 2.4, description: 'Major surplus discharge conduit to Buckingham Canal' },
-    { id: 'NODE-COOUM-01', name: 'Koyambedu / Aminjikarai Confluence', type: 'JUNCTION', basin: 'Cooum Basin', lat: 13.0740, lon: 80.2000, surface_elevation_m: 11.0, invert_elevation_m: 7.6, depth_m: 3.4, description: 'Central catchment drain receiver' },
-    { id: 'NODE-COOUM-02', name: 'Chetpet / Egmore River Corridor', type: 'JUNCTION', basin: 'Cooum Basin', lat: 13.0760, lon: 80.2550, surface_elevation_m: 6.4, invert_elevation_m: 3.2, depth_m: 3.2, description: 'Railway culvert and SWD arterial confluence' },
-    { id: 'NODE-COOUM-OUTFALL', name: 'Cooum River Napier Bridge Outfall', type: 'OUTFALL', basin: 'Cooum Basin', lat: 13.0690, lon: 80.2850, surface_elevation_m: 2.2, invert_elevation_m: 0.0, depth_m: 2.2, description: 'Marina Beach ocean outfall with tidal gates' },
-    { id: 'NODE-TNAGAR-01', name: 'Panagal Park / Usman Road Drain', type: 'INLET_SUMP', basin: 'Central SWD', lat: 13.0380, lon: 80.2280, surface_elevation_m: 9.2, invert_elevation_m: 7.1, depth_m: 2.1, description: 'Commercial zone storm collector' },
-    { id: 'NODE-MAMBALAM-01', name: 'Mambalam Canal - Nandanam Outfall', type: 'JUNCTION', basin: 'Central SWD', lat: 13.0250, lon: 80.2380, surface_elevation_m: 6.5, invert_elevation_m: 4.1, depth_m: 2.4, description: 'Discharges into Adyar River' },
-    { id: 'NODE-BUCK-NORTH', name: 'Buckingham Canal - Basin Bridge', type: 'JUNCTION', basin: 'Tidal Corridor', lat: 13.1000, lon: 80.2850, surface_elevation_m: 3.8, invert_elevation_m: 1.1, depth_m: 2.7, description: 'North Chennai tidal canal lock' },
-    { id: 'NODE-BUCK-MID', name: 'Buckingham Canal - Triplicane Sluice', type: 'JUNCTION', basin: 'Tidal Corridor', lat: 13.0500, lon: 80.2750, surface_elevation_m: 3.1, invert_elevation_m: 0.8, depth_m: 2.3, description: 'Tidal regulator separating Cooum and Adyar catchments' },
-    { id: 'NODE-BUCK-SOUTH', name: 'Buckingham Canal - Sholinganallur', type: 'JUNCTION', basin: 'Tidal Corridor', lat: 12.9500, lon: 80.2550, surface_elevation_m: 2.9, invert_elevation_m: 0.5, depth_m: 2.4, description: 'OMR coastal IT corridor tidal canal' },
-    { id: 'NODE-OTTERI-01', name: 'Otteri Nallah - Anna Nagar East', type: 'INLET_SUMP', basin: 'North SWD Basin', lat: 13.0900, lon: 80.2200, surface_elevation_m: 10.5, invert_elevation_m: 8.0, depth_m: 2.5, description: 'Upstream masonry channel draining Kilpauk' },
-    { id: 'NODE-OTTERI-02', name: 'Otteri Nallah - Perambur / Vyasarpadi', type: 'JUNCTION', basin: 'North SWD Basin', lat: 13.1100, lon: 80.2500, surface_elevation_m: 5.8, invert_elevation_m: 3.2, depth_m: 2.6, description: 'Chronic subway interceptor' },
-    { id: 'NODE-KOSASTHALAIYAR-OUTFALL', name: 'Ennore Creek / Kosasthalaiyar Outfall', type: 'OUTFALL', basin: 'North River Basin', lat: 13.2250, lon: 80.3200, surface_elevation_m: 2.0, invert_elevation_m: 0.0, depth_m: 2.0, description: 'Primary northern mega-basin ocean outfall' }
+    { id: 'NODE-MITHI-01', name: 'Vihar Lake Overflow Sluice', type: 'INLET_SUMP', basin: 'Mithi River Basin', lat: 19.1450, lon: 72.9050, surface_elevation_m: 24.5, invert_elevation_m: 21.0, depth_m: 3.5, description: 'Vihar Lake natural overflow channel and headwaters of Mithi River' },
+    { id: 'NODE-MITHI-02', name: 'Powai - Saki Naka Confluence', type: 'JUNCTION', basin: 'Mithi River Basin', lat: 19.1100, lon: 72.8850, surface_elevation_m: 14.2, invert_elevation_m: 10.5, depth_m: 3.7, description: 'Industrial stormwater collector and airport perimeter channel' },
+    { id: 'NODE-MITHI-03', name: 'Kurla CST Road Gauging Station', type: 'JUNCTION', basin: 'Mithi River Basin', lat: 19.0700, lon: 72.8700, surface_elevation_m: 5.8, invert_elevation_m: 2.4, depth_m: 3.4, description: 'Chronic constriction neck near Kurla railway terminus' },
+    { id: 'NODE-MITHI-04', name: 'BKC Dharavi Tidal Estuary', type: 'JUNCTION', basin: 'Mithi River Basin', lat: 19.0550, lon: 72.8550, surface_elevation_m: 3.5, invert_elevation_m: 0.8, depth_m: 2.7, description: 'Tidal mudflats confluence with Sion-Bandra link road culverts' },
+    { id: 'NODE-MITHI-OUTFALL', name: 'Mahim Causeway Bay Outfall', type: 'OUTFALL', basin: 'Mithi River Basin', lat: 19.0400, lon: 72.8380, surface_elevation_m: 2.0, invert_elevation_m: 0.0, depth_m: 2.0, description: 'Mahim Bay ocean outfall with BRIMSTOWAD tidal flap gates' },
+    { id: 'NODE-HINDMATA-01', name: 'Hindmata Bowl Storm Sump', type: 'INLET_SUMP', basin: 'Island City Central', lat: 19.0080, lon: 72.8430, surface_elevation_m: 2.8, invert_elevation_m: 0.5, depth_m: 2.3, description: 'Saucer depression interceptor connected to underground holding tanks' },
+    { id: 'NODE-BRITANNIA-PUMP', name: 'Britannia Stormwater Pumping Station', type: 'JUNCTION', basin: 'BRIMSTOWAD South', lat: 18.9720, lon: 72.8480, surface_elevation_m: 3.2, invert_elevation_m: 0.4, depth_m: 2.8, description: 'Reay Road high-capacity dewatering station (6 x 6000 m3/h pumps)' },
+    { id: 'NODE-BRITANNIA-OUTFALL', name: 'Reay Road Harbour Outfall', type: 'OUTFALL', basin: 'BRIMSTOWAD South', lat: 18.9680, lon: 72.8550, surface_elevation_m: 1.8, invert_elevation_m: 0.0, depth_m: 1.8, description: 'Direct ocean discharge into Mumbai Harbour' },
+    { id: 'NODE-LOVEGROVE-PUMP', name: 'Lovegrove Stormwater Pumping Station', type: 'JUNCTION', basin: 'BRIMSTOWAD West', lat: 19.0020, lon: 72.8180, surface_elevation_m: 2.5, invert_elevation_m: 0.2, depth_m: 2.3, description: 'Worli Naka pumping station discharging to Arabian Sea' },
+    { id: 'NODE-LOVEGROVE-OUTFALL', name: 'Worli Sea Face Marine Outfall', type: 'OUTFALL', basin: 'BRIMSTOWAD West', lat: 19.0060, lon: 72.8120, surface_elevation_m: 1.5, invert_elevation_m: 0.0, depth_m: 1.5, description: 'High-volume marine outfall with anti-backflow sluice gates' },
+    { id: 'NODE-ANDHERI-SUBWAY', name: 'Andheri Subway Inundation Sump', type: 'INLET_SUMP', basin: 'Western Suburbs Mid', lat: 19.1197, lon: 72.8464, surface_elevation_m: 2.4, invert_elevation_m: 0.1, depth_m: 2.3, description: 'Railway underpass low point equipped with continuous dewatering' },
+    { id: 'NODE-MOGRA-01', name: 'Mogra Nullah Macro Drain', type: 'MACRO_CANAL', basin: 'Western Suburbs Mid', lat: 19.1250, lon: 72.8350, surface_elevation_m: 4.8, invert_elevation_m: 2.2, depth_m: 2.6, description: 'Open stormwater macro collector draining Andheri West' },
+    { id: 'NODE-OSHIWARA-01', name: 'Aarey Colony Western Drainage Reach', type: 'JUNCTION', basin: 'Oshiwara Basin', lat: 19.1550, lon: 72.8750, surface_elevation_m: 18.5, invert_elevation_m: 15.0, depth_m: 3.5, description: 'Forested runoff collector into Oshiwara River' },
+    { id: 'NODE-OSHIWARA-OUTFALL', name: 'Oshiwara River Malad Creek Outfall', type: 'OUTFALL', basin: 'Oshiwara Basin', lat: 19.1450, lon: 72.8250, surface_elevation_m: 2.1, invert_elevation_m: 0.0, depth_m: 2.1, description: 'Tidal discharge into Malad Creek and Arabian Sea' },
+    { id: 'NODE-POISAR-01', name: 'Kandivali Poisar River Gauging Point', type: 'JUNCTION', basin: 'Poisar Basin', lat: 19.2050, lon: 72.8550, surface_elevation_m: 8.5, invert_elevation_m: 5.5, depth_m: 3.0, description: 'Suburban macro drain intercepting SV Road runoff' },
+    { id: 'NODE-POISAR-OUTFALL', name: 'Poisar River Marve Creek Outfall', type: 'OUTFALL', basin: 'Poisar Basin', lat: 19.2150, lon: 72.8250, surface_elevation_m: 1.9, invert_elevation_m: 0.0, depth_m: 1.9, description: 'Ocean discharge at Marve Creek' },
+    { id: 'NODE-DAHISAR-01', name: 'Borivali National Park Stream Sump', type: 'INLET_SUMP', basin: 'Dahisar Basin', lat: 19.2350, lon: 72.8900, surface_elevation_m: 22.0, invert_elevation_m: 18.5, depth_m: 3.5, description: 'Sanjay Gandhi National Park pristine hillside stream inflow' },
+    { id: 'NODE-DAHISAR-OUTFALL', name: 'Dahisar River Manori Creek Outfall', type: 'OUTFALL', basin: 'Dahisar Basin', lat: 19.2500, lon: 72.8400, surface_elevation_m: 2.0, invert_elevation_m: 0.0, depth_m: 2.0, description: 'Northern boundary tidal estuary outfall' }
   ];
 
   edges: DrainageEdge3D[] = [
-    { id: 'PIPE-ADYAR-UPPER', name: 'Adyar River Upper Reach (Manapakkam)', type: 'RIVER_CHANNEL', source_node: 'NODE-ADYAR-01', target_node: 'NODE-ADYAR-02', length_m: 4350.0, width_m: 45.0, height_m: 3.8, shape: 'TRAPEZOIDAL', manning_n: 0.035, slope: 0.00087, manning_capacity_m3s: 245.0, catchment_area_ha: 3200.0, runoff_coeff: 0.72 },
-    { id: 'PIPE-ADYAR-MID', name: 'Adyar River Mid Reach (Saidapet - Kotturpuram)', type: 'RIVER_CHANNEL', source_node: 'NODE-ADYAR-02', target_node: 'NODE-ADYAR-03', length_m: 3100.0, width_m: 55.0, height_m: 3.5, shape: 'TRAPEZOIDAL', manning_n: 0.033, slope: 0.00090, manning_capacity_m3s: 285.0, catchment_area_ha: 2400.0, runoff_coeff: 0.80 },
-    { id: 'PIPE-ADYAR-LOWER', name: 'Adyar River Estuary to Bay of Bengal', type: 'RIVER_CHANNEL', source_node: 'NODE-ADYAR-03', target_node: 'NODE-ADYAR-OUTFALL', length_m: 2900.0, width_m: 80.0, height_m: 3.0, shape: 'TRAPEZOIDAL', manning_n: 0.030, slope: 0.00076, manning_capacity_m3s: 340.0, catchment_area_ha: 1800.0, runoff_coeff: 0.85 },
-    { id: 'PIPE-VEL-TRUNK-01', name: 'Velachery 100ft Road Macro Box Drain', type: 'STORM_WATER_DRAIN', source_node: 'NODE-VELACHERY-01', target_node: 'NODE-VELACHERY-02', length_m: 1250.0, width_m: 3.2, height_m: 2.1, shape: 'RECTANGULAR_BOX', manning_n: 0.015, slope: 0.00088, manning_capacity_m3s: 14.2, catchment_area_ha: 480.0, runoff_coeff: 0.88 },
-    { id: 'PIPE-VEL-TO-OKKIUM', name: 'Pallikaranai - Okkium Madavu Relief Canal', type: 'MACRO_CANAL', source_node: 'NODE-VELACHERY-02', target_node: 'NODE-OKKIUM-01', length_m: 4600.0, width_m: 18.0, height_m: 2.4, shape: 'RECTANGULAR_OPEN', manning_n: 0.025, slope: 0.00035, manning_capacity_m3s: 48.5, catchment_area_ha: 1450.0, runoff_coeff: 0.75 },
-    { id: 'PIPE-OKKIUM-TO-BUCK', name: 'Okkium Madavu to South Buckingham Canal', type: 'MACRO_CANAL', source_node: 'NODE-OKKIUM-01', target_node: 'NODE-BUCK-SOUTH', length_m: 3200.0, width_m: 22.0, height_m: 2.2, shape: 'RECTANGULAR_OPEN', manning_n: 0.028, slope: 0.00041, manning_capacity_m3s: 52.0, catchment_area_ha: 1100.0, runoff_coeff: 0.78 },
-    { id: 'PIPE-TNAGAR-FEEDER', name: 'Usman Road Subterranean Box Culvert', type: 'STORM_WATER_DRAIN', source_node: 'NODE-TNAGAR-01', target_node: 'NODE-MAMBALAM-01', length_m: 1800.0, width_m: 2.8, height_m: 1.9, shape: 'RECTANGULAR_BOX', manning_n: 0.016, slope: 0.00167, manning_capacity_m3s: 16.8, catchment_area_ha: 350.0, runoff_coeff: 0.92 },
-    { id: 'PIPE-MAMBALAM-TO-ADYAR', name: 'Mambalam Canal Outfall into Adyar River', type: 'MACRO_CANAL', source_node: 'NODE-MAMBALAM-01', target_node: 'NODE-ADYAR-02', length_m: 2200.0, width_m: 12.0, height_m: 2.2, shape: 'RECTANGULAR_OPEN', manning_n: 0.024, slope: 0.00041, manning_capacity_m3s: 32.5, catchment_area_ha: 650.0, runoff_coeff: 0.85 },
-    { id: 'PIPE-COOUM-UPPER', name: 'Cooum River Central Reach (Koyambedu)', type: 'RIVER_CHANNEL', source_node: 'NODE-COOUM-01', target_node: 'NODE-COOUM-02', length_m: 5800.0, width_m: 35.0, height_m: 3.0, shape: 'TRAPEZOIDAL', manning_n: 0.032, slope: 0.00076, manning_capacity_m3s: 185.0, catchment_area_ha: 2900.0, runoff_coeff: 0.82 },
-    { id: 'PIPE-COOUM-LOWER', name: 'Cooum River to Napier Bridge Outfall', type: 'RIVER_CHANNEL', source_node: 'NODE-COOUM-02', target_node: 'NODE-COOUM-OUTFALL', length_m: 3400.0, width_m: 48.0, height_m: 2.8, shape: 'TRAPEZOIDAL', manning_n: 0.029, slope: 0.00094, manning_capacity_m3s: 215.0, catchment_area_ha: 1600.0, runoff_coeff: 0.86 },
-    { id: 'PIPE-OTTERI-01', name: 'Otteri Nallah Masonry Canal (Anna Nagar)', type: 'MACRO_CANAL', source_node: 'NODE-OTTERI-01', target_node: 'NODE-OTTERI-02', length_m: 3900.0, width_m: 14.0, height_m: 2.4, shape: 'RECTANGULAR_OPEN', manning_n: 0.022, slope: 0.00123, manning_capacity_m3s: 38.0, catchment_area_ha: 820.0, runoff_coeff: 0.84 },
-    { id: 'PIPE-OTTERI-TO-BUCK', name: 'Otteri Nallah to North Buckingham Canal', type: 'MACRO_CANAL', source_node: 'NODE-OTTERI-02', target_node: 'NODE-BUCK-NORTH', length_m: 2100.0, width_m: 16.0, height_m: 2.2, shape: 'RECTANGULAR_OPEN', manning_n: 0.025, slope: 0.00100, manning_capacity_m3s: 41.5, catchment_area_ha: 540.0, runoff_coeff: 0.86 },
-    { id: 'PIPE-BUCK-NORTH-MID', name: 'Buckingham Canal Central Navigation Lock', type: 'TIDAL_CANAL', source_node: 'NODE-BUCK-NORTH', target_node: 'NODE-BUCK-MID', length_m: 5600.0, width_m: 25.0, height_m: 2.5, shape: 'TRAPEZOIDAL', manning_n: 0.030, slope: 0.00005, manning_capacity_m3s: 55.0, catchment_area_ha: 1200.0, runoff_coeff: 0.88 },
-    { id: 'PIPE-BUCK-MID-SOUTH', name: 'Buckingham Canal South Tidal Channel', type: 'TIDAL_CANAL', source_node: 'NODE-BUCK-MID', target_node: 'NODE-BUCK-SOUTH', length_m: 8200.0, width_m: 28.0, height_m: 2.4, shape: 'TRAPEZOIDAL', manning_n: 0.030, slope: 0.00004, manning_capacity_m3s: 62.0, catchment_area_ha: 1700.0, runoff_coeff: 0.84 }
+    { id: 'PIPE-MITHI-UPPER', name: 'Mithi River Upper Reach (Vihar to Powai)', type: 'RIVER_CHANNEL', source_node: 'NODE-MITHI-01', target_node: 'NODE-MITHI-02', length_m: 4800.0, width_m: 35.0, height_m: 3.8, shape: 'TRAPEZOIDAL', manning_n: 0.035, slope: 0.00215, manning_capacity_m3s: 260.0, catchment_area_ha: 2800.0, runoff_coeff: 0.72 },
+    { id: 'PIPE-MITHI-MID', name: 'Mithi River Mid Reach (Saki Naka to Kurla)', type: 'RIVER_CHANNEL', source_node: 'NODE-MITHI-02', target_node: 'NODE-MITHI-03', length_m: 4200.0, width_m: 45.0, height_m: 3.6, shape: 'TRAPEZOIDAL', manning_n: 0.033, slope: 0.00120, manning_capacity_m3s: 295.0, catchment_area_ha: 3100.0, runoff_coeff: 0.88 },
+    { id: 'PIPE-MITHI-BKC', name: 'Mithi River BKC Dharavi Choke Reach', type: 'RIVER_CHANNEL', source_node: 'NODE-MITHI-03', target_node: 'NODE-MITHI-04', length_m: 2600.0, width_m: 60.0, height_m: 3.2, shape: 'TRAPEZOIDAL', manning_n: 0.030, slope: 0.00065, manning_capacity_m3s: 320.0, catchment_area_ha: 1900.0, runoff_coeff: 0.92 },
+    { id: 'PIPE-MITHI-ESTUARY', name: 'Mithi River to Mahim Causeway Outfall', type: 'RIVER_CHANNEL', source_node: 'NODE-MITHI-04', target_node: 'NODE-MITHI-OUTFALL', length_m: 2100.0, width_m: 85.0, height_m: 3.0, shape: 'TRAPEZOIDAL', manning_n: 0.028, slope: 0.00045, manning_capacity_m3s: 390.0, catchment_area_ha: 1400.0, runoff_coeff: 0.85 },
+    { id: 'PIPE-HINDMATA-BRITANNIA', name: 'Hindmata to Britannia Station Box Culvert', type: 'STORM_WATER_DRAIN', source_node: 'NODE-HINDMATA-01', target_node: 'NODE-BRITANNIA-PUMP', length_m: 4100.0, width_m: 4.5, height_m: 2.6, shape: 'RECTANGULAR_BOX', manning_n: 0.015, slope: 0.00055, manning_capacity_m3s: 28.5, catchment_area_ha: 520.0, runoff_coeff: 0.95 },
+    { id: 'PIPE-BRITANNIA-DISCHARGE', name: 'Britannia Pump Discharge to Harbour', type: 'MACRO_CANAL', source_node: 'NODE-BRITANNIA-PUMP', target_node: 'NODE-BRITANNIA-OUTFALL', length_m: 850.0, width_m: 8.0, height_m: 2.5, shape: 'RECTANGULAR_BOX', manning_n: 0.016, slope: 0.00165, manning_capacity_m3s: 36.0, catchment_area_ha: 180.0, runoff_coeff: 0.90 },
+    { id: 'PIPE-LOVEGROVE-DISCHARGE', name: 'Lovegrove Pump to Worli Outfall', type: 'MACRO_CANAL', source_node: 'NODE-LOVEGROVE-PUMP', target_node: 'NODE-LOVEGROVE-OUTFALL', length_m: 650.0, width_m: 7.5, height_m: 2.4, shape: 'RECTANGULAR_BOX', manning_n: 0.016, slope: 0.00150, manning_capacity_m3s: 32.0, catchment_area_ha: 150.0, runoff_coeff: 0.92 },
+    { id: 'PIPE-ANDHERI-TO-MOGRA', name: 'Andheri Subway Sump to Mogra Nullah', type: 'STORM_WATER_DRAIN', source_node: 'NODE-ANDHERI-SUBWAY', target_node: 'NODE-MOGRA-01', length_m: 1250.0, width_m: 2.8, height_m: 2.0, shape: 'RECTANGULAR_BOX', manning_n: 0.015, slope: 0.00120, manning_capacity_m3s: 14.5, catchment_area_ha: 260.0, runoff_coeff: 0.94 },
+    { id: 'PIPE-MOGRA-TO-OSHIWARA', name: 'Mogra Nullah to Oshiwara Outfall', type: 'MACRO_CANAL', source_node: 'NODE-MOGRA-01', target_node: 'NODE-OSHIWARA-OUTFALL', length_m: 2800.0, width_m: 14.0, height_m: 2.5, shape: 'RECTANGULAR_OPEN', manning_n: 0.024, slope: 0.00085, manning_capacity_m3s: 42.0, catchment_area_ha: 890.0, runoff_coeff: 0.88 },
+    { id: 'PIPE-OSHIWARA-MAIN', name: 'Oshiwara River Aarey Reach to Creek Outfall', type: 'RIVER_CHANNEL', source_node: 'NODE-OSHIWARA-01', target_node: 'NODE-OSHIWARA-OUTFALL', length_m: 5400.0, width_m: 32.0, height_m: 3.2, shape: 'TRAPEZOIDAL', manning_n: 0.032, slope: 0.00185, manning_capacity_m3s: 195.0, catchment_area_ha: 2400.0, runoff_coeff: 0.82 },
+    { id: 'PIPE-POISAR-MAIN', name: 'Poisar River Suburban Channel to Marve Creek', type: 'RIVER_CHANNEL', source_node: 'NODE-POISAR-01', target_node: 'NODE-POISAR-OUTFALL', length_m: 3900.0, width_m: 26.0, height_m: 2.8, shape: 'TRAPEZOIDAL', manning_n: 0.031, slope: 0.00140, manning_capacity_m3s: 165.0, catchment_area_ha: 1850.0, runoff_coeff: 0.84 },
+    { id: 'PIPE-DAHISAR-MAIN', name: 'Dahisar River National Park to Manori Creek', type: 'RIVER_CHANNEL', source_node: 'NODE-DAHISAR-01', target_node: 'NODE-DAHISAR-OUTFALL', length_m: 5900.0, width_m: 28.0, height_m: 3.0, shape: 'TRAPEZOIDAL', manning_n: 0.033, slope: 0.00220, manning_capacity_m3s: 185.0, catchment_area_ha: 2100.0, runoff_coeff: 0.78 }
   ];
 
   selectedEdge: DrainageEdge3D | null = null;
@@ -948,9 +946,9 @@ export class DrainageComponent implements OnInit, AfterViewInit, OnDestroy {
   private flowDashOffset = 0;
 
   bounds = {
-    minLat: 12.92, maxLat: 13.23,
-    minLon: 80.17, maxLon: 80.32,
-    minElev: 0.0, maxElev: 12.4
+    minLat: 18.89, maxLat: 19.30,
+    minLon: 72.75, maxLon: 73.02,
+    minElev: 0.0, maxElev: 28.5
   };
 
   constructor(private http: HttpClient) {}
@@ -1019,7 +1017,7 @@ export class DrainageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   selectDefaultPipe(): void {
-    const defaultPipe = this.edges.find(e => e.id.includes('VEL-TRUNK')) || this.edges[0];
+    const defaultPipe = this.edges.find(e => e.id.includes('PIPE-MITHI-BKC')) || this.edges[0];
     if (defaultPipe) {
       this.selectEdge(defaultPipe);
     }
@@ -1130,7 +1128,7 @@ export class DrainageComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.gisMapRef || this.gisMap) return;
 
     this.gisMap = L.map(this.gisMapRef.nativeElement, {
-      center: [13.0300, 80.2350],
+      center: [19.0760, 72.8777],
       zoom: 12,
       zoomControl: true,
       preferCanvas: true

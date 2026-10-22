@@ -28,7 +28,7 @@ import { DrainageStatus } from '../models/eoc-models';
             </button>
           }
         </div>
-        <p class="fine">Nodes marked DEMO are illustrative simulation geometry — not confirmed GCC infrastructure.</p>
+        <p class="fine">Nodes marked DEMO are illustrative simulation geometry — not confirmed BMC infrastructure.</p>
       </div>
 
       <div class="panel inspector">

@@ -35,8 +35,8 @@ const NAV: NavItem[] = [
         </button>
       }
       <div class="rail-foot">
-        <span>GCC EOC</span>
-        <span>Ripon Building</span>
+        <span>BMC EOC</span>
+        <span>BMC Head Office Fort</span>
       </div>
     </nav>
   `,
