@@ -46,7 +46,7 @@ urban-floos-/
 │       │   ├── mumbai_static_spatial_features.parquet (1,767 rows, 25 predictors - ACTIVE)
 │       │   └── chennai_static_spatial_features.parquet (3,963 rows, 25 predictors - PRESERVED)
 │       └── vectors/
-│           ├── mumbai_critical_infrastructure.parquet (162 facilities, EPSG:32643 - ACTIVE)
+│           ├── mumbai_critical_infrastructure.parquet (537 facilities, EPSG:32643 - ACTIVE)
 │           └── chennai_critical_infrastructure.parquet (1,505 facilities - PRESERVED)
 ├── models/
 │   └── trained/
@@ -81,7 +81,7 @@ urban-floos-/
 │               ├── accessibility.py
 │               ├── prioritization.py
 │               └── analytics.py
-└── tests/                             # Comprehensive test suite (43 tests)
+└── tests/                             # Comprehensive test suite (32 tests)
     ├── test_data_validation.py
     ├── test_flood_inference.py
     ├── test_road_network_criticality.py
