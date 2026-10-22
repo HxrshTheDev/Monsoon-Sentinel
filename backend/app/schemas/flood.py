@@ -61,3 +61,4 @@ class RoadSegmentSchema(BaseModel):
     coordinates: List[List[float]]
     avoidedBySafeRoute: bool
     locality: str
+

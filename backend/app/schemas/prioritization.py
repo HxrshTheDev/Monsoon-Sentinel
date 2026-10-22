@@ -63,3 +63,4 @@ class BudgetComparisonResponse(BaseModel):
     )
     decision_recommendation: str
     provenance_status: ProvenanceStatus = ProvenanceStatus.DERIVED
+

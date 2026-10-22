@@ -39,3 +39,4 @@ class NetworkCriticalityOverview(BaseModel):
 class NetworkCriticalityResponse(BaseModel):
     overview: NetworkCriticalityOverview
     roads: List[RoadCriticalityItem]
+

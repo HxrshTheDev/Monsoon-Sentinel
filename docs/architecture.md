@@ -130,3 +130,4 @@ All communication conforms strictly to Pydantic v2 schemas:
 1. **No Fake Hydrodynamics**: We do not claim 2D depth predictions without sensor calibration. Depth is explicitly marked as `null` or unmeasured.
 2. **Honest Distinctions**: Clear separation between *observed historical flood evidence*, *statistical susceptibility*, and *hypothetical disruption scenarios*.
 3. **Decoupled Frontend**: The backend exposes purely clean REST endpoints so any frontend (Angular, React, Vue, Streamlit) can consume the structured outputs.
+

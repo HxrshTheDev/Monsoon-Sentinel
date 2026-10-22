@@ -91,3 +91,4 @@ To prevent hallucinated data and maintain rigorous engineering integrity:
 - All storage of spatial feature centroids and critical infrastructure points is performed with explicit CRS tracking:
   - Coordinate pairs serialized to client applications are formatted as `[latitude, longitude]` or GeoJSON `[lon, lat]` in **WGS 84 (`EPSG:4326`)**.
   - Internal distance calculations, Euclidean nearest-neighbor lookups, and network segment lengths are evaluated in **UTM Zone 44N (`EPSG:32644`)** using `pyproj.Transformer.from_crs("EPSG:32644", "EPSG:4326", always_xy=True)`.
+

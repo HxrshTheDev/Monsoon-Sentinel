@@ -112,3 +112,4 @@ The audit revealed that the reference project **completely lacked** the analytic
   - Copernicus GLO-30 DEM: European Space Agency / Copernicus Open Access.
   - ESA WorldCover: CC-BY 4.0.
   - IMD Telemetry: Open Government Data (OGD) Platform India.
+

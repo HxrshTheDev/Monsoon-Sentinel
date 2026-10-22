@@ -33,3 +33,4 @@ def get_critical_facilities(
     if facility_type.lower() != "all":
         facs = [f for f in facs if f["facility_type"] == facility_type.lower()]
     return facs[:100]
+

@@ -138,3 +138,4 @@ def test_analytics_endpoints():
     report = res_report.json()
     assert "budget_comparison" in report
     assert len(report["limitations_and_assumptions"]) >= 2
+

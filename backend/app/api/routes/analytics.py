@@ -89,3 +89,4 @@ def get_decision_support_report():
             "Essential-service travel times are calculated via NetworkX Dijkstra shortest paths on dynamic impedance models."
         ]
     )
+

@@ -37,3 +37,4 @@ def compare_budget_allocation(
 ):
     service = PrioritizationService.get_instance()
     return service.compare_budget_strategies(budget_k=budget_k)
+

@@ -28,3 +28,4 @@ def calculate_safe_route(payload: RouteRequestSchema):
         vehicle_type=payload.vehicle_type or "car",
         flood_service=flood_svc
     )
+

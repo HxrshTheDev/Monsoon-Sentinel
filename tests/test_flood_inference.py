@@ -61,3 +61,4 @@ def test_inundation_eta_prediction(flood_service):
     res_severe = flood_service.predict_inundation_eta(rainfall_rate_mm_h=60.0, accumulated_rainfall_mm=50.0)
     assert res_severe["status"] in ["IMPENDING_INUNDATION", "WATCH_ADVISORY"]
     assert res_severe["estimated_eta_minutes"] > 0
+

@@ -9,3 +9,4 @@ if PROJECT_ROOT not in sys.path:
 from config import Settings, settings
 
 __all__ = ["Settings", "settings"]
+

@@ -36,3 +36,4 @@ api_router.include_router(prioritization.router)
 
 # 7. Analytics & Executive Reports
 api_router.include_router(analytics.router)
+

@@ -40,3 +40,4 @@ def get_network_overview():
     )
 
     return NetworkCriticalityResponse(overview=overview, roads=roads)
+

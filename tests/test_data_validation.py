@@ -67,3 +67,4 @@ def test_data_quality_report(data_loader):
     assert report["total_grid_cells"] == 3963
     assert report["static_feature_nulls"] == 0
     assert report["validation_status"] == "PASSED_STRICT_SCHEMA"
+

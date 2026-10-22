@@ -48,3 +48,4 @@ class AccessibilityAnalysisResponse(BaseModel):
     notes: str = Field(
         default="Disrupted travel times are simulated based on susceptibility impedance models. Physical closures are scenario assumptions."
     )
+

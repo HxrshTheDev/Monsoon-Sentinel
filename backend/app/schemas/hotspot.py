@@ -32,3 +32,4 @@ class FloodDepthResponse(BaseModel):
     message: str = Field(
         default="No physical hydrodynamic depth sensor is attached to this cell. Continuous depth is not fabricated."
     )
+

@@ -24,3 +24,4 @@ class ProvenanceRecord(BaseModel):
     unit: Optional[str] = Field(None, description="Physical unit of measurement")
     confidence: Optional[float] = Field(None, description="Confidence score [0.0, 1.0] if probabilistic")
     notes: Optional[str] = Field(None, description="Contextual qualifications, limitations or caveats")
+

@@ -57,3 +57,4 @@ class DecisionSupportReportSchema(BaseModel):
     budget_comparison: BudgetComparisonResponse
     top_inspection_priorities: list
     limitations_and_assumptions: List[str]
+

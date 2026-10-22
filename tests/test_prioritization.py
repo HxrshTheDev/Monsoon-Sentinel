@@ -59,3 +59,4 @@ def test_budget_comparison_edge_cases(prioritization_service):
     comp_15 = prioritization_service.compare_budget_strategies(budget_k=15)
     assert comp_15["budget_k"] == 15
     assert len(comp_15["strategy_b_network_aware"]["selected_edges"]) == 15
+
