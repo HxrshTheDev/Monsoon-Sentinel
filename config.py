@@ -41,6 +41,17 @@ class Settings(BaseSettings):
     OTP_EXPIRE_MINUTES: int = 10
     OTP_MAX_ATTEMPTS: int = 5
 
+    # CityPulse Decision Support Extensions
+    DATA_DIR: str = os.getenv("DATA_DIR", "./data")
+    GRID_GEOJSON_PATH: str = os.getenv("GRID_GEOJSON_PATH", "./data/processed/grids/chennai_grid_500m.geojson")
+    STATIC_FEATURES_PATH: str = os.getenv("STATIC_FEATURES_PATH", "./data/processed/features/chennai_static_spatial_features.parquet")
+    CRITICAL_INFRA_PATH: str = os.getenv("CRITICAL_INFRA_PATH", "./data/processed/vectors/chennai_critical_infrastructure.parquet")
+    MODEL_PATH: str = os.getenv("MODEL_PATH", "./models/trained/chennai_xgboost_baseline.json")
+
+    DEFAULT_INSPECTION_BUDGET: int = 5
+    DISRUPTION_THRESHOLD_HIGH: float = 0.50
+    DISRUPTION_THRESHOLD_CRITICAL: float = 0.75
+
     model_config = SettingsConfigDict(case_sensitive=True)
 
 settings = Settings()
