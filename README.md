@@ -73,7 +73,7 @@ python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 | GET | `/api/v1/current-risk/kpis` | Scenario KPIs |
 | GET | `/api/v1/forecast-risk?horizon=NOW` | 500m susceptibility grid |
 | GET | `/api/v1/hotspots?limit=20` | Ranked hotspots |
-| POST | `/api/v1/safe-route` | Prototype arterial routing |
+| POST | `/api/v1/safe-route` | OSM road-network flood-aware routing |
 | GET | `/api/v1/criticality/roads` | Betweenness / bridges |
 | GET | `/api/v1/accessibility/analysis` | Emergency accessibility |
 | POST | `/api/v1/prioritization/rank` | Inspection ranking |
@@ -101,7 +101,7 @@ Open **http://localhost:4200/**
 1. Landing → Login (demo roles) or open `/dashboard` / `/flood-map`
 2. Inspect Mumbai susceptibility map and hotspots
 3. Change forecast horizon where offered
-4. `/safe-route` for prototype arterial routing
+4. `/safe-route` for OSM road-following flood-aware routing
 5. `/eoc` for Emergency Operations Centre (backend hotspots + labelled simulation)
 6. `/analytics` for reports; prioritization via API / dashboard widgets
 
@@ -114,6 +114,7 @@ Expected runtime assets (already in repo for demo):
 - `data/processed/grids/mumbai_grid_500m.geojson`
 - `data/processed/features/mumbai_static_spatial_features.parquet`
 - `data/processed/vectors/mumbai_critical_infrastructure.parquet`
+- `data/processed/roads/mumbai_drive_network.json.gz` (OSM road cache)
 - `models/trained/mumbai_xgboost_baseline.json`
 
 Regenerate / retrain:
@@ -122,12 +123,15 @@ Regenerate / retrain:
 # Full GIS rebuild (uses cached raw under backend/data/mumbai/raw when present)
 python scripts/build_mumbai_pipeline.py
 
+# OSM road network for Safe Route (Overpass; writes the gzip cache above)
+python scripts/build_mumbai_road_network.py
+
 # Retrain only (fixes label leakage; writes evaluation JSON)
 python scripts/retrain_mumbai_model.py
 ```
 
 **Labels:** BMC chronic waterlogging hotspot proximity (750 m), not a circular hazard formula.  
-**Road graph:** curated prototype arterials — not a complete city network.
+**Road graph:** OpenStreetMap drive highways (arterial/collector) for the Mumbai study bbox — see `docs/data_sources.md`.
 
 ---
 

@@ -118,6 +118,7 @@ export interface SafeRoutePlan {
   etaMin: number;
   maxDepthCm: number;
   path: LatLng[];
+  isDemo: true;
 }
 
 export interface StormArchiveEntry {

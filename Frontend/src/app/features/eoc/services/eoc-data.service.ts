@@ -4,9 +4,11 @@
  * deterministic simulation dataset and flags SIMULATION mode in the UI.
  */
 import { Injectable, computed, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, forkJoin, of } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { RoutePlanResult } from '../../../core/models/route.model';
+import { RoutingService } from '../../../core/services/routing.service';
 import {
   DataMode,
   DrainageNode,
@@ -18,7 +20,6 @@ import {
   RadarCell,
   RainfallSample,
   RouteAdvisory,
-  SafeRoutePlan,
   Shelter,
   StormArchiveEntry,
   TelemetrySnapshot,
@@ -38,7 +39,6 @@ import {
   SIM_SHELTERS,
   SIM_TELEMETRY,
   SIM_ZONES,
-  planSafeRoute,
 } from '../data/eoc-simulation';
 import { DrainageLink } from '../models/eoc-models';
 
@@ -91,7 +91,9 @@ export class EocDataService {
   readonly selectedNodeId = signal<string | null>(null);
   readonly selectedIncidentId = signal<string | null>(null);
   readonly vehicle = signal<VehicleKind>('RESCUE');
-  readonly safeRoute = signal<SafeRoutePlan | null>(null);
+  readonly safeRoute = signal<RoutePlanResult | null>(null);
+  readonly safeRouteLoading = signal(false);
+  readonly safeRouteError = signal<string | null>(null);
   readonly criticalAlert = signal<EocIncident | null>(SIM_INCIDENTS[2]);
   readonly criticalDismissed = signal(false);
   /** One-shot map camera request consumed by the map component. */
@@ -107,7 +109,7 @@ export class EocDataService {
   private timer: ReturnType<typeof setInterval> | null = null;
   private clock: ReturnType<typeof setInterval> | null = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private routingService: RoutingService) {
     this.clock = setInterval(() => this.now.set(new Date()), 1000);
     this.loadFeeds();
   }
@@ -360,9 +362,34 @@ export class EocDataService {
     if (this.criticalAlert()?.id === id) this.criticalAlert.set(null);
   }
   dismissCritical(): void { this.criticalDismissed.set(true); this.criticalAlert.set(null); }
-  generateSafeRoute(): void {
-    this.safeRoute.set(planSafeRoute(this.vehicle()));
-    this.setLayer('emergencyRoutes', true);
+  generateSafeRoute(source: string, destination: string): void {
+    const origin = source.trim();
+    const target = destination.trim();
+    if (!origin || !target) {
+      this.safeRoute.set(null);
+      this.safeRouteError.set('Enter both an origin and a destination.');
+      return;
+    }
+
+    this.safeRoute.set(null);
+    this.safeRouteError.set(null);
+    this.safeRouteLoading.set(true);
+    this.routingService.calculateSafeRoute(origin, target, this.vehicle().toLowerCase()).subscribe({
+      next: (plan) => {
+        this.safeRoute.set(plan);
+        this.safeRouteLoading.set(false);
+        this.setLayer('emergencyRoutes', true);
+      },
+      error: (error: HttpErrorResponse) => {
+        const detail = error.error && typeof error.error === 'object' && 'detail' in error.error
+          ? String(error.error.detail)
+          : null;
+        this.safeRouteError.set(detail || (error.status === 0
+          ? 'FastAPI is unavailable. No route was generated; demo data was not substituted.'
+          : `Route request failed (${error.status || 'unknown status'}). No route was generated.`));
+        this.safeRouteLoading.set(false);
+      },
+    });
   }
 
   /** Slice helpers for the active horizon. */

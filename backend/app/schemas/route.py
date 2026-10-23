@@ -28,11 +28,12 @@ class RouteOptionSchema(BaseModel):
     hazardExposure: str  # 'Low' | 'Medium' | 'High'
     riskExposureScore: float = 0.0  # length-weighted mean edge susceptibility
     highRiskEdgeCount: int = 0
+    unknownRiskEdgeCount: int = 0
     pathCoordinates: List[List[float]]  # [[lat, lon], ...] Leaflet order
     nodesVisited: Optional[List[str]] = None
     notes: str
     isSimulated: bool = False
-    geometrySource: str = "arterial_graph_reconstruction"
+    geometrySource: str = "openstreetmap_road_network"
 
 
 class RouteHazardSchema(BaseModel):
@@ -57,7 +58,9 @@ class RoutePlanResultSchema(BaseModel):
     hazards: List[RouteHazardSchema] = []
     networkProvenance: Optional[str] = None
     geometrySource: Optional[str] = None
-    warnings: List[str] = []
+    riskSource: Optional[str] = None
+    riskIsSimulated: bool = False
+    warnings: List[str] = Field(default_factory=list)
     isSimulated: bool = False
 
 

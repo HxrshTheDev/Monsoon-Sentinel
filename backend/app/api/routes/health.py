@@ -76,10 +76,17 @@ def system_overview():
         "modelMetrics": metrics,
         "geospatialData": loader.data_quality_report,
         "roadNetwork": {
-            "nodesCount": len(road_svc.nodes),
+            "nodesCount": len(road_svc.graph.nodes) if road_svc.network_available else 0,
             "edgesCount": len(road_svc.edge_definitions),
             "criticalBridgesCount": len(road_svc.bridges_set),
-            "coverageNote": "Prototype arterial graph (manually curated corridors), not a complete OSM road network."
+            "available": road_svc.network_available,
+            "geometrySource": road_svc.geometry_source,
+            "coverageNote": (
+                "OpenStreetMap drive network cache (arterial/collector highways in Greater Mumbai bbox). "
+                "Build via scripts/build_mumbai_road_network.py. Not live traffic."
+                if road_svc.network_available
+                else "Road network cache missing — run scripts/build_mumbai_road_network.py."
+            ),
         },
         "limitsAndCaveats": [
             "Scores are prototype flood-susceptibility estimates under scenario rainfall — not calibrated flood probabilities.",
