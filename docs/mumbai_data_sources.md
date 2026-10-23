@@ -1,44 +1,44 @@
-# Mumbai GIS Data Sources & Provenance
+# Mumbai source catalogue
 
-**Project**: CityPulse / Monsoon Sentinel  
-**Target City**: Municipal Corporation of Greater Mumbai (MCGM / BMC), Maharashtra, India  
-**Bounding Box**: $18.8900^\circ\text{ N} - 19.3000^\circ\text{ N}, 72.7500^\circ\text{ E} - 73.0200^\circ\text{ E}$  
-**Centroid**: $19.0760^\circ\text{ N}$, $72.8777^\circ\text{ E}$  
-**Projected Metric CRS**: `EPSG:32643` (UTM Zone 43N)  
-**Display CRS**: `EPSG:4326`
+This page records the Mumbai-specific source mapping used by the pipeline.
+It complements the concise inventory in
+[data_sources.md](data_sources.md); it does not describe another city or an
+independent dataset.
 
----
+## Dataset mapping
 
-## Active datasets
+| ID | Dataset or input | Repository evidence | Use |
+| --- | --- | --- | --- |
+| DS-01 | 500 m grid | `data/processed/grids/mumbai_grid_500m.geojson` | Grid inference and map display. |
+| DS-02 | Static spatial features | `data/processed/features/mumbai_static_spatial_features.parquet` | Model predictors. |
+| DS-03 | Elevation cache | `backend/data/mumbai/raw/mumbai_dem_elevations.json` when present | DEM-derived elevation features. |
+| DS-04 | Microwatersheds | `backend/data/mumbai/raw/mumbai_microwatersheds.geojson` when present | Drainage and watershed features. |
+| DS-05 | Critical infrastructure | `data/processed/vectors/mumbai_critical_infrastructure.parquet` | Hospital, fire, and police proximity/accessibility. |
+| DS-06 | Chronic waterlogging labels | Constants and label construction in `scripts/build_mumbai_pipeline.py` | 750 m proximity proxy for model training. |
+| DS-07 | OSM drive graph | `data/processed/roads/mumbai_drive_network.json.gz` | Cached road routing and network analysis. |
+| DS-08 | Rainfall scenarios | Horizon logic in `backend/app/services/flood_service.py` | Deterministic inference forcing, not live telemetry. |
+| DS-09 | XGBoost model | `models/trained/mumbai_xgboost_baseline.json` | Prototype susceptibility scoring. |
 
-| ID | Dataset | Path / source | Notes |
-|---|---|---|---|
-| DS-01 | 500m grid | `data/processed/grids/mumbai_grid_500m.geojson` | ~1,767 terrestrial cells |
-| DS-02 | Static features | `data/processed/features/mumbai_static_spatial_features.parquet` | 25 predictors |
-| DS-03 | DEM elevations | `backend/data/mumbai/raw/mumbai_dem_elevations.json` | Cached DEM samples |
-| DS-04 | Microwatersheds | `backend/data/mumbai/raw/mumbai_microwatersheds.geojson` | OpenCity / MRSAC |
-| DS-05 | Emergency facilities | `data/processed/vectors/mumbai_critical_infrastructure.parquet` | OpenCity + OSM |
-| DS-06 | Chronic waterlogging labels | BMC hotspot coordinates in `scripts/build_mumbai_pipeline.py` | ML training labels (750 m proximity) |
-| DS-07 | OSM drive road graph | `data/processed/roads/mumbai_drive_network.json.gz` | Overpass OSM highways; build via `scripts/build_mumbai_road_network.py` |
-| DS-08 | Rainfall scenarios | Inference horizons in `flood_service.py` | Scenario baselines — not live AWS by default |
-| DS-09 | XGBoost model | `models/trained/mumbai_xgboost_baseline.json` | Prototype susceptibility |
+Availability of raw files is build-dependent. Do not treat a listed optional
+cache as proof that it is present in every checkout.
 
-Schema legacy: `dist_to_buckingham_canal_m` stores **Mithi / Mahim Creek** corridor distance for Mumbai.
+## Referenced portals and licences
 
----
+The provenance manifest records the sources verified for the current generated
+assets, including OpenCity Mumbai, MRSAC/OpenCity microwatersheds, Copernicus
+DEM access, and the BMC Disaster Management chronic-waterlogging reference.
+OpenStreetMap road data is downloaded through Overpass and is distributed under
+the ODbL. Consult the manifest and generated cache metadata for the exact
+status of each local asset before relying on it.
 
-## Official portals consulted
+## Guardrails
 
-- BMC Disaster Management: https://dm.mcgm.gov.in
-- OpenCity Mumbai: https://data.opencity.in/
-- Geofabrik OSM India: https://download.geofabrik.de/asia/india.html
-- Copernicus DEM / WorldCover open access
-
----
-
-## Scientific guardrails
-
-1. Water depth is unmeasured (`null`) — never fabricated.
-2. Model metrics describe agreement with BMC hotspot-proximity labels, not calibrated flood probability.
-3. Road routing is a prototype arterial graph, not a complete network or live traffic feed.
-4. Rainfall telemetry endpoints are labelled scenario/demo unless a live feed is wired.
+1. The project is Mumbai-only; Chennai datasets, loaders, and experimental DNO
+   material are not active components.
+2. Water depth is unmeasured and must remain `null`.
+3. Model metrics describe agreement with the BMC hotspot-proximity proxy, not
+   calibrated flood probability or event forecasting.
+4. Road routing is a cached OSM network, not live traffic or a closure
+   advisory.
+5. Rainfall endpoints are labelled scenario/demo unless a separate live feed
+   is explicitly wired and verified.

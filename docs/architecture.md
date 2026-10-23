@@ -1,134 +1,119 @@
-# CityPulse Backend Architecture & Analytical Data Flow
+# Monsoon Sentinel architecture
 
-**Project**: CityPulse — Flood-Disruption Decision-Support System  
-**Hackathon**: HackAMatch 1.0 (CityPulse Data Science + AI Challenge)  
-**Study Area**: Brihanmumbai Municipal Corporation (BMC / MCGM) & Contiguous Urban Catchment ($18.8900^\circ - 19.3000^\circ\text{ N}, 72.7500^\circ - 73.0200^\circ\text{ E}$)  
-**Coordinate Reference Systems**:
-- Projected Metric CRS: WGS 84 / UTM Zone 43N (`EPSG:32643`) for Euclidean distances ($m$), buffering, and graph link lengths.
-- Display / Web CRS: WGS 84 (`EPSG:4326`) for GeoJSON serialization, route path coordinates, and Leaflet/MapLibre consumption.
+This document describes the active Mumbai implementation. It is an evidence
+based overview of the repository, not a claim that the prototype is a live
+flood-warning or hydrodynamic system.
 
----
+## System flow
 
-## 1. Architectural Overview & System Design
-
-The CityPulse backend is designed as a **high-throughput, modular decision-support system**. Rather than acting as a static map server or uncalibrated physical simulator, it bridges **empirical flood susceptibility evidence** with **topological road-network criticality** to empower disaster managers with actionable prioritization under finite intervention budgets.
-
-```text
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │                           DATA INGESTION & QUALITY ASSURANCE                │
- │  • mumbai_grid_500m.geojson (1,767 terrestrial spatial sectors, EPSG:32643) │
- │  • mumbai_static_spatial_features.parquet (25 audited topographical features)│
- │  • mumbai_critical_infrastructure.parquet (162 verified hospitals, fire, etc)│
- │  • Dynamic Telemetric / Synthetic Rainfall Vectors                          │
- └──────────────────────────────────────┬──────────────────────────────────────┘
-                                        │ (Schema & Bounds Validation)
-                                        ▼
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │                           ANALYTICAL ENGINE LAYERS                          │
- │                                                                             │
- │  1. Flood Susceptibility Layer (XGBoost Baseline Model - Mumbai)            │
- │     Vectorized forward pass across 1,767 sectors -> Susceptibility [0, 1]   │
- │     Trained with 5-fold CV: 0.972 Accuracy, 0.949 F1-Score, 0.997 ROC-AUC   │
- │                                                                             │
- │  2. Road Network Graph Engine (NetworkX Directed Multigraph)                │
- │     Nodes: 25 arterial centroids (CSMT, Dadar, Sion, Kurla, BKC, Airport)  │
- │     Edges: 29 arterial links (WEH, EEH, Sea Link, Eastern Freeway, SCLR)   │
- │     Metrics: Betweenness Centrality, Bridge/Cut-Edge Flag, Dynamic Impedance│
- │                                                                             │
- │  3. Essential-Service Accessibility Engine                                  │
- │     Origin: 8 population clusters (Kurla, Sion, Hindmata, Andheri, etc.)    │
- │     Destination: Trauma hospitals, fire stations, emergency dispatch centers│
- │     Disruption Scenarios: Baseline vs Flood-Impeded Travel Time & Isolation │
- │                                                                             │
- │  4. Resource-Constrained Inspection & Prioritization Engine                 │
- │     Multi-Criteria Decision Analysis: w_hazard, w_criticality, w_access     │
- │     Budget K Optimization: Hazard-Only vs Network-Aware Strategy Comparison │
- └──────────────────────────────────────┬──────────────────────────────────────┘
-                                        │ (Typed Pydantic Schemas & Provenance)
-                                        ▼
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │                        FASTAPI REST API GATEWAY                             │
- │  • GET  /api/v1/health                  (Health probe & component status)   │
- │  • GET  /api/v1/forecast-risk           (500m grid susceptibility scores)   │
- │  • GET  /api/v1/current-risk/kpis       (High-level municipal KPIs)         │
- │  • POST /api/v1/safe-route              (Risk-aware Dijkstra pathfinding)   │
- │  • GET  /api/v1/criticality/roads       (Network link betweenness & cut-edges)
- │  • GET  /api/v1/accessibility/analysis  (Baseline vs flood travel times)    │
- │  • POST /api/v1/prioritization/rank     (Multi-criteria inspection rankings)│
- │  • POST /api/v1/prioritization/compare  (Budget K: Hazard vs Network-Aware) │
- │  • GET  /api/v1/analytics/decision-summary (Comprehensive executive report) │
- └─────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph inputs["Mumbai inputs"]
+        A[Raw and processed assets]
+        R[OSM road cache]
+    end
+    subgraph build["Build and validate"]
+        B[GIS pipeline]
+        C[Feature validation]
+    end
+    subgraph score["Inference"]
+        D[XGBoost booster]
+        E[Scenario susceptibility]
+    end
+    subgraph serve["FastAPI /api/v1"]
+        F[Flood and hotspot routes]
+        G[Routing and criticality]
+        H[Accessibility and prioritization]
+    end
+    I[Angular frontend]
+    J[Decision reports]
+    A --> B --> C --> D --> E
+    R --> G
+    E --> F
+    E --> G
+    F --> I
+    G --> I
+    H --> J
+    F --> H
+    G --> H
+    classDef input fill:#102a43,stroke:#5bc0eb,color:#fff
+    classDef process fill:#12372a,stroke:#6ee7b7,color:#fff
+    classDef service fill:#3b245c,stroke:#d8b4fe,color:#fff
+    classDef consumer fill:#4a2c17,stroke:#fdba74,color:#fff
+    class A,R input
+    class B,C,D,E process
+    class F,G,H service
+    class I,J consumer
 ```
 
----
+### Components
 
-## 2. Core Service Modules & Responsibilities
+| Layer | Repository evidence | Responsibility |
+| --- | --- | --- |
+| Data sources | `backend/data/mumbai/raw/`, `data/processed/` | Stores downloaded/cached Mumbai source data and derived assets. |
+| Geospatial processing | `scripts/build_mumbai_pipeline.py`, `scripts/build_mumbai_road_network.py` | Builds the 500 m grid, static features, infrastructure data, and OSM road cache. |
+| Risk model | `backend/app/services/flood_service.py`, `models/trained/mumbai_xgboost_baseline.json` | Scores grid cells using the XGBoost model blended with a transparent susceptibility calculation. |
+| FastAPI backend | `backend/app/main.py`, `backend/app/api/` | Loads data/services and exposes `/api/v1` REST routes. |
+| Angular frontend | `Frontend/src/` | Presents maps, routing, EOC, analytics, and decision-support views. |
+| Decision support | `backend/app/services/accessibility_service.py`, `prioritization_service.py`, `road_network_service.py` | Compares accessibility, network criticality, routes, and inspection priorities under scenario assumptions. |
 
-### A. Data Validation & Quality Assurance (`data_loader_service.py`)
-- **Schema Enforcement**: Validates required columns, datatypes, and non-null constraints before ingestion.
-- **Coordinate Bounds**: Asserts all coordinates fall strictly within the Greater Mumbai study area ($18.89 \le \text{lat} \le 19.30, 72.75 \le \text{lon} \le 73.02$).
-- **Projection Checks**: Converts between UTM Zone 43N metric coordinates (`EPSG:32643`) and WGS84 coordinates using `pyproj`.
-- **Quality Metrics**: Exposes missing-data counts, total active facilities, and data freshness timestamps.
+## Runtime path
 
-### B. Flood Susceptibility Service (`flood_service.py`)
-- Loads the audited `mumbai_xgboost_baseline.json` booster.
-- Merges static spatial features (elevation, slope, saucer depression index, built-up ratio, distance to storm water drains) with dynamic precipitation indices.
-- Performs vectorized forward-pass scoring across all 1,767 spatial cells.
-- Classifies cells into standardized risk tiers: `LOW` ($<0.20$), `MEDIUM` ($0.20-0.49$), `HIGH` ($0.50-0.74$), and `CRITICAL` ($\ge 0.75$).
-- Emits explicit `waterDepth = null` and `depth_status = "unavailable"` records to avoid fabricating continuous hydrodynamic water depth.
+1. `backend.app.main` initializes the data loader, flood service, and road
+   network service during application startup.
+2. `DataLoaderService` validates the checked-in/generated Mumbai assets and
+   exposes infrastructure and spatial data.
+3. `FloodService` loads the XGBoost booster and static features. Forecast
+   horizons use deterministic rainfall baselines (`NOW`, `+30M`, `+1H`,
+   `+2H`, and `+3H`); they are not live observations.
+4. `RoadNetworkService` loads the cached OSM graph and samples susceptibility
+   along real edge geometry. Missing or unknown risk is reported and
+   penalized; route coordinates returned by the API are `[latitude, longitude]`.
+5. Accessibility and prioritization services use the road graph and flood
+   susceptibility to calculate scenario comparisons.
+6. The Angular application calls the REST API using the development base URL in
+   `Frontend/src/environments/environment.ts`.
 
-### C. Road Network Graph Service (`road_network_service.py`)
-- Constructs an authentic directed multigraph $G = (V, E)$ covering the Greater Mumbai arterial backbone (25 nodes, 29 links):
-  - Corridors: Western Express Highway (WEH), Eastern Express Highway (EEH), Bandra-Worli Sea Link, Eastern Freeway elevated viaducts, Mahim Causeway, Santacruz-Chembur Link Road (SCLR), Jogeshwari-Vikhroli Link Road (JVLR).
-  - Critical Chronic Bottlenecks & Depressed Subways: Andheri Subway Rail Underpass, Milan Subway, Khar Subway, Hindmata Bowl, Kurla Mithi Basin.
-- Computes structural network properties:
-  - **Edge Betweenness Centrality**: Identifies links carrying disproportionate traffic flow.
-  - **Bridge / Cut-Edge Detection**: Identifies single points of failure whose closure partitions the network.
-- **Dynamic Impedance Formulation**:
-  $$\text{Impedance}(e) = \text{Length}(e) \times \left(1.0 + 9.0 \times \text{Susceptibility}(e)^{2.0}\right)$$
-  When a link's flood risk exceeds the critical disruption threshold ($\tau_{\text{crit}} = 0.75$), the edge is flagged as physically impassable or heavily degraded.
+## Data and model facts
 
-### D. Essential-Service Accessibility Service (`accessibility_service.py`)
-- Evaluates shortest paths from residential population centers to nearest essential service facilities:
-  - Level 1: Tertiary Trauma Hospitals (KEM Hospital Parel, Sion Hospital, Lilavati Hospital, Kokilaben Ambani Hospital).
-  - Level 2: Fire & Heavy Rescue Stations (Byculla HQ, Andheri Fire Station, Kurla Flood Dewatering Station).
-  - Level 3: Police Headquarters & Divisional Hubs (Mumbai Police Commissionerate HQ Fort, Bandra Divisional HQ).
-- Assesses accessibility across two states:
-  1. **Baseline State**: Free-flow network travel time $T_{\text{base}}(i, j)$.
-  2. **Disrupted Scenario**: Travel time $T_{\text{disrupt}}(i, j)$ under flood-induced link delays or closures.
-- Outputs accessibility degradation metrics:
-  $$\Delta T = T_{\text{disrupt}} - T_{\text{base}}, \quad \text{Delay Ratio} = \frac{T_{\text{disrupt}}}{T_{\text{base}}}$$
-  Identifies isolated origins where access becomes infinite or critically compromised.
+- The provenance manifest records 1,767 grid cells, 537 infrastructure records,
+  and 25 model feature columns.
+- The checked-in evaluation metadata reports accuracy `0.981`, F1 `0.929`,
+  and ROC-AUC `0.995`. These metrics measure agreement with the BMC
+  hotspot-proximity proxy under stratified cross-validation; they are not
+  calibrated event-forecasting metrics.
+- `waterDepth` is explicitly `null` because continuous depth is not measured.
+- The road-cache metadata records 71,590 nodes and 96,230 edges for its
+  arterial/collector download. These counts can change when the cache is
+  rebuilt.
+- The legacy feature name `dist_to_buckingham_canal_m` is retained for schema
+  compatibility and represents the Mithi/Mahim Creek corridor distance in this
+  Mumbai dataset.
 
-### E. Prioritization & Budget Comparison Engine (`prioritization_service.py`)
-- **Inspection Score Calculation**:
-  Combines hazard evidence with network consequences using transparent, configurable weights:
-  $$S_{\text{inspect}}(e) = w_h \cdot \text{HazardScore}(e) + w_c \cdot \text{Betweenness}(e) + w_a \cdot \text{AccessImpact}(e) + w_e \cdot \text{FacilityExposure}(e)$$
-  Default weights: $w_h = 0.35, w_c = 0.30, w_a = 0.25, w_e = 0.10$.
-- **Resource-Constrained Scenario Simulation**:
-  Given a fixed budget $K$ (e.g. $K=5$ emergency inspection crews, high-capacity mobile pumps, or temporary flood barriers):
-  - **Strategy A (Hazard-Only Prioritization)**: Allocates resources to the top $K$ links ranked strictly by flood susceptibility.
-  - **Strategy B (Network-Aware Prioritization)**: Allocates resources to the top $K$ links ranked by the composite decision-support score.
-  - **Comparative Output**:
-    - Critical links protected (bridges, hospital corridors).
-    - Aggregate minutes of emergency transit delay mitigated.
-    - Number of facilities preserved from isolation.
+## API surface
 
----
+The route groups are registered in `backend/app/api/api_router.py`:
 
-## 3. Request/Response Data Flow & Schemas
+| Group | Representative routes |
+| --- | --- |
+| Health | `/health`, `/health/system-overview` |
+| Flood susceptibility | `/current-risk/kpis`, `/forecast-risk`, `/hotspots`, `/map-data/zones/{grid_id}` |
+| Routing | `/safe-route`, `/safe-route/presets` |
+| Criticality | `/criticality/roads`, `/criticality/network-overview` |
+| Accessibility | `/accessibility/analysis`, `/accessibility/facilities` |
+| Prioritization | `/prioritization/rank`, `/prioritization/compare` |
+| Analytics | `/analytics/summary`, `/analytics/decision-report` |
 
-All communication conforms strictly to Pydantic v2 schemas:
-- `ProvenanceRecord`: Origin dataset, measurement timestamp, status enum (`OBSERVED`, `MODEL_PREDICTED`, `SIMULATED`, `UNAVAILABLE`), and scientific caveats.
-- `RoadCriticalityResponse`: Edge list with length, free-flow time, betweenness index, bridge status, and associated flood zone.
-- `AccessibilityAnalysisResponse`: Baseline vs disrupted travel times, isolated nodes, average delay factor.
-- `PrioritizationComparisonResponse`: Side-by-side comparison of Strategy A vs Strategy B under budget $K$, with explicit performance delta indicators.
+See [API.md](API.md) for request and response details.
 
----
+## Boundaries and limitations
 
-## 4. Operational Boundaries & Ethical Standards
-
-1. **No Fake Hydrodynamics**: We do not claim 2D depth predictions without sensor calibration. Depth is explicitly marked as `null` or unmeasured.
-2. **Honest Distinctions**: Clear separation between *observed historical flood evidence*, *statistical susceptibility*, and *hypothetical disruption scenarios*.
-3. **Decoupled Frontend**: The backend exposes purely clean REST endpoints so any frontend (Angular, React, Vue, Streamlit) can consume the structured outputs.
-
+- Data and model outputs are Mumbai-specific; no Chennai assets or active
+  loaders belong to this project.
+- Scenario rainfall and road disruption outputs are decision-support
+  simulations, not official advisories.
+- OSM routing is a cached network and does not provide live traffic or verified
+  road closures.
+- Source, license, and provenance notes are maintained in
+  [data_sources.md](data_sources.md) and
+  [mumbai_data_sources.md](mumbai_data_sources.md).

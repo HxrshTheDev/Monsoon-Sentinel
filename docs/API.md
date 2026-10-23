@@ -1,148 +1,109 @@
-# CityPulse / Monsoon Sentinel — API Specification (v2.1.0)
+# API reference
 
-## Greater Mumbai (BMC / MCGM) flood susceptibility & decision-support API
+FastAPI REST API for the Greater Mumbai susceptibility and disruption
+decision-support prototype.
 
-FastAPI Gateway Base URL: `http://localhost:8000/api/v1`  
-Interactive Swagger Docs: `http://localhost:8000/docs`  
-ReDoc Docs: `http://localhost:8000/redoc`
+- Base URL: `http://localhost:8000/api/v1`
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
 
-Scores are prototype susceptibility estimates under scenario rainfall — not calibrated flood probabilities. Water depth is always unmeasured (`null`).
+All forecast and route-risk results are scenario/model outputs. They are not
+calibrated flood probabilities, live rainfall observations, road-closure
+confirmations, or emergency instructions. Continuous water depth is returned
+as `null`.
 
----
+## Request flow
 
-## 1. System Health & Metadata
+```mermaid
+sequenceDiagram
+    participant UI as Angular frontend
+    participant API as FastAPI /api/v1
+    participant Risk as Flood service
+    participant Graph as Road and decision services
+    UI->>API: GET forecast or POST decision request
+    API->>Risk: Load cached scenario scores
+    Risk-->>API: Susceptibility and provenance
+    API->>Graph: Route, criticality, access, or priority calculation
+    Graph-->>API: Scenario result
+    API-->>UI: Typed JSON response
+```
 
-### `GET /`
-Returns top-level project metadata and endpoints.
+For the exact response shape, use the generated OpenAPI document at
+`http://localhost:8000/openapi.json`; this page documents the stable route
+surface and important interpretation constraints.
 
-### `GET /api/v1/health`
-Returns gateway and microservice liveness.
+## Health and metadata
 
-**Response**:
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | `/` | Project metadata and API location (outside `/api/v1`). |
+| GET | `/health` | Gateway and service health. |
+| GET | `/health/system-overview` | Data, model, road-cache, and evaluation diagnostics. |
+
+## Flood susceptibility
+
+| Method | Path | Query/body | Description |
+| --- | --- | --- | --- |
+| GET | `/current-risk/kpis` | — | Current scenario KPI summary. |
+| GET | `/forecast-risk` | `horizon`: `NOW`, `+30M`, `+1H`, `+2H`, or `+3H` | Scores the 500 m Mumbai grid. |
+| GET | `/forecast-risk/recent` | — | Recent prediction records. |
+| GET | `/hotspots` | `limit` from 1 to 100 | Ranks the highest model scores. |
+| GET | `/flood/hotspots` | `limit` from 1 to 100 | Compatibility alias for `/hotspots`. |
+| GET | `/depth` | `location` | Depth response; depth is unavailable in this prototype. |
+| GET | `/flood/depth` | `location` | Compatibility alias for `/depth`. |
+| GET | `/map-data/zones/{grid_id}` | — | Returns one grid-cell result. |
+| GET | `/location-risk` | `location` | Looks up a named locality. |
+| GET | `/predict-eta` | `rainfall_rate_mm_h`, `accumulated_rainfall_mm` | Scenario inundation ETA estimate. |
+| GET | `/rainfall/telemetry-details` | — | Deterministic scenario payload labelled `SCENARIO_DEMO`. |
+
+`forecast-risk` returns `Array<FloodZone>`. A zone includes `gridId`,
+coordinates, `riskLevel`, `riskScore`, `predictionTime`, scenario rainfall,
+`waterDepth: null`, `isSimulated: true`, and provenance fields. Consult the
+OpenAPI schema at `/openapi.json` for the authoritative field types.
+
+## Safe mobility and network analysis
+
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | `/safe-route/presets` | Predefined Mumbai route inputs. |
+| POST | `/safe-route` | Compares a risk-penalized route with a shortest route when distinct. |
+| GET | `/criticality/roads` | Road-edge betweenness and bridge indicators. |
+| GET | `/criticality/network-overview` | Network node, edge, and critical-bridge summary. |
+
+Example request:
+
 ```json
 {
-  "status": "healthy",
-  "service": "CityPulse API Gateway",
-  "study_area": "Greater Mumbai (BMC)",
-  "model": "XGBoost-v1.1-Mumbai-HotspotProxy",
-  "timestamp": "now"
+  "source": "CSMT Fort",
+  "destination": "CSMIA International Airport",
+  "vehicle_type": "car"
 }
 ```
 
-### `GET /api/v1/health/system-overview`
-Returns complete MLOps telemetry, data feeds status, model evaluation card, and hardware loads.
+The route cache is
+`data/processed/roads/mumbai_drive_network.json.gz`. Route coordinates use
+Leaflet order `[latitude, longitude]`; stored cache geometry uses GeoJSON
+`[longitude, latitude]`. The risk penalty is
+`length_m + length_m * RISK_PENALTY_FACTOR * risk^RISK_PENALTY_EXPONENT`.
+Missing cache errors are reported as HTTP 503 and invalid snapping/path input
+as HTTP 422.
 
----
+## Accessibility and prioritization
 
-## 2. Flood Nowcasting & Geospatial Telemetry
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | `/accessibility/analysis` | Compares baseline and disrupted access to facilities; accepts `scenario_threshold`. |
+| GET | `/accessibility/facilities` | Lists facilities; accepts `facility_type` (`all`, `hospital`, `fire_station`, or `police`). |
+| GET | `/accessibility/emergency/facilities` | Emergency-facility compatibility route. |
+| POST | `/prioritization/rank` | Ranks inspection candidates using supplied weights. |
+| POST | `/prioritization/compare` | Compares hazard-only and network-aware strategies; accepts `budget_k`. |
 
-### `GET /api/v1/current-risk/kpis`
-Returns live municipal KPIs across Greater Mumbai.
+## Analytics and decision reports
 
-**Response**:
-```json
-{
-  "currentRainfall": 32.2,
-  "rainfallDelta": "+6.4 mm/hr vs last hour",
-  "highRiskZones": 1584,
-  "highRiskDelta": "+3 zones expanding east",
-  "unsafeRoads": 3,
-  "unsafeRoadsStatus": "Hindmata, Milan & Andheri Subways Blocked",
-  "activeAlerts": 4,
-  "highPriorityAlerts": 3,
-  "lastUpdated": "10:30 UTC • Live BMC AWS Pipeline",
-  "isSimulated": false
-}
-```
+| Method | Path | Description |
+| --- | --- | --- |
+| GET | `/analytics/summary` | Scenario rainfall trends, risk distribution, rankings, and depth-unavailable history. |
+| GET | `/analytics/decision-report` | Combines KPIs, network overview, budget comparison, and inspection priorities. |
 
-### `GET /api/v1/forecast-risk`
-Returns high-resolution 500m grid sector predictions for the requested horizon.
-
-**Query Parameters**:
-* `horizon` (string, optional, default: `"NOW"`): Temporal nowcasting horizon (`NOW`, `+30M`, `+1H`, `+2H`, `+3H`).
-
-**Response**: `Array<FloodZone>`
-```json
-[
-  {
-    "gridId": "MUM_000001",
-    "name": "Colaba / Fort",
-    "latitude": 18.8977,
-    "longitude": 72.7873,
-    "bounds": [[18.8955, 72.7851], [18.8999, 72.7895]],
-    "riskLevel": "LOW",
-    "riskScore": 22,
-    "predictionTime": "NOW",
-    "rainfall": 30.4,
-    "elevation": 14.5,
-    "waterDepth": 0.08,
-    "runoffCoefficient": 0.72,
-    "slope": "Low",
-    "summary": "Colaba / Fort sector under LOW flood risk for horizon NOW.",
-    "historicalFlooding": "Low",
-    "drainageStatus": "Operational",
-    "builtUpDensity": 72,
-    "isSimulated": false
-  }
-]
-```
-
-### `GET /api/v1/map-data/zones/{grid_id}`
-Returns telemetry for a specific 500m sector.
-
-### `GET /api/v1/map-data/roads`
-Returns flood status assigned to Mumbai arterial road segments.
-
----
-
-## 3. Safe Mobility & Graph Dijkstra Routing
-
-Uses the cached OpenStreetMap drive network (`data/processed/roads/mumbai_drive_network.json.gz`).
-Routes follow real highway geometry (no synthetic bay chords). Flood-aware weighted route minimizes
-`length_m + length_m * RISK_PENALTY_FACTOR * risk^RISK_PENALTY_EXPONENT`; the alternative is shortest distance when distinct.
-`pathCoordinates` are `[lat, lon]` (Leaflet). HTTP 422 when snap/path fails; 503 if the road cache is missing.
-
-### `GET /api/v1/safe-route/presets`
-Returns predefined Mumbai commute scenarios (e.g., CSMT → CSMIA, Dadar → Bandra).
-
-### `POST /api/v1/safe-route`
-Calculates flood-aware vs shortest paths on the OSM road graph.
-
-**Request Body**:
-```json
-{
-  "source": "Sion Circle",
-  "destination": "Bandra-Kurla Complex (BKC)",
-  "vehicle_type": "rescue"
-}
-```
-
-The response contains `recommendedRoute` and, when a distinct route exists,
-`alternativeRoute`. Each option includes `distanceKm` (sum of mapped edge lengths),
-`etaMinutes` (sum of edge free-flow estimates), `pathCoordinates` in Leaflet
-`[latitude, longitude]` order, risk metrics, `unknownRiskEdgeCount`, and geometry
-provenance. `sourceCoords` and `destCoords` are the snapped OSM road nodes; any
-snap offset is included in `warnings`.
-
-`riskSource` identifies the flood-risk data. The current XGBoost input is a
-scenario-based susceptibility estimate, not live water depth or road-closure
-observations (`riskIsSimulated: true`). Unknown edge risk is penalized and
-reported; `safetyScore` is only the inverse modeled susceptibility indicator,
-and `riskStatus` never means that a road has been confirmed safe.
-
----
-
-## 4. Disaster Alerts
-
-### `GET /api/v1/alerts`
-Returns active emergency warnings and evacuation alerts.
-
-### `PATCH /api/v1/alerts/{alert_id}/acknowledge`
-Acknowledges a specific alert by EOC incident commanders.
-
----
-
-## 5. Flood Analytics
-
-### `GET /api/v1/analytics/summary`
-Returns hourly rainfall curves, sector risk distribution, ranked vulnerable areas, and inundation timelines.
+See [architecture.md](architecture.md) for the request flow and
+[data_sources.md](data_sources.md) for provenance and limitations.

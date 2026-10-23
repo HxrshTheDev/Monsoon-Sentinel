@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Monsoon Sentinel API request sequence",
+    "subtitle": "Scenario risk request from Angular to typed FastAPI output",
+    "output": ".archify/sequence-api-request-20261023-0945/api-request-sequence.html",
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/TanviGawade13/urban-floos-.git",
+      "revision": "002491b69a7e3d1b0cfff414aee90ae3290cca4a",
+      "link_mode": "web"
+    }
+  },
+  "participants": [
+    {"id":"operator","type":"external","label":"Operator","sublabel":"Browser session"},
+    {"id":"ui","type":"frontend","label":"Angular UI","sublabel":"Map or dashboard","sources":[{"path":"Frontend/src/environments/environment.ts","line":5}]},
+    {"id":"api","type":"backend","label":"FastAPI","sublabel":"/api/v1 router","sources":[{"path":"backend/app/main.py","line":39},{"path":"backend/app/api/api_router.py","line":16}]},
+    {"id":"risk","type":"backend","label":"Flood service","sublabel":"Cached inference","sources":[{"path":"backend/app/api/routes/flood.py","line":21},{"path":"backend/app/services/flood_service.py","line":232}]},
+    {"id":"graph","type":"backend","label":"Decision services","sublabel":"Route and prioritization","sources":[{"path":"backend/app/api/routes/routing.py","line":22},{"path":"backend/app/api/routes/prioritization.py","line":16}]}
+  ],
+  "segments": [
+    {"from":150,"to":250,"label":"request"},
+    {"from":260,"to":370,"label":"calculation"},
+    {"from":380,"to":480,"label":"response"}
+  ],
+  "messages": [
+    {"id":"open","from":"operator","to":"ui","y":160,"label":"open map or dashboard"},
+    {"id":"request","from":"ui","to":"api","y":190,"label":"GET /forecast-risk?horizon=NOW","variant":"emphasis"},
+    {"id":"load-risk","from":"api","to":"risk","y":225,"label":"load cached scenario scores","variant":"default"},
+    {"id":"risk-result","from":"risk","to":"api","y":275,"label":"zones + provenance","variant":"return"},
+    {"id":"decision-request","from":"ui","to":"api","y":320,"label":"POST /safe-route or /prioritization/rank","variant":"emphasis"},
+    {"id":"decision-calc","from":"api","to":"graph","y":360,"label":"route or rank candidates","variant":"default"},
+    {"id":"decision-result","from":"graph","to":"api","y":410,"label":"scenario decision result","variant":"return"},
+    {"id":"response","from":"api","to":"ui","y":440,"label":"typed JSON response","variant":"return"},
+    {"id":"render","from":"ui","to":"operator","y":470,"label":"render map, route, or report","variant":"return"}
+  ],
+  "activations": [
+    {"participant":"ui","from":185,"to":430,"type":"frontend"},
+    {"participant":"api","from":190,"to":405,"type":"backend"},
+    {"participant":"risk","from":220,"to":270,"type":"backend"},
+    {"participant":"graph","from":350,"to":420,"type":"backend"}
+  ]
+}

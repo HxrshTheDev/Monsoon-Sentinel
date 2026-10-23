@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "cff1e363-9d30-43eb-a1fd-2ce6432151db",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "C:\\backend\\urban-floos-\\.archify\\architecture-monsoon-sentinel-20261023-0945\\candidate.json",
+  "output": "C:\\backend\\urban-floos-\\.archify\\architecture-monsoon-sentinel-20261023-0945\\monsoon-sentinel-architecture.html",
+  "specification": {
+    "sha256": "3a0a4ab49d8cd613be173aba16ebb359e775edd2ea1bd855a031fbbfcb7f31ad",
+    "bytes": 3078
+  },
+  "artifact": {
+    "sha256": "fcb271635aab7aa9fb2214d9b195987d2cece2dc4c55418e68396abe72c6e240",
+    "bytes": 758802
+  }
+}

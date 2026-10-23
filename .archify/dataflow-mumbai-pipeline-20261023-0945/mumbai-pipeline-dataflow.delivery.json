@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "b4797cdb-3b49-4c7a-b275-ae9e48c59f24",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "C:\\backend\\urban-floos-\\.archify\\dataflow-mumbai-pipeline-20261023-0945\\candidate.json",
+  "output": "C:\\backend\\urban-floos-\\.archify\\dataflow-mumbai-pipeline-20261023-0945\\mumbai-pipeline-dataflow.html",
+  "specification": {
+    "sha256": "e7a3abe48fe208951771e3bfd4488001183e8d028722c209524874234b4e697f",
+    "bytes": 2775
+  },
+  "artifact": {
+    "sha256": "555b1c97589f8fe4e5ee37e257caa6f709baa9ea83e5038a7b3525d5760d6f9a",
+    "bytes": 754223
+  }
+}

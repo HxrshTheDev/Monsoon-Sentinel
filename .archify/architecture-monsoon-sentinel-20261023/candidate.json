@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Monsoon Sentinel data-to-decision flow",
+    "subtitle": "Mumbai flood susceptibility and disruption decision support",
+    "output": ".archify/architecture-monsoon-sentinel-20261023/monsoon-sentinel.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/TanviGawade13/urban-floos-.git",
+      "revision": "002491b69a7e3d1b0cfff414aee90ae3290cca4a",
+      "link_mode": "web"
+    }
+  },
+  "components": [
+    {
+      "id": "sources",
+      "type": "external",
+      "label": "Data Sources",
+      "sublabel": "Mumbai raw and processed assets",
+      "pos": [40, 190],
+      "size": [150, 68],
+      "sources": [
+        { "path": "backend/data/mumbai/mumbai_provenance_manifest.json", "line": 1 }
+      ]
+    },
+    {
+      "id": "geo",
+      "type": "backend",
+      "label": "Geospatial Processing",
+      "sublabel": "Grid, features, OSM road cache",
+      "pos": [320, 190],
+      "size": [175, 68],
+      "sources": [
+        { "path": "scripts/build_mumbai_pipeline.py", "line": 1 },
+        { "path": "scripts/build_mumbai_road_network.py", "line": 1 }
+      ]
+    },
+    {
+      "id": "model",
+      "type": "backend",
+      "label": "Risk Model",
+      "sublabel": "XGBoost + scenario susceptibility",
+      "pos": [630, 190],
+      "size": [175, 68],
+      "sources": [
+        { "path": "backend/app/services/flood_service.py", "line": 129 },
+        { "path": "models/trained/mumbai_model_evaluation.json", "line": 1 }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "FastAPI Backend",
+      "sublabel": "/api/v1 REST routes",
+      "pos": [940, 190],
+      "size": [175, 68],
+      "sources": [
+        { "path": "backend/app/main.py", "line": 39 },
+        { "path": "backend/app/api/api_router.py", "line": 16 }
+      ]
+    },
+    {
+      "id": "frontend",
+      "type": "frontend",
+      "label": "Angular Frontend",
+      "sublabel": "Maps, routing, EOC, analytics",
+      "pos": [1250, 190],
+      "size": [175, 68],
+      "sources": [
+        { "path": "Frontend/src/environments/environment.ts", "line": 5 }
+      ]
+    },
+    {
+      "id": "decision",
+      "type": "backend",
+      "label": "Decision Support",
+      "sublabel": "Access, criticality, prioritization",
+      "pos": [940, 350],
+      "size": [205, 68],
+      "sources": [
+        { "path": "backend/app/services/accessibility_service.py", "line": 1 },
+        { "path": "backend/app/services/prioritization_service.py", "line": 1 },
+        { "path": "backend/app/services/road_network_service.py", "line": 1 }
+      ]
+    }
+  ],
+  "connections": [
+    { "id": "sources-to-geo", "from": "sources", "to": "geo", "label": "load and validate" },
+    { "id": "geo-to-model", "from": "geo", "to": "model", "label": "features and graph" },
+    { "id": "model-to-api", "from": "model", "to": "api", "label": "scores and provenance" },
+    { "id": "api-to-frontend", "from": "api", "to": "frontend", "label": "JSON over HTTP", "variant": "emphasis" },
+    { "id": "api-to-decision", "from": "api", "to": "decision", "label": "scenario inputs", "fromSide": "bottom", "toSide": "top" },
+    { "id": "frontend-to-decision", "from": "frontend", "to": "decision", "label": "operator views", "fromSide": "bottom", "toSide": "right" }
+  ]
+}

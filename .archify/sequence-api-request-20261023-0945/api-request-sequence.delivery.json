@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "abfd68e6-38b6-48e5-a88b-b7661314dc92",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "C:\\backend\\urban-floos-\\.archify\\sequence-api-request-20261023-0945\\candidate.json",
+  "output": "C:\\backend\\urban-floos-\\.archify\\sequence-api-request-20261023-0945\\api-request-sequence.html",
+  "specification": {
+    "sha256": "e264ef5c5c11674d11440f8c6ca5c649a785b94e70e042fcf827b76b465d3d15",
+    "bytes": 2956
+  },
+  "artifact": {
+    "sha256": "4bc8a6b6c9bc6b7c2756cdb553433dd72a53ca70e5feabebd3d1235e3f454cb6",
+    "bytes": 756041
+  }
+}
