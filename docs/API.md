@@ -12,6 +12,26 @@ calibrated flood probabilities, live rainfall observations, road-closure
 confirmations, or emergency instructions. Continuous water depth is returned
 as `null`.
 
+## Request flow
+
+```mermaid
+sequenceDiagram
+    participant UI as Angular frontend
+    participant API as FastAPI /api/v1
+    participant Risk as Flood service
+    participant Graph as Road and decision services
+    UI->>API: GET forecast or POST decision request
+    API->>Risk: Load cached scenario scores
+    Risk-->>API: Susceptibility and provenance
+    API->>Graph: Route, criticality, access, or priority calculation
+    Graph-->>API: Scenario result
+    API-->>UI: Typed JSON response
+```
+
+For the exact response shape, use the generated OpenAPI document at
+`http://localhost:8000/openapi.json`; this page documents the stable route
+surface and important interpretation constraints.
+
 ## Health and metadata
 
 | Method | Path | Description |

@@ -14,6 +14,33 @@ Paths are relative to the repository root.
 The generated provenance manifest is
 [`backend/data/mumbai/mumbai_provenance_manifest.json`](../backend/data/mumbai/mumbai_provenance_manifest.json).
 
+## Dataset-to-model flow
+
+```mermaid
+flowchart LR
+    A[Raw Mumbai sources] --> B[Grid and road builders]
+    B --> C[500 m grid]
+    B --> D[Static spatial features]
+    B --> E[Critical infrastructure]
+    C --> F[Feature validation]
+    D --> F
+    E --> F
+    F --> G[XGBoost training / retraining]
+    G --> H[Scenario susceptibility]
+    H --> I[FastAPI routes and decision support]
+    classDef source fill:#102a43,stroke:#5bc0eb,color:#fff
+    classDef data fill:#12372a,stroke:#6ee7b7,color:#fff
+    classDef model fill:#3b245c,stroke:#d8b4fe,color:#fff
+    classDef output fill:#4a2c17,stroke:#fdba74,color:#fff
+    class A,B source
+    class C,D,E,F data
+    class G,H model
+    class I output
+```
+
+The road graph is consumed by routing and network analysis alongside the
+susceptibility grid; it is not a training label.
+
 ## Active assets
 
 | Asset | Path | Verified fact |

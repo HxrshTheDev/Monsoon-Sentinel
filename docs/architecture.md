@@ -8,12 +8,42 @@ flood-warning or hydrodynamic system.
 
 ```mermaid
 flowchart LR
-    A[Data Sources] --> B[Geospatial Processing]
-    B --> C[Risk Model]
-    C --> D[FastAPI Backend]
-    D --> E[Angular Frontend]
-    D --> F[Decision Support]
+    subgraph inputs["Mumbai inputs"]
+        A[Raw and processed assets]
+        R[OSM road cache]
+    end
+    subgraph build["Build and validate"]
+        B[GIS pipeline]
+        C[Feature validation]
+    end
+    subgraph score["Inference"]
+        D[XGBoost booster]
+        E[Scenario susceptibility]
+    end
+    subgraph serve["FastAPI /api/v1"]
+        F[Flood and hotspot routes]
+        G[Routing and criticality]
+        H[Accessibility and prioritization]
+    end
+    I[Angular frontend]
+    J[Decision reports]
+    A --> B --> C --> D --> E
+    R --> G
     E --> F
+    E --> G
+    F --> I
+    G --> I
+    H --> J
+    F --> H
+    G --> H
+    classDef input fill:#102a43,stroke:#5bc0eb,color:#fff
+    classDef process fill:#12372a,stroke:#6ee7b7,color:#fff
+    classDef service fill:#3b245c,stroke:#d8b4fe,color:#fff
+    classDef consumer fill:#4a2c17,stroke:#fdba74,color:#fff
+    class A,R input
+    class B,C,D,E process
+    class F,G,H service
+    class I,J consumer
 ```
 
 ### Components

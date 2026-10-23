@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Mumbai dataset to decision-support flow",
+    "subtitle": "Reproducible assets, model inputs, and scenario outputs",
+    "output": ".archify/dataflow-mumbai-pipeline-20261023-0945/mumbai-pipeline-dataflow.html",
+    "quality_profile": "showcase",
+    "viewBox": [980, 600],
+    "repository": {
+      "url": "https://github.com/TanviGawade13/urban-floos-.git",
+      "revision": "002491b69a7e3d1b0cfff414aee90ae3290cca4a",
+      "link_mode": "web"
+    }
+  },
+  "stages": [
+    {"label":"Sources"},
+    {"label":"Build"},
+    {"label":"Model"},
+    {"label":"Consume"}
+  ],
+  "nodes": [
+    {"id":"raw","type":"external","label":"Mumbai sources","sublabel":"DEM + facilities","stage":0,"row":0,"width":88,"sources":[{"path":"backend/data/mumbai/mumbai_provenance_manifest.json","line":1}]},
+    {"id":"grid","type":"backend","label":"Grid builder","sublabel":"500 m cells","stage":1,"row":0,"width":88,"sources":[{"path":"scripts/build_mumbai_pipeline.py","line":1}]},
+    {"id":"features","type":"database","label":"Feature parquet","sublabel":"25 columns","stage":2,"row":0,"width":88,"sources":[{"path":"backend/data/mumbai/mumbai_provenance_manifest.json","line":1}]},
+    {"id":"booster","type":"backend","label":"XGBoost model","sublabel":"Hotspot labels","stage":2,"row":1,"width":88,"sources":[{"path":"models/trained/mumbai_model_evaluation.json","line":1}]},
+    {"id":"scores","type":"backend","label":"Scenario scores","sublabel":"Susceptibility","stage":2,"row":2,"width":88,"sources":[{"path":"backend/app/services/flood_service.py","line":129}]},
+    {"id":"api","type":"backend","label":"FastAPI outputs","sublabel":"Risk + reports","stage":3,"row":0,"width":88,"sources":[{"path":"backend/app/api/api_router.py","line":16}]},
+    {"id":"decision","type":"frontend","label":"Decision views","sublabel":"Maps + priorities","stage":3,"row":1,"width":88,"sources":[{"path":"Frontend/src/environments/environment.ts","line":5}]}
+  ],
+  "flows": [
+    {"id":"raw-grid","from":"raw","to":"grid","label":"source inputs","variant":"emphasis","route":"straight"},
+    {"id":"grid-features","from":"grid","to":"features","label":"derived predictors","variant":"emphasis"},
+    {"id":"features-model","from":"features","to":"booster","label":"training matrix","variant":"emphasis","route":"straight","labelDy":25},
+    {"id":"booster-scores","from":"booster","to":"scores","label":"model score","variant":"emphasis","labelDy":25},
+    {"id":"scores-api","from":"scores","to":"api","label":"typed risk output","variant":"emphasis"},
+    {"id":"api-decision","from":"api","to":"decision","label":"JSON over HTTP","variant":"emphasis","labelDy":25}
+  ]
+}

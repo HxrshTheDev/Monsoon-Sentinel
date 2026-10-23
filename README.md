@@ -24,6 +24,25 @@ See [the architecture and data flow](docs/architecture.md), [the API
 reference](docs/API.md), and [data provenance](docs/data_sources.md) for
 implementation details.
 
+```mermaid
+flowchart LR
+    A[Mumbai data] --> B[Geospatial processing]
+    B --> C[Scenario susceptibility]
+    C --> D[FastAPI]
+    D --> E[Angular UI]
+    D --> F[Decision support]
+    E --> F
+    classDef source fill:#102a43,stroke:#5bc0eb,color:#fff
+    classDef process fill:#12372a,stroke:#6ee7b7,color:#fff
+    classDef product fill:#3b245c,stroke:#d8b4fe,color:#fff
+    class A source
+    class B,C process
+    class D,E,F product
+```
+
+The default path is a scenario-analysis workflow: it supports comparison and
+prioritization, but does not issue live flood warnings.
+
 ## Repository layout
 
 ```text
