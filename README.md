@@ -1,88 +1,67 @@
 # CityPulse / Monsoon Sentinel
 
-[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg)](https://fastapi.tiangolo.com)
-[![Angular](https://img.shields.io/badge/Angular-21-dd0031.svg)](https://angular.dev/)
-[![Challenge](https://img.shields.io/badge/Hackathon-HackAMatch%201.0%20(CityPulse)-orange.svg)]()
+Mumbai-focused flood **susceptibility** and disruption decision support for
+Brihanmumbai Municipal Corporation (BMC / MCGM).
 
-Mumbai-only flood **susceptibility** and disruption decision-support prototype for **Brihanmumbai Municipal Corporation (BMC / MCGM)**.
+The repository contains a FastAPI backend, an Angular frontend, a Mumbai
+geospatial/model pipeline, and tests. Scores are prototype susceptibility
+estimates under scenario rainfall; they are **not calibrated probabilities of
+a future flood**. Continuous water depth is unmeasured and is returned as
+`null`.
 
-**Team:** Omkar Musale (Team Leader), Tanvi Gawade, Harsh Gosavi  
-**Geography:** Greater Mumbai ($18.89^\circ$–$19.30^\circ$ N, $72.75^\circ$–$73.02^\circ$ E)  
-**CRS:** `EPSG:32643` (metric) · `EPSG:4326` (map / GeoJSON)
+## Scope and evidence
 
-> Scores are **prototype susceptibility estimates** under scenario rainfall. They are **not** calibrated probabilities of a future flood. Water depth is unmeasured (`null`) and never fabricated.
+- Study area: Greater Mumbai, approximately `18.89-19.30 N` and
+  `72.75-73.02 E`.
+- Metric CRS: `EPSG:32643`; web/GeoJSON CRS: `EPSG:4326`.
+- Model labels: proximity to BMC chronic waterlogging hotspot coordinates
+  within 750 m.
+- Road graph: OpenStreetMap highway geometry downloaded through Overpass.
+- Rainfall: deterministic scenario baselines in the default demo, not live
+  IMD or BMC AWS observations.
 
----
+See [the architecture and data flow](docs/architecture.md), [the API
+reference](docs/API.md), and [data provenance](docs/data_sources.md) for
+implementation details.
 
 ## Repository layout
 
 ```text
-monsoon-sentinel/
-├── config.py                 # Shared settings (Mumbai paths, bounds, CORS)
-├── requirements.txt
-├── .env.example
-├── backend/app/              # FastAPI application
-├── Frontend/                 # Angular 21 SPA
-├── data/processed/           # Mumbai grid, features, infrastructure
-├── models/trained/           # mumbai_xgboost_baseline.json (+ evaluation JSON)
-├── scripts/                  # GIS pipeline + model retrain
-├── tests/                    # pytest suite
-└── docs/                     # Architecture & data provenance
+config.py                 Shared Mumbai settings and paths
+backend/app/              FastAPI application and services
+Frontend/                 Angular SPA
+data/processed/           Generated grid, features, infrastructure, and roads
+models/trained/           Trained XGBoost model and evaluation metadata
+scripts/                  Mumbai data, road-network, and model commands
+tests/                    pytest integration and service tests
+docs/                     Architecture, API, provenance, and audit notes
 ```
 
----
-
-## Prerequisites (Windows-friendly)
+## Prerequisites
 
 - Python 3.11 or 3.12 (64-bit)
-- Node.js 20+ and npm 10+
+- Node.js 20 or later and npm 10 or later
 - Git
 
----
+## Run the backend
 
-## 1. Backend setup
+From the repository root:
 
 ```powershell
-cd C:\path\to\monsoon-sentinel
 python -m venv venv
 .\venv\Scripts\activate
 pip install -r requirements.txt
 copy .env.example .env
-```
-
-### Start API
-
-```powershell
 python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-| Resource | URL |
-|---|---|
-| API root | http://localhost:8000/ |
-| Swagger UI | http://localhost:8000/docs |
-| ReDoc | http://localhost:8000/redoc |
-| Health | http://localhost:8000/api/v1/health |
+The API is available at `http://localhost:8000`. Swagger UI is at
+`/docs`, ReDoc is at `/redoc`, and the health endpoint is
+`/api/v1/health`.
 
-### Key endpoints
+## Run the frontend
 
-| Method | Path | Purpose |
-|---|---|---|
-| GET | `/api/v1/health` | Health |
-| GET | `/api/v1/health/system-overview` | Diagnostics + honest model caveats |
-| GET | `/api/v1/current-risk/kpis` | Scenario KPIs |
-| GET | `/api/v1/forecast-risk?horizon=NOW` | 500m susceptibility grid |
-| GET | `/api/v1/hotspots?limit=20` | Ranked hotspots |
-| POST | `/api/v1/safe-route` | OSM road-network flood-aware routing |
-| GET | `/api/v1/criticality/roads` | Betweenness / bridges |
-| GET | `/api/v1/accessibility/analysis` | Emergency accessibility |
-| POST | `/api/v1/prioritization/rank` | Inspection ranking |
-| POST | `/api/v1/prioritization/compare?budget_k=5` | Strategy A vs B |
-| GET | `/api/v1/analytics/decision-report` | Executive report |
-
----
-
-## 2. Frontend setup
+In a second terminal:
 
 ```powershell
 cd Frontend
@@ -90,82 +69,79 @@ npm install
 npm start
 ```
 
-Open **http://localhost:4200/**
+Open `http://localhost:4200/`. The development environment uses the real API
+(`useMockData: false`) with a default base URL of `http://localhost:8000`.
 
-- Dev API base: `http://localhost:8000` (`Frontend/src/environments/environment.ts`)
-- `useMockData` is **false** — the UI calls the real FastAPI backend
-- Demo login: use the demo role buttons on `/login` if the auth API is offline
+The main UI paths include `/dashboard`, `/flood-map`, `/safe-route`, `/eoc`,
+and `/analytics`. Demo login role buttons are available when the authentication
+API is offline.
 
-### Main journey
+## Data and model assets
 
-1. Landing → Login (demo roles) or open `/dashboard` / `/flood-map`
-2. Inspect Mumbai susceptibility map and hotspots
-3. Change forecast horizon where offered
-4. `/safe-route` for OSM road-following flood-aware routing
-5. `/eoc` for Emergency Operations Centre (backend hotspots + labelled simulation)
-6. `/analytics` for reports; prioritization via API / dashboard widgets
-
----
-
-## 3. Data & model
-
-Expected runtime assets (already in repo for demo):
+The default demo expects these generated or checked-in assets:
 
 - `data/processed/grids/mumbai_grid_500m.geojson`
 - `data/processed/features/mumbai_static_spatial_features.parquet`
 - `data/processed/vectors/mumbai_critical_infrastructure.parquet`
-- `data/processed/roads/mumbai_drive_network.json.gz` (OSM road cache)
+- `data/processed/roads/mumbai_drive_network.json.gz`
 - `models/trained/mumbai_xgboost_baseline.json`
 
-Regenerate / retrain:
+The full asset inventory, source status, CRS, labels, and routing assumptions
+are maintained in [docs/data_sources.md](docs/data_sources.md) and
+[docs/mumbai_data_sources.md](docs/mumbai_data_sources.md).
+
+## Rebuild or retrain
+
+Run from the repository root:
 
 ```powershell
-# Full GIS rebuild (uses cached raw under backend/data/mumbai/raw when present)
+# Rebuild the Mumbai GIS pipeline.
 python scripts/build_mumbai_pipeline.py
 
-# OSM road network for Safe Route (Overpass; writes the gzip cache above)
+# Download/build the cached OSM road graph.
 python scripts/build_mumbai_road_network.py
 
-# Retrain only (fixes label leakage; writes evaluation JSON)
+# Retrain the model from the existing Mumbai feature dataset.
 python scripts/retrain_mumbai_model.py
 ```
 
-**Labels:** BMC chronic waterlogging hotspot proximity (750 m), not a circular hazard formula.  
-**Road graph:** OpenStreetMap drive highways (arterial/collector) for the Mumbai study bbox — see `docs/data_sources.md`.
+The GIS and road commands may require network access. Rebuild outputs are
+written under `data/processed/`; raw downloads, when available, are kept
+under `backend/data/mumbai/raw/`.
 
----
-
-## 4. Tests
+## Test
 
 ```powershell
 pytest tests -v
 ```
 
----
+The tests exercise API responses, data validation, flood inference,
+prioritization, accessibility, road criticality, and route geometry. Tests
+that require a road cache may skip when that cache is absent.
 
-## 5. Environment variables
+## Environment
 
-See `.env.example`. Minimum:
+`.env.example` documents the supported settings. Common overrides include:
 
 | Variable | Purpose |
-|---|---|
-| `SECRET_KEY` | JWT / app secret (required for any non-dev deploy) |
-| `ENVIRONMENT` | `development` / `production` |
-| `MODEL_PATH` | Override trained model path |
-| `GRID_GEOJSON_PATH` | Override Mumbai grid path |
-| `STATIC_FEATURES_PATH` | Override features parquet |
-| `CRITICAL_INFRA_PATH` | Override infrastructure parquet |
+| --- | --- |
+| `SECRET_KEY` | Application/JWT secret; replace the development default for deployment |
+| `ENVIRONMENT` | Runtime environment, such as `development` or `production` |
+| `MODEL_PATH` | Trained model path |
+| `GRID_GEOJSON_PATH` | Mumbai grid path |
+| `STATIC_FEATURES_PATH` | Static feature parquet path |
+| `CRITICAL_INFRA_PATH` | Infrastructure parquet path |
+| `ROAD_NETWORK_PATH` | OSM road-cache path |
 
-CORS defaults to local Angular/Vite origins (no wildcard).
+## Limitations
 
----
+- The default rainfall and telemetry payloads are labelled scenario/demo data.
+- The model is evaluated against a BMC hotspot-proximity proxy, not
+  chronological flood-event labels or calibrated flood probabilities.
+- Water depth is unmeasured and remains `null`.
+- Routing uses cached OSM geometry and configured road classes; it is not live
+  traffic, closure, or emergency advice.
+- Optional feeds are not assumed to be present.
 
-## 6. Known limitations
-
-- No live IMD/BMC AWS rainfall feed in the default demo (scenario baselines + labelled simulation).
-- No continuous water-depth model — depth stays `null`.
-- Model metrics describe agreement with hotspot-proximity labels, not operational flood forecasting skill.
-- Road routing covers curated corridors only.
-- EOC drainage / radar layers fall back to clearly labelled simulation when optional feeds are absent.
-
-Further provenance: `docs/data_sources.md`, `docs/mumbai_data_sources.md`, `docs/architecture.md`.
+For the retained historical component audit, see
+[docs/reference_component_audit.md](docs/reference_component_audit.md).
