@@ -28,109 +28,46 @@ class AccessibilityService:
         self.road_service = RoadNetworkService.get_instance()
         self.flood_service = FloodService.get_instance()
 
-        # Key population origin clusters across Greater Mumbai
-        self.origins = [
-            {"id": "ORIGIN-KURLA", "name": "Kurla Mithi Catchment Lowlands", "node": "MUM-NODE-KURLA", "lat": 19.0680, "lon": 72.8800},
-            {"id": "ORIGIN-SION", "name": "Sion Circle / Gandhi Market Lowlands", "node": "MUM-NODE-SION", "lat": 19.0400, "lon": 72.8620},
-            {"id": "ORIGIN-HINDMATA", "name": "Hindmata / Parel Lowland Bowl", "node": "MUM-NODE-HINDMATA", "lat": 19.0080, "lon": 72.8430},
-            {"id": "ORIGIN-ANDHERI", "name": "Andheri West / SV Road Catchment", "node": "MUM-NODE-ANDHERI", "lat": 19.1197, "lon": 72.8464},
-            {"id": "ORIGIN-BANDRA", "name": "Bandra West / Khar Sector", "node": "MUM-NODE-BANDRA", "lat": 19.0544, "lon": 72.8402},
-            {"id": "ORIGIN-CHEMBUR", "name": "Chembur / Trombay Sector", "node": "MUM-NODE-CHEMBUR", "lat": 19.0620, "lon": 72.9000},
-            {"id": "ORIGIN-MALAD", "name": "Malad Western Lowlands", "node": "MUM-NODE-MALAD", "lat": 19.1860, "lon": 72.8485},
-            {"id": "ORIGIN-BORIVALI", "name": "Borivali / Dahisar Gateway", "node": "MUM-NODE-BORIVALI", "lat": 19.2300, "lon": 72.8570}
+        # Key population origin clusters across Greater Mumbai (nodes snapped to OSM)
+        raw_origins = [
+            {"id": "ORIGIN-KURLA", "name": "Kurla Mithi Catchment Lowlands", "lat": 19.0680, "lon": 72.8800},
+            {"id": "ORIGIN-SION", "name": "Sion Circle / Gandhi Market Lowlands", "lat": 19.0400, "lon": 72.8620},
+            {"id": "ORIGIN-HINDMATA", "name": "Hindmata / Parel Lowland Bowl", "lat": 19.0080, "lon": 72.8430},
+            {"id": "ORIGIN-ANDHERI", "name": "Andheri West / SV Road Catchment", "lat": 19.1197, "lon": 72.8464},
+            {"id": "ORIGIN-BANDRA", "name": "Bandra West / Khar Sector", "lat": 19.0544, "lon": 72.8402},
+            {"id": "ORIGIN-CHEMBUR", "name": "Chembur / Trombay Sector", "lat": 19.0620, "lon": 72.9000},
+            {"id": "ORIGIN-MALAD", "name": "Malad Western Lowlands", "lat": 19.1860, "lon": 72.8485},
+            {"id": "ORIGIN-BORIVALI", "name": "Borivali / Dahisar Gateway", "lat": 19.2300, "lon": 72.8570},
         ]
+        self.origins = []
+        for o in raw_origins:
+            node = self._snap_node(o["lat"], o["lon"])
+            self.origins.append({**o, "node": node})
 
-        # Key destination facilities mapped to nearest network nodes
-        self.destination_facilities = [
-            {
-                "id": "HOSP-KEM-01",
-                "name": "King Edward Memorial Hospital (KEM Hospital)",
-                "facility_type": "hospital",
-                "category": "Level 1 Trauma Center",
-                "node": "MUM-NODE-HINDMATA",
-                "lat": 19.0028, "lon": 72.8431
-            },
-            {
-                "id": "HOSP-SION-02",
-                "name": "Lokmanya Tilak Municipal General Hospital (Sion Hospital)",
-                "facility_type": "hospital",
-                "category": "Metropolitan Disaster Trauma Center",
-                "node": "MUM-NODE-SION",
-                "lat": 19.0378, "lon": 72.8606
-            },
-            {
-                "id": "HOSP-LILAVATI-03",
-                "name": "Lilavati Hospital & Research Centre",
-                "facility_type": "hospital",
-                "category": "Emergency Cardiac & Trauma",
-                "node": "MUM-NODE-BANDRA",
-                "lat": 19.0514, "lon": 72.8295
-            },
-            {
-                "id": "HOSP-KDAH-04",
-                "name": "Kokilaben Dhirubhai Ambani Hospital",
-                "facility_type": "hospital",
-                "category": "Western Suburbs Trauma Center",
-                "node": "MUM-NODE-ANDHERI",
-                "lat": 19.1312, "lon": 72.8252
-            },
-            {
-                "id": "HOSP-BHABHA-05",
-                "name": "K. B. Bhabha Municipal General Hospital Kurla",
-                "facility_type": "hospital",
-                "category": "Suburban Municipal Trauma Center",
-                "node": "MUM-NODE-KURLA",
-                "lat": 19.0650, "lon": 72.8790
-            },
-            {
-                "id": "FIRE-BYCULLA-01",
-                "name": "Mumbai Fire Brigade Headquarters",
-                "facility_type": "fire_station",
-                "category": "Metropolitan Dispatch",
-                "node": "MUM-NODE-BYCULLA",
-                "lat": 18.9780, "lon": 72.8310
-            },
-            {
-                "id": "FIRE-ANDHERI-02",
-                "name": "Andheri Fire & Rescue Station",
-                "facility_type": "fire_station",
-                "category": "Mid-Suburbs Heavy Rescue Hub",
-                "node": "MUM-NODE-ANDHERI",
-                "lat": 19.1180, "lon": 72.8490
-            },
-            {
-                "id": "FIRE-KURLA-03",
-                "name": "Kurla Fire & Rescue Station",
-                "facility_type": "fire_station",
-                "category": "Mithi Catchment Flood Dispatch",
-                "node": "MUM-NODE-KURLA",
-                "lat": 19.0680, "lon": 72.8780
-            },
-            {
-                "id": "POLICE-HQ-01",
-                "name": "Mumbai Police Commissionerate Headquarters",
-                "facility_type": "police",
-                "category": "Metropolitan Command",
-                "node": "MUM-NODE-CST",
-                "lat": 18.9440, "lon": 72.8340
-            },
-            {
-                "id": "POLICE-BANDRA-02",
-                "name": "Bandra Police Divisional Headquarters",
-                "facility_type": "police",
-                "category": "Divisional Command",
-                "node": "MUM-NODE-BANDRA",
-                "lat": 19.0550, "lon": 72.8350
-            },
-            {
-                "id": "POLICE-KURLA-03",
-                "name": "Kurla Police Station Hub",
-                "facility_type": "police",
-                "category": "Divisional Command",
-                "node": "MUM-NODE-KURLA",
-                "lat": 19.0670, "lon": 72.8795
-            }
+        # Key destination facilities — snap lat/lon onto the OSM road graph
+        raw_facilities = [
+            {"id": "HOSP-KEM-01", "name": "King Edward Memorial Hospital (KEM Hospital)", "facility_type": "hospital", "category": "Level 1 Trauma Center", "lat": 19.0028, "lon": 72.8431},
+            {"id": "HOSP-SION-02", "name": "Lokmanya Tilak Municipal General Hospital (Sion Hospital)", "facility_type": "hospital", "category": "Metropolitan Disaster Trauma Center", "lat": 19.0378, "lon": 72.8606},
+            {"id": "HOSP-LILAVATI-03", "name": "Lilavati Hospital & Research Centre", "facility_type": "hospital", "category": "Emergency Cardiac & Trauma", "lat": 19.0514, "lon": 72.8295},
+            {"id": "HOSP-KDAH-04", "name": "Kokilaben Dhirubhai Ambani Hospital", "facility_type": "hospital", "category": "Western Suburbs Trauma Center", "lat": 19.1312, "lon": 72.8252},
+            {"id": "HOSP-BHABHA-05", "name": "K. B. Bhabha Municipal General Hospital Kurla", "facility_type": "hospital", "category": "Suburban Municipal Trauma Center", "lat": 19.0650, "lon": 72.8790},
+            {"id": "FIRE-BYCULLA-01", "name": "Mumbai Fire Brigade Headquarters", "facility_type": "fire_station", "category": "Metropolitan Dispatch", "lat": 18.9780, "lon": 72.8310},
+            {"id": "FIRE-ANDHERI-02", "name": "Andheri Fire & Rescue Station", "facility_type": "fire_station", "category": "Mid-Suburbs Heavy Rescue Hub", "lat": 19.1180, "lon": 72.8490},
+            {"id": "FIRE-KURLA-03", "name": "Kurla Fire & Rescue Station", "facility_type": "fire_station", "category": "Mithi Catchment Flood Dispatch", "lat": 19.0680, "lon": 72.8780},
+            {"id": "POLICE-HQ-01", "name": "Mumbai Police Commissionerate Headquarters", "facility_type": "police", "category": "Metropolitan Command", "lat": 18.9440, "lon": 72.8340},
+            {"id": "POLICE-BANDRA-02", "name": "Bandra Police Divisional Headquarters", "facility_type": "police", "category": "Divisional Command", "lat": 19.0550, "lon": 72.8350},
+            {"id": "POLICE-KURLA-03", "name": "Kurla Police Station Hub", "facility_type": "police", "category": "Divisional Command", "lat": 19.0670, "lon": 72.8795},
         ]
+        self.destination_facilities = []
+        for fac in raw_facilities:
+            self.destination_facilities.append({**fac, "node": self._snap_node(fac["lat"], fac["lon"])})
+
+    def _snap_node(self, lat: float, lon: float) -> str:
+        """Snap a facility/origin coordinate to the nearest OSM road node."""
+        if not self.road_service.network_available:
+            return f"UNSNAPPED-{lat:.4f}-{lon:.4f}"
+        node, _dist = self.road_service.get_nearest_node_to_coords(lat, lon)
+        return node
 
     def evaluate_accessibility(self, scenario_threshold: float = 0.40) -> Dict[str, Any]:
         """
@@ -140,32 +77,30 @@ class AccessibilityService:
         # Baseline free-flow graph
         G_base = self.road_service.graph
 
-        # Construct disrupted graph under scenario
+        # Construct disrupted graph under scenario (honour directed / one-way OSM edges)
         G_disrupted = nx.DiGraph()
         G_disrupted.add_nodes_from(G_base.nodes)
         for ed in self.road_service.edge_definitions:
             u, v = ed["u"], ed["v"]
             base_time = ed["free_flow_time_min"]
             is_bridge = ed.get("is_bridge", False)
-            risk = 0.15
+            risk = settings.UNKNOWN_RISK_DEFAULT
             zone = self.flood_service.get_location_risk(ed["locality"])
-            if zone:
-                risk = float(zone.get("probability", 0.15))
+            if zone and zone.get("probability") is not None:
+                risk = float(zone["probability"])
 
-            # Subways flood completely and close under high water
-            is_subway = "subway" in ed["name"].lower() or "underpass" in ed["name"].lower()
+            name_l = (ed.get("name") or "").lower()
+            is_subway = "subway" in name_l or "underpass" in name_l or ed.get("is_tunnel")
             if is_subway and risk >= 0.70:
                 continue
 
             if is_bridge:
-                # Elevated bridges remain structurally passable but experience flood-related congestion/delays
                 if risk >= scenario_threshold:
                     impedance = base_time * (2.2 + (risk * 2.8))
                 else:
                     impedance = base_time * (1.0 + (risk * 0.5))
             else:
                 if risk >= 0.85:
-                    # Severely flooded surface road
                     continue
                 elif risk >= scenario_threshold:
                     impedance = base_time * (3.0 + (risk * 4.0))
@@ -173,7 +108,6 @@ class AccessibilityService:
                     impedance = base_time * (1.0 + (risk * 0.8))
 
             G_disrupted.add_edge(u, v, weight=impedance)
-            G_disrupted.add_edge(v, u, weight=impedance)
 
         results = []
         isolated_count = 0

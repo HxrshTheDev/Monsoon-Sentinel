@@ -19,7 +19,7 @@
 | DS-04 | Microwatersheds | `backend/data/mumbai/raw/mumbai_microwatersheds.geojson` | OpenCity / MRSAC |
 | DS-05 | Emergency facilities | `data/processed/vectors/mumbai_critical_infrastructure.parquet` | OpenCity + OSM |
 | DS-06 | Chronic waterlogging labels | BMC hotspot coordinates in `scripts/build_mumbai_pipeline.py` | ML training labels (750 m proximity) |
-| DS-07 | Arterial road graph | `backend/app/services/road_network_service.py` | Prototype curated corridors |
+| DS-07 | OSM drive road graph | `data/processed/roads/mumbai_drive_network.json.gz` | Overpass OSM highways; build via `scripts/build_mumbai_road_network.py` |
 | DS-08 | Rainfall scenarios | Inference horizons in `flood_service.py` | Scenario baselines — not live AWS by default |
 | DS-09 | XGBoost model | `models/trained/mumbai_xgboost_baseline.json` | Prototype susceptibility |
 

@@ -13,11 +13,14 @@ export interface RouteOption {
   hazardExposure: 'Low' | 'Medium' | 'High';
   riskExposureScore?: number;
   highRiskEdgeCount?: number;
+  unknownRiskEdgeCount?: number;
   pathCoordinates: [number, number][]; // [lat, lon] Leaflet order
   nodesVisited?: string[];
   notes: string;
   isSimulated: boolean;
   geometrySource?: string;
+  riskSource?: string;
+  riskIsSimulated?: boolean;
 }
 
 export interface RouteHazard {
@@ -42,6 +45,8 @@ export interface RoutePlanResult {
   hazards: RouteHazard[];
   networkProvenance?: string;
   geometrySource?: string;
+  riskSource?: string;
+  riskIsSimulated?: boolean;
   warnings?: string[];
   isSimulated: boolean;
 }

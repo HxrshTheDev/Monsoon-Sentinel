@@ -68,6 +68,19 @@ class Settings(BaseSettings):
     DISRUPTION_THRESHOLD_HIGH: float = 0.50
     DISRUPTION_THRESHOLD_CRITICAL: float = 0.75
 
+    # Road network (OSM cache) & flood-aware routing costs
+    # edge_cost_m = length_m + length_m * RISK_PENALTY_FACTOR * risk^RISK_PENALTY_EXPONENT
+    # (unknown risk uses UNKNOWN_RISK_DEFAULT — not treated as guaranteed safe)
+    ROAD_NETWORK_PATH: str = os.getenv(
+        "ROAD_NETWORK_PATH",
+        "./data/processed/roads/mumbai_drive_network.json.gz",
+    )
+    ROAD_SNAP_MAX_METERS: float = float(os.getenv("ROAD_SNAP_MAX_METERS", "750"))
+    RISK_PENALTY_FACTOR: float = float(os.getenv("RISK_PENALTY_FACTOR", "4.0"))
+    RISK_PENALTY_EXPONENT: float = float(os.getenv("RISK_PENALTY_EXPONENT", "2.0"))
+    UNKNOWN_RISK_DEFAULT: float = float(os.getenv("UNKNOWN_RISK_DEFAULT", "0.35"))
+    MAX_SAFE_DETOUR_RATIO: float = float(os.getenv("MAX_SAFE_DETOUR_RATIO", "2.5"))
+
     model_config = SettingsConfigDict(case_sensitive=True)
 
 settings = Settings()

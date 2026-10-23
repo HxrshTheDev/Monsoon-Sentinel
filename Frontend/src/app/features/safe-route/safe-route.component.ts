@@ -141,12 +141,12 @@ import { environment } from '../../../environments/environment';
             <div class="route-map-legend">
               <div class="legend-row">
                 <span class="legend-line route-safe-line"></span>
-                <span>Safer route (selected emphasis)</span>
+                <span>Safer route (flood-aware OSM path)</span>
               </div>
               @if (routePlan?.alternativeRoute) {
                 <div class="legend-row">
                   <span class="legend-line route-alt-line"></span>
-                  <span>Higher-risk alternative</span>
+                  <span>Shortest road-network alternative</span>
                 </div>
               }
               <div class="legend-row">
@@ -163,7 +163,15 @@ import { environment } from '../../../environments/environment';
         <!-- Route Comparison Sidebar -->
         <div class="comparison-column">
           @if (loading) {
-            <app-loading-state message="Evaluating arterial susceptibility & calculating network paths..."></app-loading-state>
+            <app-loading-state message="Snapping to OSM roads and calculating flood-aware paths..."></app-loading-state>
+          } @else if (routeError && !routePlan) {
+            <div class="card route-card" style="border-color: var(--status-unsafe);">
+              <h4 class="route-name">No route displayed</h4>
+              <p class="route-notes">{{ routeError }}</p>
+              <p class="route-notes" style="margin-top: 0.5rem;">
+                The map will not show a fake straight-line path when routing fails.
+              </p>
+            </div>
           } @else if (routePlan) {
             <!-- Card 1: Recommended Safe Route -->
             <button
@@ -947,6 +955,14 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
     this.routeError = null;
     this.routingService.calculateSafeRoute(this.sourceLocation, this.destinationLocation, this.vehicleType).subscribe({
       next: plan => {
+        const coords = plan?.recommendedRoute?.pathCoordinates;
+        if (!coords || coords.length < 2) {
+          this.loading = false;
+          this.routePlan = null;
+          this.routeLayersGroup.clearLayers();
+          this.routeError = 'Backend returned an empty route geometry. No path was drawn.';
+          return;
+        }
         this.routePlan = plan;
         this.selectedRouteId = plan.recommendedRoute.id;
         this.renderRouteOnMap(plan);
@@ -956,10 +972,11 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
       error: (err) => {
         this.loading = false;
         this.routePlan = null;
+        this.routeLayersGroup.clearLayers();
         const detail = err?.error?.detail;
         this.routeError = typeof detail === 'string'
           ? detail
-          : 'Route calculation failed. Confirm the backend is reachable and endpoints are on the arterial network.';
+          : 'Route calculation failed. Confirm the backend is reachable and both points snap to the Mumbai road network.';
       }
     });
   }
@@ -982,6 +999,18 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
     this.routeLayersGroup.clearLayers();
     this.map.invalidateSize({ animate: false });
 
+    // Leaflet expects [lat, lon] — backend pathCoordinates use that order.
+    const toLatLngs = (pts: [number, number][]): L.LatLngExpression[] =>
+      pts
+        .filter((p) => Array.isArray(p) && p.length >= 2 && Number.isFinite(p[0]) && Number.isFinite(p[1]))
+        .map((p) => [p[0], p[1]] as L.LatLngExpression);
+
+    const safeLatLngs = toLatLngs(plan.recommendedRoute.pathCoordinates as [number, number][]);
+    if (safeLatLngs.length < 2) {
+      this.routeError = 'Route geometry is invalid; nothing drawn on the map.';
+      return;
+    }
+
     const selectedId = this.selectedRouteId || plan.recommendedRoute.id;
     const safeSelected = selectedId === plan.recommendedRoute.id;
     const alt = plan.alternativeRoute;
@@ -989,40 +1018,47 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Draw alternative first (under), then safer on top — selected gets casing + heavier stroke
     let altPolyline: L.Polyline | null = null;
-    if (alt?.pathCoordinates?.length) {
+    const altLatLngs = alt?.pathCoordinates?.length
+      ? toLatLngs(alt.pathCoordinates as [number, number][])
+      : [];
+    if (altLatLngs.length >= 2) {
       if (altSelected) {
-        this.routeLayersGroup.addLayer(L.polyline(alt.pathCoordinates as L.LatLngExpression[], {
+        this.routeLayersGroup.addLayer(L.polyline(altLatLngs, {
           color: '#7c2d12',
           weight: 10,
           opacity: 0.55,
-          interactive: false
+          interactive: false,
+          smoothFactor: 0
         }));
       }
-      altPolyline = L.polyline(alt.pathCoordinates as L.LatLngExpression[], {
+      altPolyline = L.polyline(altLatLngs, {
         color: '#f97316',
         weight: altSelected ? 7 : 4,
         dashArray: altSelected ? undefined : '10, 8',
-        opacity: altSelected ? 0.95 : 0.65
+        opacity: altSelected ? 0.95 : 0.65,
+        smoothFactor: 0
       });
       altPolyline.bindTooltip(
-        `<strong>${alt.name}</strong><br/>${alt.distanceKm} km • ${alt.etaMinutes} min • risk ${alt.riskExposureScore ?? '—'}`
+        `<strong>${alt!.name}</strong><br/>${alt!.distanceKm} km • ${alt!.etaMinutes} min • risk ${alt!.riskExposureScore ?? '—'}`
       );
-      altPolyline.on('click', () => this.selectRoute(alt.id));
+      altPolyline.on('click', () => this.selectRoute(alt!.id));
       this.routeLayersGroup.addLayer(altPolyline);
     }
 
     if (safeSelected) {
-      this.routeLayersGroup.addLayer(L.polyline(plan.recommendedRoute.pathCoordinates as L.LatLngExpression[], {
+      this.routeLayersGroup.addLayer(L.polyline(safeLatLngs, {
         color: '#064e3b',
         weight: 10,
         opacity: 0.5,
-        interactive: false
+        interactive: false,
+        smoothFactor: 0
       }));
     }
-    const safePolyline = L.polyline(plan.recommendedRoute.pathCoordinates as L.LatLngExpression[], {
+    const safePolyline = L.polyline(safeLatLngs, {
       color: '#10b981',
       weight: safeSelected ? 7 : 4,
-      opacity: safeSelected ? 0.95 : 0.55
+      opacity: safeSelected ? 0.95 : 0.55,
+      smoothFactor: 0
     });
     safePolyline.bindTooltip(
       `<strong>${plan.recommendedRoute.name}</strong><br/>` +
@@ -1065,12 +1101,12 @@ export class SafeRouteComponent implements OnInit, AfterViewInit, OnDestroy {
       this.routeLayersGroup.addLayer(marker);
     });
 
-    const bounds = L.latLngBounds(plan.recommendedRoute.pathCoordinates as L.LatLngExpression[]);
+    const bounds = L.latLngBounds(safeLatLngs);
     bounds.extend(plan.sourceCoords as L.LatLngExpression);
     bounds.extend(plan.destCoords as L.LatLngExpression);
     if (altPolyline) {
       bounds.extend(altPolyline.getBounds());
     }
-    this.map.fitBounds(bounds.pad(0.12), { padding: [36, 36], maxZoom: 14 });
+    this.map.fitBounds(bounds.pad(0.12), { padding: [36, 36], maxZoom: 15 });
   }
 }

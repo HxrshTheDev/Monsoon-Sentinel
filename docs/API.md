@@ -97,71 +97,38 @@ Returns flood status assigned to Mumbai arterial road segments.
 
 ## 3. Safe Mobility & Graph Dijkstra Routing
 
+Uses the cached OpenStreetMap drive network (`data/processed/roads/mumbai_drive_network.json.gz`).
+Routes follow real highway geometry (no synthetic bay chords). Flood-aware weighted route minimizes
+`length_m + length_m * RISK_PENALTY_FACTOR * risk^RISK_PENALTY_EXPONENT`; the alternative is shortest distance when distinct.
+`pathCoordinates` are `[lat, lon]` (Leaflet). HTTP 422 when snap/path fails; 503 if the road cache is missing.
+
 ### `GET /api/v1/safe-route/presets`
-Returns predefined Mumbai commute scenarios (e.g., Dadar to Andheri via WEH vs Milan Subway).
+Returns predefined Mumbai commute scenarios (e.g., CSMT → CSMIA, Dadar → Bandra).
 
 ### `POST /api/v1/safe-route`
-Calculates dynamic risk-penalized shortest path avoiding submerged roads vs direct surface route.
+Calculates flood-aware vs shortest paths on the OSM road graph.
 
 **Request Body**:
 ```json
 {
-  "source": "Dadar",
-  "destination": "Andheri",
-  "mode": "vehicle"
+  "source": "Sion Circle",
+  "destination": "Bandra-Kurla Complex (BKC)",
+  "vehicle_type": "rescue"
 }
 ```
 
-**Response**:
-```json
-{
-  "source": "Dadar",
-  "destination": "Andheri",
-  "sourceCoords": [19.0178, 72.8478],
-  "destCoords": [19.1197, 72.8441],
-  "recommendedRoute": {
-    "id": "ROUTE_SAFE_MUMBAI",
-    "name": "Elevated Flyover Bypass (Dadar -> BKC -> Santacruz -> Andheri)",
-    "type": "RECOMMENDED_SAFE",
-    "distanceKm": 16.5,
-    "etaMinutes": 38,
-    "safetyScore": 94,
-    "riskStatus": "SAFE",
-    "floodPointsAvoided": 3,
-    "hazardExposure": "Low",
-    "pathCoordinates": [[19.0178, 72.8478], [19.0650, 72.8680], [19.0832, 72.8415], [19.1197, 72.8441]],
-    "notes": "Route prioritizes elevated Western Express Highway flyovers and ridge arterials, completely avoiding submerged underpasses.",
-    "isSimulated": false
-  },
-  "alternativeRoute": {
-    "id": "ROUTE_ALT_MUMBAI",
-    "name": "Surface Grade Direct Path (Hindmata & Milan Corridor)",
-    "type": "FASTER_ALTERNATIVE",
-    "distanceKm": 14.8,
-    "etaMinutes": 48,
-    "safetyScore": 45,
-    "riskStatus": "UNSAFE",
-    "floodPointsAvoided": 0,
-    "hazardExposure": "High",
-    "pathCoordinates": [[19.0178, 72.8478], [19.0125, 72.8428], [19.0350, 72.8600], [19.0832, 72.8415], [19.1197, 72.8441]],
-    "notes": "Direct surface route, but encounters severe waterlogging at depressed railway subways and saucer depressions.",
-    "isSimulated": false
-  },
-  "hazards": [
-    {
-      "id": "HAZ_MUM_01",
-      "title": "Milan Subway Inundation",
-      "location": "Milan Subway (Santacruz)",
-      "coordinates": [19.0832, 72.8415],
-      "severity": "UNSAFE",
-      "waterDepthCm": 70,
-      "status": "Submerged (-3.0m underpass) • Impassable for vehicular transit",
-      "isSimulated": false
-    }
-  ],
-  "isSimulated": false
-}
-```
+The response contains `recommendedRoute` and, when a distinct route exists,
+`alternativeRoute`. Each option includes `distanceKm` (sum of mapped edge lengths),
+`etaMinutes` (sum of edge free-flow estimates), `pathCoordinates` in Leaflet
+`[latitude, longitude]` order, risk metrics, `unknownRiskEdgeCount`, and geometry
+provenance. `sourceCoords` and `destCoords` are the snapped OSM road nodes; any
+snap offset is included in `warnings`.
+
+`riskSource` identifies the flood-risk data. The current XGBoost input is a
+scenario-based susceptibility estimate, not live water depth or road-closure
+observations (`riskIsSimulated: true`). Unknown edge risk is penalized and
+reported; `safetyScore` is only the inverse modeled susceptibility indicator,
+and `riskStatus` never means that a road has been confirmed safe.
 
 ---
 
